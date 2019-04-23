@@ -914,6 +914,10 @@ font-style: normal;
 #articleBody p {
 margin: 24px 0 24px 24px;
 }
+#articleBody pre {
+margin: 24px 0;
+overflow: auto;
+}
 #articleBody h5 + p,
 #articleBody h6 + p {
 margin-top: 0;
@@ -1127,6 +1131,9 @@ height: 160px;
 font-size: 6vw;
 }
 #articleTitle p {
+font-size: 3vw;
+}
+#articleBody pre {
 font-size: 3vw;
 }
 #articleBody nav ul {
