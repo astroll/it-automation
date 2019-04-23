@@ -1011,7 +1011,8 @@ top: 0; left: 0;
 width: 100%; height: 100%;
 }
 
-#articleBody a.download {
+#articleBody a.download,
+#articleBody span.download {
 display: inline-block;
 padding: 4px 32px;
 background-color: #C00;
@@ -1020,6 +1021,9 @@ text-align: center;
 text-decoration: none;
 color: #FFF;
 transition-duration: 0.3s;
+}
+#articleBody span.download {
+background-color: #CCC;
 }
 #articleBody a.download:hover {
 background-color: #A00;
