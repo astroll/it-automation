@@ -924,6 +924,13 @@ margin: 24px 0;
 padding-left: 1.5em;
 line-height: 1.5;
 }
+#articleBody .sectionInner ul {
+padding-left: 48px;
+margin-top: -24px;
+}
+#articleBody .sectionInner ul li {
+margin-bottom: 0;
+}
 #articleBody ul li,
 #articleBody ol li {
 margin-bottom: 0.25em;
