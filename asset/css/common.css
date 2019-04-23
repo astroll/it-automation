@@ -1175,6 +1175,13 @@ font-size: 3vw;
 #articleBody ol {
 font-size: 3vw;
 }
+#articleBody .sectionInner ul {
+padding-left: 3em;
+margin-top: -16px;
+}
+#articleBody .sectionInner ul li {
+margin-bottom: 0;
+}
 #articleBody a.move {
 font-size: 3.2vw;
 }
