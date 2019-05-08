@@ -15,13 +15,20 @@
 #
 
 REMOTE_REPO=$1
-CLONE_REPO=$2
-REMOTE_PASSWORD=$3
+BRANCH=$2
+CLONE_REPO=$3
+REMOTE_PASSWORD=$4
+
+if ${BRANCH} -eq "" ; then
+    CMD="git clone ${REMOTE_REPO} ${CLONE_REPO}"
+else
+    CMD="git clone ${REMOTE_REPO} ${CLONE_REPO} -b ${BRANCH}"
+fi
 
 expect -c "
 
 set timeout 5
-spawn git clone ${REMOTE_REPO} ${CLONE_REPO}
+spawn ${CMD}
 
 expect {
     \"s password: \" {
