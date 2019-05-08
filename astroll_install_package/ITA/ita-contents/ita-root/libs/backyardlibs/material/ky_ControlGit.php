@@ -26,6 +26,7 @@
 class ControlGit {
 
     private $remortRepoUrl;     // GitのリモートリポジトリURL
+    private $branch;            // Gitのブランチ
     private $cloneRepoDir;      // Gitクローンディレクトリ
     private $password;          // Gitのパスワード
     private $gitOption;         // Gitのオプション（--git-dir、--work-tree）
@@ -36,8 +37,9 @@ class ControlGit {
     /**
      * コンストラクタ
      */
-    public function __construct($remortRepoUrl, $cloneRepoDir, $password, $libPath) {
+    public function __construct($remortRepoUrl, $branch, $cloneRepoDir, $password, $libPath) {
         $this->remortRepoUrl = $remortRepoUrl;
+        $this->branch = $branch;
         $this->cloneRepoDir = $cloneRepoDir . "/";
         $this->password = $password;
         $this->gitOption = "--git-dir " . $this->cloneRepoDir . "/.git --work-tree=" . $this->cloneRepoDir;
@@ -63,7 +65,7 @@ class ControlGit {
 
         // Git CLONE
         $output = NULL;
-        $cmd = "sudo -s " . $this->libPath . "ky_cloneGit.sh '" . $this->remortRepoUrl . "' '" . $this->cloneRepoDir . "' " . $this->password . " 2>&1";
+        $cmd = "sudo -i " . $this->libPath . "ky_cloneGit.sh '" . $this->remortRepoUrl . "' '" . $this->branch . "' '" . $this->cloneRepoDir . "' " . $this->password . " 2>&1";
 
         exec($cmd, $output, $return_var);
 
@@ -181,7 +183,7 @@ class ControlGit {
 
         // Git PUSH
         $output = NULL;
-        $cmd = "sudo " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
+        $cmd = "sudo -i " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
         exec($cmd, $output, $return_var);
 
         if(0 != $return_var){
@@ -284,7 +286,7 @@ class ControlGit {
 
             // Git PUSH
             $output = NULL;
-            $cmd = "sudo " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
+            $cmd = "sudo -i " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
             exec($cmd, $output, $return_var);
 
             if(0 != $return_var){
@@ -347,7 +349,7 @@ class ControlGit {
 
         // Git PUSH
         $output = NULL;
-        $cmd = "sudo " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
+        $cmd = "sudo -i " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
         exec($cmd, $output, $return_var);
 
         if(0 != $return_var){
@@ -430,7 +432,7 @@ class ControlGit {
 
             // Git PUSH
             $output = NULL;
-            $cmd = "sudo " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
+            $cmd = "sudo -i " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
             exec($cmd, $output, $return_var);
 
             if(0 != $return_var){
