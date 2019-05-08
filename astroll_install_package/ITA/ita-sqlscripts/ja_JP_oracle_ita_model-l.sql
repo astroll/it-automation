@@ -318,6 +318,7 @@ CREATE TABLE F_MATERIAL_IF_INFO
 ROW_ID                             NUMBER                           , -- 識別シーケンス項番
 
 REMORT_REPO_URL                    VARCHAR2(256)                    ,
+BRANCH                             VARCHAR2(256)                    ,
 CLONE_REPO_DIR                     VARCHAR2(256)                    ,
 PASSWORD                           VARCHAR2(128)                    ,
 
@@ -339,6 +340,7 @@ JOURNAL_ACTION_CLASS               VARCHAR2 (8)                     , -- 履歴�
 ROW_ID                             NUMBER                           , -- 識別シーケンス項番
 
 REMORT_REPO_URL                    VARCHAR2(256)                    ,
+BRANCH                             VARCHAR2(256)                    ,
 CLONE_REPO_DIR                     VARCHAR2(256)                    ,
 PASSWORD                           VARCHAR2(128)                    ,
 
