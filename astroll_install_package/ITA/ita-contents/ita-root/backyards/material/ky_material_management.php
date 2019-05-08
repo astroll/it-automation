@@ -89,9 +89,10 @@ try{
     }
 
     $remortRepoUrl = $materialIfInfoArray[0]['REMORT_REPO_URL'];
+    $branch = $materialIfInfoArray[0]['BRANCH'];
     $cloneRepoDir = $materialIfInfoArray[0]['CLONE_REPO_DIR'];
     $password = ky_decrypt($materialIfInfoArray[0]['PASSWORD']);
-    $controlGit = new ControlGit($remortRepoUrl, $cloneRepoDir, $password, MATERIAL_LIB_PATH);
+    $controlGit = new ControlGit($remortRepoUrl, $branch, $cloneRepoDir, $password, MATERIAL_LIB_PATH);
 
     //////////////////////////
     // ファイル管理テーブルを検索
