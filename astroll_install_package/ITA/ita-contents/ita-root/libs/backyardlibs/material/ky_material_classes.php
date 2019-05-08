@@ -442,6 +442,7 @@ class MaterialIfInfoTable extends BaseTable {
         $this->jnlSeqName   = $this->tableName . '_JSQ';
         $this->columnNames  = array('ROW_ID',
                                     'REMORT_REPO_URL',
+                                    'BRANCH',
                                     'CLONE_REPO_DIR',
                                     'PASSWORD',
                                     'NOTE',
