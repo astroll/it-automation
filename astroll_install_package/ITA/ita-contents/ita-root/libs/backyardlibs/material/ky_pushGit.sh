@@ -16,9 +16,6 @@
 
 GIT_OPTION=$1
 REMOTE_PASSWORD=$2
-echo "hoge"
-echo ${GIT_OPTION}
-echo "hoge"
 
 expect -c "
 
@@ -26,7 +23,7 @@ set timeout 5
 spawn git ${GIT_OPTION} push
 
 expect {
-    \"s password: \" {
+    -re \"assword.*: \" {
         send \"${REMOTE_PASSWORD}\n\"
         expect {
             default {
