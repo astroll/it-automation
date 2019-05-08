@@ -867,9 +867,10 @@ function setDefault(){
     search_async('orderFromFilterCmdBtn');
 }
 
-function initial_sync( remortRepoUrl, cloneRepoDir, password, objButton){
+function initial_sync( remortRepoUrl, branch, cloneRepoDir, password, objButton){
 
     var decRemortRepoUrl = decodeURIComponent(escape(atob(remortRepoUrl)));
+    var decBranch = decodeURIComponent(escape(atob(branch)));
     var decCloneRepoDir = decodeURIComponent(escape(atob(cloneRepoDir)));
     var decPassword = decodeURIComponent(escape(atob(password)));
 
@@ -880,7 +881,7 @@ function initial_sync( remortRepoUrl, cloneRepoDir, password, objButton){
         var retStrTid =  disableButton(objButton);
         if( retStrTid !== null ){
             window.alert(getSomeMessage("ITAMATERIAL_1003"));
-            proxy.initial_sync( decRemortRepoUrl, decCloneRepoDir, decPassword, retStrTid );
+            proxy.initial_sync( decRemortRepoUrl, decBranch, decCloneRepoDir, decPassword, retStrTid );
         }
     }
 }
