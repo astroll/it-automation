@@ -1,5 +1,0 @@
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_varsautolistup-workflow
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_valautostup-workflow
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_execute-workflow
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_checkcondition-workflow
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_masterSync-workflow
