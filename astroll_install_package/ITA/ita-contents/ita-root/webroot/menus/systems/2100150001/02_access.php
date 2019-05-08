@@ -22,14 +22,14 @@
     //-- サイト個別PHP要素、ここまで--
     class Db_Access extends Db_Access_Core {
         //-- サイト個別PHP要素、ここから--
-        function initial_sync($remortRepoUrl, $cloneRepoDir, $password, $strTid) {
+        function initial_sync($remortRepoUrl, $branch, $cloneRepoDir, $password, $strTid) {
 
             global $g;
             $result = array();
 
             require_once ("{$g['root_dir_path']}/libs/webindividuallibs/systems/{$g['page_dir']}/99_initialSync.php");
             $initialSync = new InitialSync();
-            $result = $initialSync->execute($remortRepoUrl, $cloneRepoDir, $password, $strTid);
+            $result = $initialSync->execute($remortRepoUrl, $branch, $cloneRepoDir, $password, $strTid);
 
             $output_str = makeAjaxProxyResultStream($result);
 
