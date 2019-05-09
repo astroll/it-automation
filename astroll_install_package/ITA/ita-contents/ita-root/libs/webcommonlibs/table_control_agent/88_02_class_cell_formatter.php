@@ -1782,7 +1782,7 @@ class TextTabBFmt extends TabBFmt {
 			}
 			//リッチ完全合致がなかった場合----
 		}
-		$strTagInnerBody = nl2br($strTagInnerBody);
+//		$strTagInnerBody = nl2br($strTagInnerBody);
 		dev_log($g['objMTS']->getSomeMessage("ITAWDCH-STD-4",array(__FILE__,$strFxName)),$intControlDebugLevel01);
 		return $this->getTag($strTagInnerBody, $rowData);
 	}
