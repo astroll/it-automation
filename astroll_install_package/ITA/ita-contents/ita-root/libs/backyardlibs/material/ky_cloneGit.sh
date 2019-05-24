@@ -15,14 +15,13 @@
 #
 
 REMOTE_REPO=$1
-BRANCH=$2
-CLONE_REPO=$3
-REMOTE_PASSWORD=$4
+CLONE_REPO=$2
+REMOTE_PASSWORD=$3
 
-if ${BRANCH} -eq "" ; then
+if [ $# == 3 ]; then
     CMD="git clone ${REMOTE_REPO} ${CLONE_REPO}"
 else
-    CMD="git clone ${REMOTE_REPO} ${CLONE_REPO} -b ${BRANCH}"
+    CMD="git clone ${REMOTE_REPO} ${CLONE_REPO} -b $4"
 fi
 
 expect -c "
