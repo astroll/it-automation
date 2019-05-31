@@ -726,7 +726,8 @@ TIME_LIMIT                        NUMBER                           ,
 ANS_HOST_DESIGNATE_TYPE_ID        NUMBER                           ,
 ANS_PARALLEL_EXE                  NUMBER                           ,
 ANS_WINRM_ID                      NUMBER                           ,
-ANS_GATHER_FACTS                  NUMBER                           ,
+ANS_PLAYBOOK_HED_DEF              VARCHAR2(512)                    , -- legacy Playbook.ymlのヘッダ定義
+ANS_EXEC_OPTIONS                  VARCHAR2(512)                    ,
 OPENST_TEMPLATE                   VARCHAR2(256)                    ,
 OPENST_ENVIRONMENT                VARCHAR2(256)                    ,
 
@@ -758,7 +759,8 @@ TIME_LIMIT                        NUMBER                           ,
 ANS_HOST_DESIGNATE_TYPE_ID        NUMBER                           ,
 ANS_PARALLEL_EXE                  NUMBER                           ,
 ANS_WINRM_ID                      NUMBER                           ,
-ANS_GATHER_FACTS                  NUMBER                           ,
+ANS_PLAYBOOK_HED_DEF              VARCHAR2(512)                    , -- legacy Playbook.ymlのヘッダ定義
+ANS_EXEC_OPTIONS                  VARCHAR2(512)                    ,
 OPENST_TEMPLATE                   VARCHAR2(256)                    ,
 OPENST_ENVIRONMENT                VARCHAR2(256)                    ,
 
