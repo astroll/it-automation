@@ -426,4 +426,7 @@ $ary[900023] = "The following states exist for Execute type.\n・Export\n・Impo
 $ary[900024] = "Export process has registred.<br>Execution No.：[<strong>{}</strong>]";
 $ary[105075] = "Last execute date";
 $ary[105076] = "Date/time when the operation was actually performed.";
+$ary[910001] = "astroll version";
+$ary[910002] = "driver";
+$ary[910003] = "version";
 ?>
