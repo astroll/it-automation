@@ -145,6 +145,18 @@ function symphonyUpdate(boolCallProxy, aryResultOfCalledProxy){
     }
 }
 
+function symphonyUpdateCancel(){
+    // 現在のシンフォニーを、読み込みする
+    var objSymphonyNoArea = document.getElementById('print_symphony_id');
+    printSymphonyClass(true,objSymphonyNoArea.innerHTML,"11");
+    // ボタン「編集」を配置する
+    drawCommandButtons(2);
+    //並べ替え領域の、並べ替え機能をOFFに設定する
+    materialAreaFunctionOff();
+    //素材一覧をドラッグできる機能をOFFに設定する
+    sortableAreaFunctionOff();
+}
+
 //----作業パターン一覧を、素材領域へ展開する
 function printMatchedPatternList(boolCallProxy,strStream){
     var intElementSetLength = 4;
