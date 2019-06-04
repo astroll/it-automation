@@ -264,18 +264,16 @@ EOD;
                         $selected2 = ($checked_flag == 2 ? "selected":"");
                         $str_temp = 
 <<< EOD
-                            <tr valign="top">
-                                <td class="likeHeader" scope="row" >
-                                  <span id="role_id_{$row_counter}" style="display:none">{$row['ROLE_ID']}</span>
-                                  <SELECT id="priv_{$row_counter}" >
-                                    <OPTION value="0" {$selected0}></OPTION>
-                                    <OPTION value="1" {$selected1}>{$g['objMTS']->getSomeMessage("ITAWDCH-MNU-1040058")}</OPTION>
-                                    <OPTION value="2" {$selected2}>{$g['objMTS']->getSomeMessage("ITAWDCH-MNU-1040059")}</OPTION>
-                                  </SELECT>
-                                </td>
-                                <td class="likeHeader number" scope="row" >$COLUMN_01</td>
-                                <td>$COLUMN_02</td>
-                            </tr>
+<tr valign="top">
+<td class="likeHeader" scope="row" ><span id="role_id_{$row_counter}" style="display:none">{$row['ROLE_ID']}</span><SELECT id="priv_{$row_counter}" >
+    <OPTION value="0" {$selected0}></OPTION>
+    <OPTION value="1" {$selected1}>{$g['objMTS']->getSomeMessage("ITAWDCH-MNU-1040058")}</OPTION>
+    <OPTION value="2" {$selected2}>{$g['objMTS']->getSomeMessage("ITAWDCH-MNU-1040059")}</OPTION>
+</SELECT>
+</td>
+<td class="likeHeader number" scope="row" >$COLUMN_01</td>
+<td>$COLUMN_02</td>
+</tr>
 EOD;
                             $output_str .= $str_temp;
                     }
