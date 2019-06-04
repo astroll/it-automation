@@ -20,7 +20,7 @@
     
     $strExeTableIdForSelect    = 'C_ANSIBLE_PNS_EXE_INS_MNG';
     
-    $strIfTableIdForSelect     = 'D_ANSIBLE_PNS_IF_INFO';
+    $strIfTableIdForSelect     = 'B_ANSIBLE_IF_INFO';  
     
     $strColIdOfDRSRPathFromWebSv = 'ANSIBLE_STORAGE_PATH_LNX';
     $strColIdOfTailLine          = 'ANSIBLE_TAILLOG_LINES';
