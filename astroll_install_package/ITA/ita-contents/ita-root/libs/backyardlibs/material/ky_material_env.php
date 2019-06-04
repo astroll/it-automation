@@ -25,9 +25,9 @@ define('COMMONLIBS_PATH',                 ROOT_DIR_PATH . '/libs/commonlibs/');
 define('UPLOADFILES_PATH',                ROOT_DIR_PATH . '/uploadfiles/2100150101/');                          // アップロードファイルパス
 define('TMP_PATH',                        ROOT_DIR_PATH . '/temp/');
 
+define('ANS_FILE_PATH',                   ROOT_DIR_PATH . '/uploadfiles/2100040703/CONTENTS_FILE/');            // アップロードファイルパス：Ansible   ：ファイル
+define('ANS_TEMPLATE_PATH',               ROOT_DIR_PATH . '/uploadfiles/2100040704/ANS_TEMPLATE_FILE//');        // アップロードファイルパス：Ansible   ：テンプレート
 define('ANS_PLAYBOOK_PATH',               ROOT_DIR_PATH . '/uploadfiles/2100020104/PLAYBOOK_MATTER_FILE/');     // アップロードファイルパス：Ansible   ：プレイブック
-define('ANS_TEMPLATE_PATH',               ROOT_DIR_PATH . '/uploadfiles/2100020110/ANS_TEMPLATE_FILE/');        // アップロードファイルパス：Ansible   ：テンプレート
-define('ANS_FILE_PATH',                   ROOT_DIR_PATH . '/uploadfiles/2100020114/CONTENTS_FILE/');            // アップロードファイルパス：Ansible   ：ファイル
 define('ANS_DIALOG_PATH',                 ROOT_DIR_PATH . '/uploadfiles/2100020205/DIALOG_MATTER_FILE/');       // アップロードファイルパス：Ansible   ：対話ファイル素材集
 define('ANS_ROLE_PATH',                   ROOT_DIR_PATH . '/uploadfiles/2100020303/ROLE_PACKAGE_FILE/');        // アップロードファイルパス：Ansible   ：ロールパッケージ
 
