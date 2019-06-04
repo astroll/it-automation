@@ -631,11 +631,15 @@ class OrchestratorLinkAgent {
         $strPatternMasterAnsWinRM = 'ANS_WINRM_ID';
         $strPatternMasterAnsParaEx = 'ANS_PARALLEL_EXE';
 
-        $strPatternMasterAnsGatherFacts = 'ANS_GATHER_FACTS'; 
-
         $strPatternMasterDscRetryTimeout = 'DSC_RETRY_TIMEOUT';
 
         $boolBinaryDistinctOnDTiS = false; //false=あいまい
+
+        $strPatternMasterAnsPlaybookHedDef    = 'ANS_PLAYBOOK_HED_DEF';
+        $strPatternMasterAnsExecOption        = 'ANS_EXEC_OPTIONS';
+        $strPatternMasterOpenst_Template      = 'OPENST_TEMPLATE';
+        $strPatternMasterOpenst_Env           = 'OPENST_ENVIRONMENT';
+
         
         try{
             $objDBCA = $this->getDBConnectAgent();
@@ -718,8 +722,11 @@ class OrchestratorLinkAgent {
                   .",{$strPatternMasterAnsHostDesignType} ANS_HOST_DESIGNATE_TYPE_ID "
                   .",{$strPatternMasterAnsParaEx} ANS_PARALLEL_EXE "
                   .",{$strPatternMasterAnsWinRM} ANS_WINRM_ID "
-                  .",{$strPatternMasterAnsGatherFacts} ANS_GATHER_FACTS "
                   .",{$strPatternMasterDscRetryTimeout} DSC_RETRY_TIMEOUT " 
+                  .",{$strPatternMasterAnsPlaybookHedDef} ANS_PLAYBOOK_HED_DEF "
+                  .",{$strPatternMasterAnsExecOption} ANS_EXEC_OPTIONS "
+                  .",{$strPatternMasterOpenst_Template} OPENST_TEMPLATE "
+                  .",{$strPatternMasterOpenst_Env} OPENST_ENVIRONMENT "
                   ."FROM   {$strPatternMasterTableId} "
                   ."WHERE  {$strWhereZone} "
                   ."ORDER  BY DISP_SEQ ASC";
