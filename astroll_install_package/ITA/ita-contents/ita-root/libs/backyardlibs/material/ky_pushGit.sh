@@ -42,6 +42,9 @@ expect {
             timeout {exit 254}
         }
     }
+    \"Username for\" {
+        exit 252
+    }
     default {
         catch wait result
 
