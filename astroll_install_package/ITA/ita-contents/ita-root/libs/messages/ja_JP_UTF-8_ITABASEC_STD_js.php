@@ -52,6 +52,7 @@ $ary["ITABASEC-010407"] = "保留解除";
 $ary["ITABASEC-010408"] = "一時停止";
 $ary["ITABASEC-010409"] = "説明";
 $ary["ITABASEC-010410"] = "スキップ";
+$ary["ITABASEC-010411"] = "キャンセル";
 $ary["ITABASEC-010501"] = "未実行";
 $ary["ITABASEC-010502"] = "準備エラー";
 $ary["ITABASEC-010503"] = "準備中";
