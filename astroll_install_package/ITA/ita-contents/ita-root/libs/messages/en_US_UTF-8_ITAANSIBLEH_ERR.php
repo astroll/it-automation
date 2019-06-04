@@ -456,4 +456,35 @@ $ary[90303] = "Failed to check whether related database changes.";
 $ary[90304] = "Failed to register completion of reflection of update of related database.";
 $ary[90305] = "Registration for backyard processing (valautostup-workflow) activation failed.";
 $ary[90306] = "Registration for backyard processing (varsautolistup-workflow) activation failed.";
+$ary[6000001] = "optional parameters is no value. (parameters: {})";
+$ary[6000002] = "option parameter is duplicate. (parameters: {})";
+$ary[6000003] = "optional parameters is invalid. (parameters: {})";
+$ary[6000004] = "optional parameters is invalid. (parameters: {})
+Please set extra_vars in the following format.
+ -e /--extra-vars=Variable name = specific value Variable name = specific value ...
+";
+$ary[6040001] = "Update SCM operation has failed.";
+$ary[6040002] = "Get the hosts information has failed.";
+$ary[6040003] = "Create project has failed.";
+$ary[6040004] = "Create credentials has failed.";
+$ary[6040005] = "Create inventory has failed.";
+$ary[6040006] = "Create job templates has failed.";
+$ary[6040007] = "Create workflow job template has failed.";
+$ary[6040008] = "Start workflow job has failed.";
+$ary[6040009] = "[Update SCM operation] Get the inventory has failed.";
+$ary[6040010] = "[Update SCM operation] No inventory.";
+$ary[6040011] = "[Update SCM operation] Get the project has failed.";
+$ary[6040012] = "[Update SCM operation] No project.";
+$ary[6040013] = "[Update SCM operation] Get the credential information has failed.";
+$ary[6040014] = "[Update SCM operation] No credential information.";
+$ary[6040015] = "[Update SCM operation] Create job template has failed.";
+$ary[6040016] = "[Update SCM operation] Create job template has failed. (Get the ID when created has failed.)";
+$ary[6040017] = "[Update SCM operation] Execute the job has failed.";
+$ary[6040018] = "[Update SCM operation] Execute the job has failed. (Get the ID when created has failed.)";
+$ary[6040019] = "[Update SCM operation] Execute the job has failed. (Time out)";
+$ary[6040020] = "[Update SCM operation] Get the job execution progress has failed.";
+$ary[6040021] = "[Update SCM operation] Execute the job has failed. (HTTP status code:{})";
+$ary[6040022] = "[Update SCM operation] Get the inventory-hosts has failed.";
+$ary[6040023] = "[Update SCM operation] No hosts.";
+$ary[6101010] = "Function to connect with REST API is not defined.";
 ?>
