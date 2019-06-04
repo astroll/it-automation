@@ -48,7 +48,7 @@ class AnsibleCommonLibs {
                "  CONTENTS_FILE_ID,            \n" .
                "  CONTENTS_FILE                \n" .
                "FROM                           \n" .
-               "  B_ANS_LRL_CONTENTS_FILE      \n" .
+               "  B_ANS_CONTENTS_FILE          \n" .
                "WHERE                          \n" .
                "  CONTENTS_FILE_VARS_NAME = '" . $in_cpf_var_name . "' AND \n" .
                "  DISUSE_FLAG            = '0';\n";
