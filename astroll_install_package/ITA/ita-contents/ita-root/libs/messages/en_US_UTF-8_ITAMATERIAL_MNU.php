@@ -107,6 +107,7 @@ $ary[101123] = "Select \"●\" for link destination menu.\n*Select only one link
 $ary[101124] = "Ansible-Role";
 $ary[101125] = "Role package file";
 $ary[101126] = "Select \"●\" for link destination menu.\n*1 Select only one link destination.\n*2 If the linked file is not a prescribed zip file, then the registered data is discarded and an error message is displayed in the remarks column.";
+$ary[101127] = "AnsibleCommon";
 $ary[101201] = "Status master";
 $ary[101202] = "Item No.";
 $ary[101203] = "Status master";
