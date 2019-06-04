@@ -52,6 +52,7 @@ $ary["ITABASEC-010407"] = "Unhold";
 $ary["ITABASEC-010408"] = "Pause";
 $ary["ITABASEC-010409"] = "Description";
 $ary["ITABASEC-010410"] = "Skip";
+$ary["ITABASEC-010411"] = "cancel";
 $ary["ITABASEC-010501"] = "Unexecuted";
 $ary["ITABASEC-010502"] = "Preparation error";
 $ary["ITABASEC-010503"] = "Preparing";
