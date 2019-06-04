@@ -145,7 +145,10 @@
                                                    "header"        => implode("\r\n", $Header),
                                                    "content"       => json_encode($RequestContents, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK ),
                                                    "ignore_errors" => true));
-            
+
+            $HttpContext['ssl']['verify_peer']=false;                      
+            $HttpContext['ssl']['verify_peer_name']=false;                 
+
             ////////////////////////////////
             // REST APIアクセス           //
             ////////////////////////////////
