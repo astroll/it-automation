@@ -35,88 +35,19 @@
     $strExeCurSeqName = 'C_ANSIBLE_LRL_EXE_INS_MNG_RIC';
     $strExeJnlSeqName = 'C_ANSIBLE_LRL_EXE_INS_MNG_JSQ';
     
-    $arrayConfig = array(
-        "JOURNAL_SEQ_NO"=>"",
-        "JOURNAL_ACTION_CLASS"=>"",
-        "JOURNAL_REG_DATETIME"=>"",
-        "EXECUTION_NO"=>"",
-        "EXECUTION_USER"=>"",
-        "PATTERN_ID"=>"",
-        "I_PATTERN_NAME"=>"",
-        "I_TIME_LIMIT"=>"",
-        "OPERATION_NO_UAPK"=>"",
-        "I_OPERATION_NAME"=>"",
-        "I_OPERATION_NO_IDBH"=>"",
-        "TIME_BOOK"=>"DATETIME",
-        "TIME_START"=>"DATETIME",
-        "TIME_END"=>"DATETIME",
-        "STATUS_ID"=>"",
-        "STATUS_NAME"=>"",
-        "RUN_MODE"=>"",
-        "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-        "I_ANS_PARALLEL_EXE"=>"",
-        "I_ANS_WINRM_ID"=>"",
-        "I_ANS_GATHER_FACTS"=>"",
-        "NOTE"=>"",
-        "DISUSE_FLAG"=>"",
-        "LAST_UPDATE_TIMESTAMP"=>"",
-        "LAST_UPDATE_USER"=>""
-    );
-    
-    $arrayValue = array(
-        "JOURNAL_SEQ_NO"=>"",
-        "JOURNAL_ACTION_CLASS"=>"",
-        "JOURNAL_REG_DATETIME"=>"",
-        "EXECUTION_NO"=>"",
-        "EXECUTION_USER"=>"",
-        "PATTERN_ID"=>"",
-        "I_PATTERN_NAME"=>"",
-        "I_TIME_LIMIT",
-        "OPERATION_NO_UAPK"=>"",
-        "I_OPERATION_NAME"=>"",
-        "I_OPERATION_NO_IDBH"=>"",
-        "TIME_BOOK"=>"",
-        "TIME_START"=>"",
-        "TIME_END"=>"",
-        "STATUS_ID"=>"",
-        "STATUS_NAME"=>"",
-        "RUN_MODE"=>"",
-        "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-        "I_ANS_PARALLEL_EXE"=>"",
-        "I_ANS_WINRM_ID"=>"",
-        "I_ANS_GATHER_FACTS"=>"",
-        "NOTE"=>"",
-        "DISUSE_FLAG"=>"",
-        "LAST_UPDATE_TIMESTAMP"=>"",
-        "LAST_UPDATE_USER"=>""
-    );
-    
-    $arrayConfig2 = array(
-        "JOURNAL_SEQ_NO"=>"",
-        "JOURNAL_ACTION_CLASS"=>"",
-        "JOURNAL_REG_DATETIME"=>"",
-        "EXECUTION_NO"=>"",
-        "EXECUTION_USER"=>"",
-        "PATTERN_ID"=>"",
-        "I_PATTERN_NAME"=>"",
-        "I_TIME_LIMIT"=>"",
-        "OPERATION_NO_UAPK"=>"",
-        "I_OPERATION_NAME"=>"",
-        "I_OPERATION_NO_IDBH"=>"",
-        "TIME_BOOK"=>"DATETIME",
-        "TIME_START"=>"DATETIME",
-        "TIME_END"=>"DATETIME",
-        "STATUS_ID"=>"",
-        "RUN_MODE"=>"",
-        "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-        "I_ANS_PARALLEL_EXE"=>"",
-        "I_ANS_WINRM_ID"=>"",
-        "I_ANS_GATHER_FACTS"=>"",
-        "NOTE"=>"",
-        "DISUSE_FLAG"=>"",
-        "LAST_UPDATE_TIMESTAMP"=>"",
-        "LAST_UPDATE_USER"=>""
-    );
+    global $root_dir_path;
+    require_once ($root_dir_path . '/libs/backyardlibs/ansible_driver/AnsibleTableDefinition.php');
+
+    $arrayConfig = array();
+    CreateExecInstMngViewArray($arrayConfig);
+    SetExecInstMngColumnType($arrayConfig);
+
+    $arrayValue = array();
+    CreateExecInstMngViewArray($arrayValue);
+
+    $arrayConfig2 = array();
+    CreateExecInstMngArray($arrayConfig2);
+    SetExecInstMngColumnType($arrayConfig2);
 
     //オーケストレータ別の設定記述----
     
