@@ -65,8 +65,14 @@ class ControlGit {
 
         // Git CLONE
         $output = NULL;
-        $cmd = "sudo -i " . $this->libPath . "ky_cloneGit.sh '" . $this->remortRepoUrl . "' '" . $this->cloneRepoDir . "' '" . $this->password . "' " . $this->branch . " 2>&1";
+        if("" == $this->branch){
+            $branch = "master";
+        }
+        else{
+            $branch = $this->branch;
+        }
 
+        $cmd = "sudo -i " . $this->libPath . "ky_cloneGit.sh '" . $this->remortRepoUrl . "' '" . $this->cloneRepoDir . "' '" . $branch . "' '" . $this->password . "' 2>&1";
         exec($cmd, $output, $return_var);
 
         if(0 != $return_var){
