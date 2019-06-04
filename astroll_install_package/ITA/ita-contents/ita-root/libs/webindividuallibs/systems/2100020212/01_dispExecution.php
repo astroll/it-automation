@@ -69,6 +69,13 @@
                         TAB_A.FILE_INPUT,
                         TAB_A.FILE_RESULT,
                         TAB_A.RUN_MODE_NAME,
+                        TAB_A.I_ANS_PLAYBOOK_HED_DEF,
+                        TAB_A.I_ANS_EXEC_OPTIONS,
+                        TAB_A.EXEC_MODE,
+                        TAB_A.EXEC_MODE_NAME,
+                        TAB_A.I_ANS_WINRM_ID,
+                        TAB_A.ANS_WINRM_FLAG_NAME,
+
                         TAB_A.NOTE,
                         {$strSelectLastUpdateTimestamp4} AS LAST_UPDATE_TIMESTAMP,
                         CASE TAB_B.USERNAME_JP WHEN NULL THEN {$strConnectString1}
@@ -167,6 +174,11 @@
         $url = sprintf("/default/menu/01_browse.php?no=2100020210&ope_id=%s&movement_id=%s", $ope_param,$movement_param);
         $COLUMN_39 =  sprintf("<input class=\"linkBtnInTbl\" type=\"button\" value=\"%s\" onClick=\"window.open('%s')\">",$caption,$url);
 
+        // Movement一覧へ遷移するボタン生成
+        $caption = $COLUMN_32;
+        $url = sprintf("/default/menu/01_browse.php?no=2100020203&movement_id=%s",$movement_param);
+        $COLUMN_40 =  sprintf("<input class=\"linkBtnInTbl\" type=\"button\" value=\"%s\" onClick=\"window.open('%s')\">",$caption,$url);
+
         //オーケストレータ別の設定記述----
 
         //----オーケストレータ別の設定記述
@@ -203,7 +215,7 @@
                     </tr>
                     <tr>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="2" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-104036")}</span><!--名称//--></td>
-                        <td                                     >{$COLUMN_32}</td>
+                        <td                                     >{$COLUMN_40}</td>
                     </tr>
                     <tr>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="2" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-104040")}</span><!--遅延タイマ(分)//--></td>
