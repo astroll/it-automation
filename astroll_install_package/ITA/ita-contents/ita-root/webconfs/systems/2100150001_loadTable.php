@@ -84,7 +84,7 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
     $c->getOutputType('filter_table')->setTextTagLastAttr('style = "ime-mode :inactive"');
     $c->getOutputType('register_table')->setTextTagLastAttr('style = "ime-mode :inactive"');
     $c->getOutputType('update_table')->setTextTagLastAttr('style = "ime-mode :inactive"');
-    $objVldt = new RemortRepoUrlValidator(1, 256, false);
+    $objVldt = new RemortRepoUrlValidator(0, 256, false);
 	$c->setValidator($objVldt);
     $table->addColumn($c);
 
