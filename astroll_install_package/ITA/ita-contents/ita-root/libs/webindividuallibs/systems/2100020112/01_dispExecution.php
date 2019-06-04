@@ -59,7 +59,6 @@
                         TAB_A.ANS_HOST_DESIGNATE_TYPE_NAME,
                         TAB_A.I_ANS_PARALLEL_EXE,
                         TAB_A.ANS_WINRM_FLAG_NAME,
-                        TAB_A.ANS_GATHER_FACTS_NAME,
                         TAB_A.STATUS_ID,
                         TAB_A.OPERATION_NO_UAPK,
                         TAB_A.I_OPERATION_NAME,
@@ -71,6 +70,11 @@
                         TAB_A.FILE_INPUT,
                         TAB_A.FILE_RESULT,
                         TAB_A.RUN_MODE_NAME,
+                        TAB_A.I_ANS_PLAYBOOK_HED_DEF,
+                        TAB_A.I_ANS_EXEC_OPTIONS,
+                        TAB_A.EXEC_MODE,
+                        TAB_A.EXEC_MODE_NAME,
+
                         TAB_A.NOTE, 
                         {$strSelectLastUpdateTimestamp4} AS LAST_UPDATE_TIMESTAMP,
                         CASE TAB_B.USERNAME_JP WHEN NULL THEN {$strConnectString1}
@@ -151,10 +155,6 @@
         $COLUMN_35 = nl2br(htmlspecialchars($showTgtRow['ANS_HOST_DESIGNATE_TYPE_NAME']));
         $COLUMN_36 = nl2br(htmlspecialchars($showTgtRow['ANS_WINRM_FLAG_NAME']));
 
-        $COLUMN_41 = nl2br(htmlspecialchars($showTgtRow['I_ANS_PARALLEL_EXE']));
-
-        $COLUMN_37 = nl2br(htmlspecialchars($showTgtRow['ANS_GATHER_FACTS_NAME']));
-        
         $status_id = htmlspecialchars($showTgtRow['STATUS_ID']);
 
         // 表示フィルター用 オペレーションID生成
@@ -171,6 +171,11 @@
         $caption = $g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-5010003");
         $url = sprintf("/default/menu/01_browse.php?no=2100020109&ope_id=%s&movement_id=%s", $ope_param,$movement_param);
         $COLUMN_39 =  sprintf("<input class=\"linkBtnInTbl\" type=\"button\" value=\"%s\" onClick=\"window.open('%s')\">",$caption,$url);
+
+        // Movement一覧へ遷移するボタン生成
+        $caption = $COLUMN_32;
+        $url = sprintf("/default/menu/01_browse.php?no=2100020103&movement_id=%s",$movement_param);
+        $COLUMN_40 =  sprintf("<input class=\"linkBtnInTbl\" type=\"button\" value=\"%s\" onClick=\"window.open('%s')\">",$caption,$url);
 
         //オーケストレータ別の設定記述----
 
@@ -202,34 +207,26 @@
                         <td                                     >{$COLUMN_42}</td>
                     </tr>
                     <tr>
-                        <td class="likeHeader" scope="row" rowspan="7" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-101080")}</span><!--作業パターン//--></td>
+                        <td class="likeHeader" scope="row" rowspan="5" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-101080")}</span><!--作業パターン//--></td>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="2" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-101095")}</span><!--ID//--></td>
                         <td                                     >{$COLUMN_31}</td>
                     </tr>
                     <tr>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="2" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-101096")}</span><!--名称//--></td>
-                        <td                                     >{$COLUMN_32}</td>
+                        <td                                     >{$COLUMN_40}</td>
                     </tr>
                     <tr>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="2" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-102010")}</span><!--遅延タイマ(分)//--></td>
                         <td                                     >{$COLUMN_03}</td>
                     </tr>
                     <tr>
-                        <td class="likeHeader" scope="row" rowspan="4" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-102011")}</span><!--Ansible利用情報//--></td>
+                        <td class="likeHeader" scope="row" rowspan="2" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-102011")}</span><!--Ansible利用情報//--></td>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-102012")}</span><!--ホスト指定形式//--></td>
                         <td                                     >{$COLUMN_35}</td>
                     </tr>
                     <tr>
-                        <td class="likeHeader" scope="row" rowspan="1" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-102014")}</span><!--並列実行数//--></td>
-                        <td                                     >{$COLUMN_41}</td>
-                    </tr>
-                    <tr>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-102013")}</span><!--WinRM接続//--></td>
                         <td                                     >{$COLUMN_36}</td>
-                    </tr>
-                    <tr>
-                        <td class="likeHeader" scope="row" rowspan="1" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-102015")}</span><!--GATHER_FACTS//--></td>
-                        <td                                     >{$COLUMN_37}</td>
                     </tr>
                     <tr>
                         <td class="likeHeader" scope="row" rowspan="3" colspan="1" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-102030")}</span><!--オペレーション情報//--></td>
