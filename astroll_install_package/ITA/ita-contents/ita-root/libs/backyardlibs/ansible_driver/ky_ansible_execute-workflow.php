@@ -22,8 +22,11 @@
     $db_connect_php                  = '/libs/commonlibs/common_db_connect.php';
     $ansible_restapi_php             = '/libs/commonlibs/common_ansible_restapi.php';
     $ansible_create_files_php        = '/libs/backyardlibs/ansible_driver/CreateAnsibleExecFiles.php';
+    $ansible_table_define_php        = '/libs/backyardlibs/ansible_driver/AnsibleTableDefinition.php';
     // REST API Request URL
     $RequestURI                      = "/restapi/ansible_driver/construct.php";
+    // AnsibleTower実行モジュール
+    $AnsibleTowerExecute_php         = "/libs/backyardlibs/ansible_driver/ansibletowerlibs/AnsibleTowerExecute.php";
 
     // 対話ファイルに埋め込まれるリモートログインのパスワード用変数の名前
     $vg_dialog_passwd_var_name = "__loginpassword__";
@@ -93,7 +96,9 @@
         ////////////////////////////////
         $aryOrderToReqGate = array('DBConnect'=>'LATE');
         require ($root_dir_path . $php_req_gate_php );
-        
+        require_once ($root_dir_path . $ansible_table_define_php);
+        require_once ($root_dir_path . $AnsibleTowerExecute_php);
+
         // 開始メッセージ
         if ( $log_level === 'DEBUG' ){
             $FREE_LOG = $objMTS->getSomeMessage("ITAWDCH-STD-50001");
@@ -186,6 +191,9 @@
 
         // ansible-playbookコマンド実行時のオプションパラメータ取得
         $lv_ansible_exec_options  = $lv_ans_if_info['ANSIBLE_EXEC_OPTIONS'];
+
+        $lv_anstwr_organization   = $lv_ans_if_info['ANSTWR_ORGANIZATION'];
+        $lv_anstwr_auth_token     = $lv_ans_if_info['ANSTWR_AUTH_TOKEN'];
         
         ////////////////////////////////////////////////////////////////////////////////////////////////
         // 作業インスタンステーブルから処理対象レコードの一意キーを取得(レコードロック)
@@ -211,71 +219,10 @@
             require ($root_dir_path . $log_output_php );
         }
 
-        // $arrayConfigをlegacyとpioneerで分ける
-        // SQL生成
-        $arrayConfig_legacy = array(
-            "JOURNAL_SEQ_NO"=>"",
-            "JOURNAL_ACTION_CLASS"=>"",
-            "JOURNAL_REG_DATETIME"=>"",
-            "EXECUTION_NO"=>"",
-            "EXECUTION_USER"=>"",
-            "STATUS_ID"=>"",
-            "SYMPHONY_INSTANCE_NO"=>"",
-            "PATTERN_ID"=>"",
-            "OPERATION_NO_UAPK"=>"",
-            // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-            "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-            "I_PATTERN_NAME"=>"",
-            "I_OPERATION_NAME"=>"",
-            "FILE_INPUT"=>"",
-            "FILE_RESULT"=>"",
-            // ドライラン 1:通常 2:ドライラン/オペレーションNO      
-            "I_OPERATION_NO_IDBH"=>"",
-            "RUN_MODE"=>"",
-            "I_ANS_WINRM_ID"=>"",
-            "I_ANS_GATHER_FACTS"=>"",
-            "TIME_BOOK"=>"DATETIME",
-            "TIME_START"=>"DATETIME",
-            "TIME_END"=>"DATETIME",
-            "I_TIME_LIMIT"=>"",
-            "I_ANS_PARALLEL_EXE"=>"",
-            "DISUSE_FLAG"=>"",
-            "NOTE"=>"",
-            "LAST_UPDATE_TIMESTAMP"=>"",
-            "LAST_UPDATE_USER"=>""
-        );
+        $arrayConfig = array();
+        CreateExecInstMngArray($arrayConfig);
+        SetExecInstMngColumnType($arrayConfig);
 
-        // SQL生成
-        $arrayConfig_pioneer = array(
-            "JOURNAL_SEQ_NO"=>"",
-            "JOURNAL_ACTION_CLASS"=>"",
-            "JOURNAL_REG_DATETIME"=>"",
-            "EXECUTION_NO"=>"",
-            "EXECUTION_USER"=>"",
-            "STATUS_ID"=>"",
-            "SYMPHONY_INSTANCE_NO"=>"",
-            "PATTERN_ID"=>"",
-            "OPERATION_NO_UAPK"=>"",
-            // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-            "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-            "I_PATTERN_NAME"=>"",
-            "I_OPERATION_NAME"=>"",
-            "FILE_INPUT"=>"",
-            "FILE_RESULT"=>"",
-            // ドライラン 1:通常 2:ドライラン/オペレーションNO      
-            "I_OPERATION_NO_IDBH"=>"",
-            "RUN_MODE"=>"",
-            "TIME_BOOK"=>"DATETIME",
-            "TIME_START"=>"DATETIME",
-            "TIME_END"=>"DATETIME",
-            "I_TIME_LIMIT"=>"",
-            "I_ANS_PARALLEL_EXE"=>"",
-            "DISUSE_FLAG"=>"",
-            "NOTE"=>"",
-            "LAST_UPDATE_TIMESTAMP"=>"",
-            "LAST_UPDATE_USER"=>""
-        );
-        
         $temp_array = array('WHERE'=>"DISUSE_FLAG = '0' AND
                                       (
                                        ( TIME_BOOK IS NULL AND STATUS_ID = 1 ) OR
@@ -283,92 +230,17 @@
                                        ( TIME_BOOK <= :KY_DB_DATETIME(6): AND STATUS_ID = 9 )
                                       )");
 
-        // $arrayValueをlegacyとpioneerで分ける
-        $arrayValue_legacy = array(
-            "JOURNAL_SEQ_NO"=>"",
-            "JOURNAL_ACTION_CLASS"=>"",
-            "JOURNAL_REG_DATETIME"=>"",
-            "EXECUTION_NO"=>"",
-            "EXECUTION_USER"=>"",
-            "STATUS_ID"=>"",
-            "SYMPHONY_INSTANCE_NO"=>"",
-            "PATTERN_ID"=>"",
-            "OPERATION_NO_UAPK"=>"",
-            // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-            "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-            "I_PATTERN_NAME"=>"",
-            "I_OPERATION_NAME"=>"",
-            "FILE_INPUT"=>"",
-            "FILE_RESULT"=>"",
-            // ドライラン 1:通常 2:ドライラン/オペレーションNO      
-            "I_OPERATION_NO_IDBH"=>"",
-            "RUN_MODE"=>"",
-            "I_ANS_WINRM_ID"=>"",
-            "I_ANS_GATHER_FACTS"=>"",
-            "TIME_BOOK"=>"",
-            "TIME_START"=>"",
-            "TIME_END"=>"",
-            "I_TIME_LIMIT"=>"",
-            "I_ANS_PARALLEL_EXE"=>"",
-            "DISUSE_FLAG"=>"",
-            "NOTE"=>"",
-            "LAST_UPDATE_TIMESTAMP"=>"",
-            "LAST_UPDATE_USER"=>""
-        );
+        $arrayValue = array();
+        CreateExecInstMngArray($arrayValue);
 
-        $arrayValue_pioneer = array(
-            "JOURNAL_SEQ_NO"=>"",
-            "JOURNAL_ACTION_CLASS"=>"",
-            "JOURNAL_REG_DATETIME"=>"",
-            "EXECUTION_NO"=>"",
-            "EXECUTION_USER"=>"",
-            "STATUS_ID"=>"",
-            "SYMPHONY_INSTANCE_NO"=>"",
-            "PATTERN_ID"=>"",
-            "OPERATION_NO_UAPK"=>"",
-            // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-            "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-            "I_PATTERN_NAME"=>"",
-            "I_OPERATION_NAME"=>"",
-            "FILE_INPUT"=>"",
-            "FILE_RESULT"=>"",
-            // ドライラン 1:通常 2:ドライラン/オペレーションNO      
-            "I_OPERATION_NO_IDBH"=>"",
-            "RUN_MODE"=>"",
-            "TIME_BOOK"=>"",
-            "TIME_START"=>"",
-            "TIME_END"=>"",
-            "I_TIME_LIMIT"=>"",
-            "I_ANS_PARALLEL_EXE"=>"",
-            "DISUSE_FLAG"=>"",
-            "NOTE"=>"",
-            "LAST_UPDATE_TIMESTAMP"=>"",
-            "LAST_UPDATE_USER"=>""
-        );
-        // Legacy-Role対応
-        switch($vg_driver_id){
-        case DF_LEGACY_DRIVER_ID:
-        case DF_LEGACY_ROLE_DRIVER_ID:
-            $retArray = makeSQLForUtnTableUpdate($db_model_ch, 
-                                                 "SELECT FOR UPDATE", 
-                                                 "EXECUTION_NO", 
-                                                 $vg_exe_ins_msg_table_name, 
-                                                 $vg_exe_ins_msg_table_jnl_name, 
-                                                 $arrayConfig_legacy, 
-                                                 $arrayValue_legacy, 
-                                                 $temp_array );
-            break;
-        case DF_PIONEER_DRIVER_ID:
-            $retArray = makeSQLForUtnTableUpdate($db_model_ch, 
-                                                 "SELECT FOR UPDATE", 
-                                                 "EXECUTION_NO", 
-                                                 $vg_exe_ins_msg_table_name, 
-                                                 $vg_exe_ins_msg_table_jnl_name, 
-                                                 $arrayConfig_pioneer, 
-                                                 $arrayValue_pioneer, 
-                                                 $temp_array );
-            break;
-        }        
+        $retArray = makeSQLForUtnTableUpdate($db_model_ch, 
+                                             "SELECT FOR UPDATE", 
+                                             "EXECUTION_NO", 
+                                             $vg_exe_ins_msg_table_name, 
+                                             $vg_exe_ins_msg_table_jnl_name, 
+                                             $arrayConfig, 
+                                             $arrayValue, 
+                                             $temp_array );
         $sqlUtnBody = $retArray[1];
         $arrayUtnBind = $retArray[2];
         
@@ -499,31 +371,14 @@
             $tgt_row["STATUS_ID"]        = 2;
             $tgt_row["LAST_UPDATE_USER"] = $db_access_user_id;
             
-            // $arrayConfigをlegacyとpioneerで分ける
-            // Legacy-Role対応
-            switch($vg_driver_id){
-            case DF_LEGACY_DRIVER_ID:
-            case DF_LEGACY_ROLE_DRIVER_ID:
-                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                     "UPDATE",
-                                                     "EXECUTION_NO",
-                                                     $vg_exe_ins_msg_table_name,
-                                                     $vg_exe_ins_msg_table_jnl_name,
-                                                     $arrayConfig_legacy,
-                                                     $tgt_row,
-                                                     $temp_array );
-                break;
-            case DF_PIONEER_DRIVER_ID:
-                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                     "UPDATE",
-                                                     "EXECUTION_NO",
-                                                     $vg_exe_ins_msg_table_name,
-                                                     $vg_exe_ins_msg_table_jnl_name,
-                                                     $arrayConfig_pioneer,
-                                                     $tgt_row,
-                                                     $temp_array );
-                break;
-            }
+            $retArray = makeSQLForUtnTableUpdate($db_model_ch,
+                                                 "UPDATE",
+                                                 "EXECUTION_NO",
+                                                 $vg_exe_ins_msg_table_name,
+                                                 $vg_exe_ins_msg_table_jnl_name,
+                                                 $arrayConfig,
+                                                 $tgt_row,
+                                                 $temp_array );
             
             $sqlUtnBody = $retArray[1];
             $arrayUtnBind = $retArray[2];
@@ -667,32 +522,14 @@
             $temp_array = array('WHERE'=>" EXECUTION_NO = :EXECUTION_NO AND DISUSE_FLAG = '0' AND STATUS_ID = 2" );
             // 外部システムが「Websam Network Automation」(ITA_EXT_STM_ID = 2)に絞込み
             
-            // $arrayConfigをlegacyとpioneerで分ける
-            // $arrayValueをlegacyとpioneerで分ける
-            // Legacy-Role対応
-            switch($vg_driver_id){
-            case DF_LEGACY_DRIVER_ID:
-            case DF_LEGACY_ROLE_DRIVER_ID:
-                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
+            $retArray = makeSQLForUtnTableUpdate($db_model_ch,
                                                      "SELECT FOR UPDATE",
                                                      "EXECUTION_NO",
                                                      $vg_exe_ins_msg_table_name, 
                                                      $vg_exe_ins_msg_table_jnl_name,
-                                                     $arrayConfig_legacy,
-                                                     $arrayValue_legacy,
+                                                     $arrayConfig,
+                                                     $arrayValue,
                                                      $temp_array );
-                break;
-            case DF_PIONEER_DRIVER_ID:
-                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                     "SELECT FOR UPDATE",
-                                                     "EXECUTION_NO",
-                                                     $vg_exe_ins_msg_table_name, 
-                                                     $vg_exe_ins_msg_table_jnl_name,
-                                                     $arrayConfig_pioneer,
-                                                     $arrayValue_pioneer,
-                                                     $temp_array );
-                break;
-            }
             
             $sqlUtnBody = $retArray[1];
             $arrayUtnBind = $retArray[2];
@@ -795,18 +632,16 @@
 
             require_once ($root_dir_path . $ansible_create_files_php);
 
+            $exec_mode             = $tgt_execution_row["EXEC_MODE"];
+            $exec_playbook_hed_def = $tgt_execution_row["I_ANS_PLAYBOOK_HED_DEF"];
+            $exec_option           = $tgt_execution_row["I_ANS_EXEC_OPTIONS"];
             switch($vg_driver_id){
             case DF_LEGACY_DRIVER_ID:
             case DF_LEGACY_ROLE_DRIVER_ID:
                 $winrm_flg = $tgt_execution_row["I_ANS_WINRM_ID"];
-
-                // GATHER_FACTSの設定値退避
-                $gather_facts_flg = $tgt_execution_row["I_ANS_GATHER_FACTS"];
                 break;
             case DF_PIONEER_DRIVER_ID:
                 $winrm_flg = "";
-                // GATHER_FACTSの設定値をoffにする。
-                $gather_facts_flg = "";
                 break;
             }
 
@@ -817,9 +652,9 @@
                                                  $vg_legacy_playbook_contents_dir,
                                                  $vg_pioneer_playbook_contents_dir,
             // ITA側で管理している legacy用 テンプレートファイル格納先ディレクトリ追加
-                                                 $vg_legacy_template_contents_dir,
+                                                 $vg_template_contents_dir,
             // ITA側で管理している Pioneer用 テンプレートファイル格納先ディレクトリ追加
-                                                 $vg_pioneer_template_contents_dir,
+                                                 $vg_template_contents_dir,
             // ITA側で管理している copyファイル格納先ディレクトリ
                                                  $vg_copy_contents_dir,
                                                  $vg_ansible_vars_masterDB,
@@ -850,26 +685,48 @@
                                                   // 対象ホストがwindowsかを判別する項目追加
                                                   // pioneerにはI_ANS_WINRM_IDがないので変数に変更
                                                   $winrm_flg,
-                                                  $gather_facts_flg,
+                                                  $exec_mode,
+                                                  $exec_playbook_hed_def,
+                                                  $exec_option,
                                                   $vg_OrchestratorSubId_dir,
                                                   $root_dir_path,$log_output_php);
 
+            if($ret !== true) {
+                $prepare_err_flag = 1;
+            }
             //getAnsible_in_Dir()
             //getAnsible_out_Dir()
             $tmp_array_dirs = $ansdrv->getAnsibleWorkingDirectories($vg_OrchestratorSubId_dir,$tgt_execution_no);
             $zip_data_source_dir = $tmp_array_dirs[3];
 
-            // ansible-playbookコマンド実行時のオプションパラメータを共有ディレクトリのファイルに出力
-            $fp=fopen($zip_data_source_dir . "/AnsibleExecOption.txt" , "w");
-            fputs($fp, $lv_ansible_exec_options);
-            fclose($fp);
+            $JobTemplatePropertyParameterAry  = array();
+            $JobTemplatePropertyNameAry       = array();
+            $ErrorMsgAry                      = array();
+            if($prepare_err_flag == 0){
+                // ansible-playbookのオプションパラメータを確認
+                getMovementAnsibleExecOption($tgt_execution_row["PATTERN_ID"],$MovementAnsibleExecOption);
+                $OptionParameter = $lv_ansible_exec_options . ' ' . $MovementAnsibleExecOption;
 
-            unset($ansdrv);
-
-            if($ret === false){
-                $prepare_err_flag = 1;
+                // Tower実行の場合にオプションパラメータをチェックする。
+                if($lv_ans_if_info['ANSIBLE_EXEC_MODE'] != DF_EXEC_MODE_ANSIBLE) {
+                    $ret = getAnsiblePlaybookOptionParameter($OptionParameter,$JobTemplatePropertyParameterAry,$JobTemplatePropertyNameAry,$ErrorMsgAry);
+                    if($ret === false)
+                    {
+                        $prepare_err_flag = 1;
+                        foreach($ErrorMsgAry as $ErrorMsg) {
+                            $ansdrv->LocalLogPrint(basename(__FILE__),__LINE__,$ErrorMsg);
+                        }
+                    }
+                }
             }
-            else{
+            if($prepare_err_flag == 0){
+                // ansible-playbookコマンド実行時のオプションパラメータを共有ディレクトリのファイルに出力
+                $fp=fopen($zip_data_source_dir . "/AnsibleExecOption.txt" , "w");
+                fputs($fp, $OptionParameter);
+                fclose($fp);
+            }
+
+            if($prepare_err_flag == 0){
                 if( count( glob( $zip_data_source_dir . "/"."*" ) ) > 0 ){
                     //----ZIPファイルを作成する
                     $zip_input_file = 'InputData_' . str_pad( $tgt_execution_no, $intNumPadding, "0", STR_PAD_LEFT ) . '.zip';
@@ -929,220 +786,215 @@
             }
             
             // 準備で異常がなければREST APIをコール
-            if( $prepare_err_flag === 0 ){
-                // トレースメッセージ
-                if ( $log_level === 'DEBUG' ){
-                    $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51066",$tgt_execution_no);
-                    require ($root_dir_path . $log_output_php );
-                }
-                ////////////////////////////////////////////////////////////////
-                // REST APIコール                                             //
-                ////////////////////////////////////////////////////////////////
-                $RequestContents 
-                = array(
-                        // データリレイパス
-                        'DATA_RELAY_STORAGE_TRUNK'=>$lv_ans_storage_path_ans, 
-                        //オーケストレータ識別子
-                        "ORCHESTRATOR_SUB_ID"=>$vg_OrchestratorSubId,
-                        //作業実行ID
-                        "EXE_NO"=>$tgt_execution_no,
+            // 実行エンジンを判定
+            if($lv_ans_if_info['ANSIBLE_EXEC_MODE'] == DF_EXEC_MODE_ANSIBLE) {
+                if($prepare_err_flag == 0){
+                    // トレースメッセージ
+                    if ( $log_level === 'DEBUG' ){
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51066",$tgt_execution_no);
+                        require ($root_dir_path . $log_output_php );
+                    }
+                    ////////////////////////////////////////////////////////////////
+                    // REST APIコール                                             //
+                    ////////////////////////////////////////////////////////////////
+                    $RequestContents 
+                    = array(
+                            // データリレイパス
+                            'DATA_RELAY_STORAGE_TRUNK'=>$lv_ans_storage_path_ans, 
+                            //オーケストレータ識別子
+                            "ORCHESTRATOR_SUB_ID"=>$vg_OrchestratorSubId,
+                            //作業実行ID
+                            "EXE_NO"=>$tgt_execution_no,
 
-                        "PARALLEL_EXE"=>$tgt_exec_count_array[$tgt_execution_no],
-
-                        "RUN_MODE"=>$tgt_run_mode_array[$tgt_execution_no]);
+                            "PARALLEL_EXE"=>$tgt_exec_count_array[$tgt_execution_no],
+    
+                            "RUN_MODE"=>$tgt_run_mode_array[$tgt_execution_no]);
                         
-                $rest_api_response = ansible_restapi_access( $lv_ans_protocol,
-                                                         $lv_ans_hostname,
-                                                         $lv_ans_port,
-                                                         $lv_ans_access_key_id,
-                                                         $lv_ans_secret_access_key,
-                                                         $RequestURI,
-                                                         $Method,
-                                                         $RequestContents );
+                    $rest_api_response = ansible_restapi_access( $lv_ans_protocol,
+                                                                 $lv_ans_hostname,
+                                                                 $lv_ans_port,
+                                                                 $lv_ans_access_key_id,
+                                                                 $lv_ans_secret_access_key,
+                                                                 $RequestURI,
+                                                                 $Method,
+                                                                 $RequestContents );
 
 
-                // トレースメッセージ
-                if ( $log_level === 'DEBUG' ){
-                    $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51067",array($tgt_execution_no,$rest_api_response['StatusCode']));
-                    require ($root_dir_path . $log_output_php );
-                }
+                    // トレースメッセージ
+                    if ( $log_level === 'DEBUG' ){
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51067",array($tgt_execution_no,$rest_api_response['StatusCode']));
+                        require ($root_dir_path . $log_output_php );
+                    }
                 
-                ////////////////////////////////////////////////////////////////
-                // 結果判定                                                   //
-                ////////////////////////////////////////////////////////////////
-                if( $rest_api_response['StatusCode'] != 200 ){
-                    // REST APIでの異常フラグをON
-                    $restapi_err_flag = 1;
+                    ////////////////////////////////////////////////////////////////
+                    // 結果判定                                                   //
+                    ////////////////////////////////////////////////////////////////
+                    if( $rest_api_response['StatusCode'] != 200 ){
+                        // REST APIでの異常フラグをON
+                        $restapi_err_flag = 1;
                     
-                    // 異常メッセージ
-                    $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-51068",$tgt_execution_no);
-                    require ($root_dir_path . $log_output_php );
-                    $FREE_LOG = print_r($rest_api_response,true);
-                    require ($root_dir_path . $log_output_php );
+                        // 異常メッセージ
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-51068",$tgt_execution_no);
+                        require ($root_dir_path . $log_output_php );
+                        $FREE_LOG = print_r($rest_api_response,true);
+                        require ($root_dir_path . $log_output_php );
+                    }
+                }
+
+                ////////////////////////////////////////////////////////////////
+                // シーケンスをロック                                         //
+                ////////////////////////////////////////////////////////////////
+                $retArray = getSequenceLockInTrz($vg_exe_ins_msg_table_jnl_seq,'A_SEQUENCE');
+                if( $retArray[1] != 0 ){
+                    // 異常フラグON
+                    $error_flag = 1;
+                        
+                    // 例外処理へ
+                    throw new Exception( $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50003",array(__FILE__,__LINE__,"00003300")) );
+                }
+                    
+                // 履歴シーケンス払い出し
+                $retArray = getSequenceValueFromTable($vg_exe_ins_msg_table_jnl_seq, 'A_SEQUENCE', FALSE );
+                if( $retArray[1] != 0 ){
+                    // 異常フラグON
+                    $error_flag = 1;
+                        
+                    // 例外処理へ
+                    throw new Exception( $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50003",array(__FILE__,__LINE__,"00003400")) );
+                }
+                $intJournalSeqNo = $retArray[0];
+
+                ////////////////////////////////////////////////////////////////
+                // 「C_EXECUTION_MANAGEMENT」をUPDATE                         //
+                ////////////////////////////////////////////////////////////////
+                // 正常(REST APIコールでHTTPレスポンスが200)の場合
+                if( $prepare_err_flag == 0 &&
+                    $restapi_err_flag == 0 ){
+                    // クローン作製
+                    $cln_execution_row = $tgt_execution_row;
+                        
+                    // 変数バインド準備
+                    $cln_execution_row['JOURNAL_SEQ_NO']    = $retArray[0];
+                    $cln_execution_row['TIME_START']        = "DATETIMEAUTO(6)";
+                    $cln_execution_row['STATUS_ID']         = "3";
+                    $cln_execution_row['LAST_UPDATE_USER']  = $db_access_user_id;
+                        
+                    $cln_execution_row['FILE_INPUT']        = $zip_input_file;
+                        
+                    // トレースメッセージ
+                    if ( $log_level === 'DEBUG' ){
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51072",$tgt_execution_no);
+                        require ($root_dir_path . $log_output_php );
+                    }
+                }
+                // 異常 or 警告の場合
+                else{
+                    // 警告フラグON
+                    $warning_flag = 1;
+                        
+                    // クローン作製
+                    $cln_execution_row = $tgt_execution_row;
+                        
+                    // 変数バインド準備
+                    $cln_execution_row['JOURNAL_SEQ_NO']    = $retArray[0];
+                    $cln_execution_row['TIME_START']        = "DATETIMEAUTO(6)";
+                    $cln_execution_row['TIME_END']          = "DATETIMEAUTO(6)";
+                    $cln_execution_row['STATUS_ID']         = "7";
+                    $cln_execution_row['LAST_UPDATE_USER']  = $db_access_user_id;
+                        
+                    $cln_execution_row['FILE_INPUT']        = $zip_input_file;
+                        
+                    // トレースメッセージ
+                    if ( $log_level === 'DEBUG' ){
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51074",$tgt_execution_no);
+                        require ($root_dir_path . $log_output_php );
+                    }
+                }
+            } else {
+                if($prepare_err_flag == 0){
+                    if ( $log_level === 'DEBUG' ){
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51066",$tgt_execution_no);
+                        require ($root_dir_path . $log_output_php );
+                    }
+                    ////////////////////////////////////////////////////////////////
+                    // REST APIコール                                             //
+                    ////////////////////////////////////////////////////////////////
+                    $UIExecLogPath  = $ansdrv->getAnsible_out_Dir() . "/" . "exec.log";
+                    $UIErrorLogPath = $ansdrv->getAnsible_out_Dir() . "/" . "error.log";
+                    ////////////////////////////////////////////////////////////////
+                    // AnsibleTowerから実行                                       //
+                    ////////////////////////////////////////////////////////////////
+                    // $Statusは未使用
+                    $ret = AnsibleTowerExecution(DF_EXECUTION_FUNCTION,$lv_ans_if_info,$tgt_execution_row,$ansdrv->getAnsible_out_Dir(),$UIExecLogPath,$UIErrorLogPath,$Status,$JobTemplatePropertyParameterAry,$JobTemplatePropertyNameAry);
+                }
+
+                ////////////////////////////////////////////////////////////////
+                // シーケンスをロック                                         //
+                ////////////////////////////////////////////////////////////////
+                $retArray = getSequenceLockInTrz($vg_exe_ins_msg_table_jnl_seq,'A_SEQUENCE');
+                if( $retArray[1] != 0 ){
+                    // 異常フラグON
+                    $error_flag = 1;
+                        
+                    // 例外処理へ
+                    throw new Exception( $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50003",array(__FILE__,__LINE__,"00003300")) );
+                }
+                    
+                // 履歴シーケンス払い出し
+                $retArray = getSequenceValueFromTable($vg_exe_ins_msg_table_jnl_seq, 'A_SEQUENCE', FALSE );
+                if( $retArray[1] != 0 ){
+                    // 異常フラグON
+                    $error_flag = 1;
+                        
+                    // 例外処理へ
+                    throw new Exception( $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50003",array(__FILE__,__LINE__,"00003400")) );
+                }
+                if($prepare_err_flag == 0){
+                    $intJournalSeqNo = $retArray[0];
+
+                    // クローン作製
+                    $cln_execution_row = $tgt_execution_row;
+
+                    $cln_execution_row['JOURNAL_SEQ_NO']    = $retArray[0];
+                    $cln_execution_row['FILE_INPUT']        = $zip_input_file;
+                }
+                else {
+                    // 警告フラグON
+                    $warning_flag = 1;
+                        
+                    // クローン作製
+                    $cln_execution_row = $tgt_execution_row;
+                        
+                    // 変数バインド準備
+                    $cln_execution_row['JOURNAL_SEQ_NO']    = $retArray[0];
+                    $cln_execution_row['TIME_START']        = "DATETIMEAUTO(6)";
+                    $cln_execution_row['TIME_END']          = "DATETIMEAUTO(6)";
+                    $cln_execution_row['STATUS_ID']         = "7";
+                    $cln_execution_row['LAST_UPDATE_USER']  = $db_access_user_id;
+                        
+                    $cln_execution_row['FILE_INPUT']        = $zip_input_file;
                 }
             }
-            
+            unset($ansdrv);
+
             // トレースメッセージ
             if ( $log_level === 'DEBUG' ){
                 $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51071",array($tgt_execution_no,$restapi_err_flag));
                 require ($root_dir_path . $log_output_php );
             }
             
-            ////////////////////////////////////////////////////////////////
-            // シーケンスをロック                                         //
-            ////////////////////////////////////////////////////////////////
-            $retArray = getSequenceLockInTrz($vg_exe_ins_msg_table_jnl_seq,'A_SEQUENCE');
-            if( $retArray[1] != 0 ){
-                // 異常フラグON
-                $error_flag = 1;
-                
-                // 例外処理へ
-                throw new Exception( $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50003",array(__FILE__,__LINE__,"00003300")) );
-            }
             
-            // 履歴シーケンス払い出し
-            $retArray = getSequenceValueFromTable($vg_exe_ins_msg_table_jnl_seq, 'A_SEQUENCE', FALSE );
-            if( $retArray[1] != 0 ){
-                // 異常フラグON
-                $error_flag = 1;
-                
-                // 例外処理へ
-                throw new Exception( $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50003",array(__FILE__,__LINE__,"00003400")) );
-            }
+            $arrayConfig2 = array();
+            CreateExecInstMngArray($arrayConfig2);
+            SetExecInstMngColumnType($arrayConfig2);
             
-            ////////////////////////////////////////////////////////////////
-            // 「C_EXECUTION_MANAGEMENT」をUPDATE                         //
-            ////////////////////////////////////////////////////////////////
-            // 正常(REST APIコールでHTTPレスポンスが200)の場合
-            if( $prepare_err_flag == 0 &&
-                $restapi_err_flag == 0 ){
-                // クローン作製
-                $cln_execution_row = $tgt_execution_row;
-                
-                // 変数バインド準備
-                $cln_execution_row['JOURNAL_SEQ_NO']    = $retArray[0];
-                $cln_execution_row['TIME_START']        = "DATETIMEAUTO(6)";
-                $cln_execution_row['STATUS_ID']         = "3";
-                $cln_execution_row['LAST_UPDATE_USER']  = $db_access_user_id;
-                
-                $cln_execution_row['FILE_INPUT']        = $zip_input_file;
-                
-                // トレースメッセージ
-                if ( $log_level === 'DEBUG' ){
-                    $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51072",$tgt_execution_no);
-                    require ($root_dir_path . $log_output_php );
-                }
-            }
-            // 異常 or 警告の場合
-            else{
-                // 警告フラグON
-                $warning_flag = 1;
-                
-                // クローン作製
-                $cln_execution_row = $tgt_execution_row;
-                
-                // 変数バインド準備
-                $cln_execution_row['JOURNAL_SEQ_NO']    = $retArray[0];
-                $cln_execution_row['TIME_START']        = "DATETIMEAUTO(6)";
-                $cln_execution_row['TIME_END']          = "DATETIMEAUTO(6)";
-                $cln_execution_row['STATUS_ID']         = "7";
-                $cln_execution_row['LAST_UPDATE_USER']  = $db_access_user_id;
-                
-                $cln_execution_row['FILE_INPUT']        = $zip_input_file;
-                
-                // トレースメッセージ
-                if ( $log_level === 'DEBUG' ){
-                    $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-51074",$tgt_execution_no);
-                    require ($root_dir_path . $log_output_php );
-                }
-            }
-            $intJournalSeqNo = $retArray[0];
-            
-            // $arrayConfig2をlegacyとpioneerで分ける
-            // SQL作成＋バインド用変数準備
-            $arrayConfig2_legacy = array(
-                "JOURNAL_SEQ_NO"=>"",
-                "JOURNAL_ACTION_CLASS"=>"",
-                "JOURNAL_REG_DATETIME"=>"",
-                "EXECUTION_NO"=>"",
-                "EXECUTION_USER"=>"",
-                "STATUS_ID"=>"",
-                "PATTERN_ID"=>"",
-                "OPERATION_NO_UAPK"=>"",
-                // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-                "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-                "I_PATTERN_NAME"=>"",
-                "I_OPERATION_NAME"=>"",
-                "FILE_INPUT"=>"",
-                "FILE_RESULT"=>"",
-                // ドライラン 1:通常 2:ドライラン/オペレーションNO      
-                "I_OPERATION_NO_IDBH"=>"",
-                "RUN_MODE"=>"",
-                "I_ANS_WINRM_ID"=>"",
-                "I_ANS_GATHER_FACTS"=>"",
-                "TIME_BOOK"=>"DATETIME",
-                "TIME_START"=>"DATETIME",
-                "TIME_END"=>"DATETIME",
-                "I_TIME_LIMIT"=>"",
-                "I_ANS_PARALLEL_EXE"=>"",
-                "DISUSE_FLAG"=>"",
-                "NOTE"=>"",
-                "LAST_UPDATE_TIMESTAMP"=>"",
-                "LAST_UPDATE_USER"=>""
-            );
-
-            $arrayConfig2_pioneer = array(
-                "JOURNAL_SEQ_NO"=>"",
-                "JOURNAL_ACTION_CLASS"=>"",
-                "JOURNAL_REG_DATETIME"=>"",
-                "EXECUTION_NO"=>"",
-                "EXECUTION_USER"=>"",
-                "STATUS_ID"=>"",
-                "PATTERN_ID"=>"",
-                "OPERATION_NO_UAPK"=>"",
-                // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-                "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-                "I_PATTERN_NAME"=>"",
-                "I_OPERATION_NAME"=>"",
-                "FILE_INPUT"=>"",
-                "FILE_RESULT"=>"",
-                // ドライラン 1:通常 2:ドライラン/オペレーションNO      
-                "I_OPERATION_NO_IDBH"=>"",
-                "RUN_MODE"=>"",
-                "TIME_BOOK"=>"DATETIME",
-                "TIME_START"=>"DATETIME",
-                "TIME_END"=>"DATETIME",
-                "I_TIME_LIMIT"=>"",
-                "I_ANS_PARALLEL_EXE"=>"",
-                "DISUSE_FLAG"=>"",
-                "NOTE"=>"",
-                "LAST_UPDATE_TIMESTAMP"=>"",
-                "LAST_UPDATE_USER"=>""
-            );
-            
-            // $arrayConfig2をlegacyとpioneerで分ける
-            // Legacy-Role対応
-            switch($vg_driver_id){
-            case DF_LEGACY_DRIVER_ID:
-            case DF_LEGACY_ROLE_DRIVER_ID:
-                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                     "UPDATE",
-                                                     "EXECUTION_NO",
-                                                     $vg_exe_ins_msg_table_name,
-                                                     $vg_exe_ins_msg_table_jnl_name,
-                                                     $arrayConfig2_legacy,
-                                                     $cln_execution_row );
-                break;
-            case DF_PIONEER_DRIVER_ID:
-                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                     "UPDATE",
-                                                     "EXECUTION_NO",
-                                                     $vg_exe_ins_msg_table_name,
-                                                     $vg_exe_ins_msg_table_jnl_name,
-                                                     $arrayConfig2_pioneer,
-                                                     $cln_execution_row );
-                break;
-            }
+            $retArray = makeSQLForUtnTableUpdate($db_model_ch,
+                                                 "UPDATE",
+                                                 "EXECUTION_NO",
+                                                 $vg_exe_ins_msg_table_name,
+                                                 $vg_exe_ins_msg_table_jnl_name,
+                                                 $arrayConfig2,
+                                                 $cln_execution_row );
             
             $sqlUtnBody = $retArray[1];
             $arrayUtnBind = $retArray[2];
@@ -1198,6 +1050,7 @@
             ////////////////////////////////////////////////////////////////
             // コミット(レコードロックを解除)                             //
             ////////////////////////////////////////////////////////////////
+            //$r = $objDBCA->transactionRollBack();
             $r = $objDBCA->transactionCommit();
             if (!$r){
                 // 異常フラグON
@@ -1379,7 +1232,9 @@
                                             $in_hostaddres_type,
                                             // 対象ホストがwindowsかを判別する項目追加
                                             $in_winrm_id,
-                                            $in_gather_facts_flg,
+                                            $in_exec_mode,
+                                            $in_exec_playbook_hed_def,
+                                            $in_exec_option,
                                             $in_OrchestratorSubId_dir,
                                             $in_root_dir_path,$in_log_output_php){
         global $objMTS;
@@ -1610,7 +1465,9 @@
                                                      $MultiArray_vars_list,
                                                      $def_vars_list,
                                                      $def_array_vars_list,
-                                                     $in_gather_facts_flg); 
+                                                     $in_exec_mode,
+                                                     $in_exec_playbook_hed_def,
+                                                     $in_exec_option); 
         if($ret <> true){
             // 例外処理へ
             $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50003",array(__FILE__,__LINE__,"00010005"));
@@ -1618,6 +1475,254 @@
                
             return false;
         }
+        return true;
+    }
+
+    function getAnsiblePlaybookOptionParameter($OptionParameter,&$JobTemplatePropertyParameterAry,&$JobTemplatePropertyNameAry,&$ErrorMsgAry)
+    {
+        global $objMTS;
+
+        $result                        = true;
+        $ErrorMsgAry                   = array();
+        $JobTemplatePropertyInfo       = array();
+
+        // Towerが扱えるオプションパラメータ取得
+        $ret = getJobTemplateProperty($JobTemplatePropertyInfo);
+        if($ret !== true)
+        {
+            $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-56100",array(basename(__FILE__),__LINE__));
+            $ErrorMsgAry[] = $FREE_LOG;
+            return false;
+        }
+        $param  = "-__dummy__ " . trim($OptionParameter) . ' ';
+        $ParamAry = preg_split("/((\s)-)/", $param);
+        foreach($JobTemplatePropertyInfo as $JobTemplatePropertyRecode) {
+            $JobTemplatePropertyNameAry[$JobTemplatePropertyRecode['PROPERTY_NAME']]= 0;   
+            if(strlen(trim( $JobTemplatePropertyRecode['KEY_NAME'] )) != 0) {
+                $ret = makeJobTemplateProperty($JobTemplatePropertyRecode['KEY_NAME'],
+                                               $JobTemplatePropertyRecode['PROPERTY_TYPE'],
+                                               $JobTemplatePropertyRecode['PROPERTY_NAME'],
+                                               $JobTemplatePropertyParameterAry,
+                                               $ParamAry,
+                                               $ErrorMsgAry);
+                if($ret === false) {
+                    $result=false;
+                }
+            }
+            if(strlen(trim( $JobTemplatePropertyRecode['SHORT_KEY_NAME'] )) != 0) {
+                $ret = makeJobTemplateProperty($JobTemplatePropertyRecode['SHORT_KEY_NAME'],
+                                               $JobTemplatePropertyRecode['PROPERTY_TYPE'],
+                                               $JobTemplatePropertyRecode['PROPERTY_NAME'],
+                                               $JobTemplatePropertyParameterAry,
+                                               $ParamAry,
+                                               $ErrorMsgAry);
+                if($ret === false) {
+                    $result=false;
+                }
+            }
+        }
+        return $result;
+    }
+
+    function getJobTemplateProperty(&$in_JobTemplatePropertyInfo) {
+
+        global $root_dir_path;
+        global $db_model_ch;
+        global $objDBCA;
+        global $objMTS;
+
+        require_once ($root_dir_path . "/libs/backyardlibs/common/common_db_access.php");
+        $dbobj = new BackyardCommonDBAccessCoreClass($db_model_ch,$objDBCA,$objMTS,-1);
+        $in_JobTemplatePropertyInfo = array();
+
+        $sql =            " SELECT * FROM B_ANS_TWR_JOBTP_PROPERTY ";
+        $sql = $sql .     " WHERE    DISUSE_FLAG = '0'             ";
+
+        $arrayBind = array();
+        $objQuery  = array();
+
+        $dbobj->ClearLastErrorMsg();
+        $ret = $dbobj->dbaccessExecute($sql, $arrayBind ,$objQuery);
+        if($ret === false) {
+            return $dbobj->GetLastErrorMsg();
+        }
+
+        while($row = $objQuery->resultFetch()) {
+            $in_JobTemplatePropertyInfo[] = array('KEY_NAME'      =>$row['KEY_NAME'],
+                                                  'SHORT_KEY_NAME'=>$row['SHORT_KEY_NAME'],
+                                                  'PROPERTY_TYPE' =>$row['PROPERTY_TYPE'],
+                                                  'PROPERTY_NAME' =>$row['PROPERTY_NAME'],
+                                                  'TOWERONLY'     =>$row['TOWERONLY']);
+        }
+        unset($objQuery);
+        unset($dbobj);
+        return true;
+    }
+
+    function makeJobTemplateProperty($KeyString,$PropertyType,$PropertyName,&$JobTemplatePropertyParameterAry,$ParamAry,&$ErrorMsgAry) {
+        global $objMTS;
+        $result = true;
+        foreach($ParamAry as $ParamString) {
+            $ChkParamString = '-' . $ParamString . ' ';
+            $ret = preg_match('/^' . $KeyString . '/', $ChkParamString);
+            if($ret === 1)
+            {
+
+                $PropertyAry = preg_split('/^' . $KeyString . '/', $ChkParamString);
+                //6000001 = "値が設定されていないオプションパラメータがあります。(パラメータ: {})";
+                //6000002 = "重複しているオプションパラメータがあります。(パラメータ: {})";
+                //6000003 = "不正なオプションパラメータがあります。(パラメータ: {})";
+                switch($PropertyType) {
+                case DF_JobTemplateKeyValueProperty:
+                    if(@strlen(@trim($PropertyAry[1])) == 0) {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000001",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    } 
+                    if(isset($JobTemplatePropertyParameterAry[$PropertyName])) {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000002",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    }
+                    $JobTemplatePropertyParameterAry[$PropertyName] = trim($PropertyAry[1]);
+                    break;
+                case DF_JobTemplateVerbosityProperty:
+                    $PropertyAry = preg_split('/^(v)*/', $ParamString);
+                    if(@strlen(@trim($PropertyAry[1])) != 0)
+                    {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000003",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    } 
+                    if(isset($JobTemplatePropertyParameterAry[$PropertyName])) {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000002",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    }
+                    if(@strlen(@trim($ParamString)) >= 6) {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000003",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    } 
+                    $JobTemplatePropertyParameterAry[$PropertyName] = strlen(trim($ParamString));
+                    break; 
+                case DF_JobTemplatebooleanTrueProperty:
+                    if(@strlen(@trim($PropertyAry[1])) != 0)
+                    {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000003",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    } 
+                    if(isset($JobTemplatePropertyParameterAry[$PropertyName])) {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000002",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    }
+                    $JobTemplatePropertyParameterAry[$PropertyName] = true;
+                    break; 
+                case DF_JobTemplateExtraVarsProperty:
+                    if(@strlen(@trim($PropertyAry[1])) == 0)
+                    {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000001",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    } 
+                    if(isset($JobTemplatePropertyParameterAry[$PropertyName])) {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000002",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    }
+                    $ExtVarString = trim($PropertyAry[1]);
+                    $ret = makeExtraVarsParameter($ExtVarString);
+                    if($ret === false) {
+                        $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-6000003",array($ChkParamString));
+                        $ErrorMsgAry[] = $FREE_LOG;
+                        $result = false;
+                        break;
+                    }
+                    $JobTemplatePropertyParameterAry[$PropertyName] = $ExtVarString;
+                    break; 
+                }
+            }
+        }
+        return $result;
+    }
+    function makeExtraVarsParameter(&$ExtVarString) {
+        $String = " " . $ExtVarString . " ";
+        $ValList = preg_split("/(\s)+(\S)+(\s)*=(\s)*/", $String);
+        if(count($ValList) > 1)
+        {
+            // 先頭に空が入るので取り除く
+            if(strlen(trim($ValList[0])) == 0)
+            {
+                unset($ValList[0]);
+            }
+        }
+        // 具体値の設定を確認
+        $Val = array();
+        foreach($ValList as $Val) {
+            if(strlen(trim($Val)) == 0) {
+                return false;
+            }
+            $ValAry[] = $Val;
+        }
+        $VarCount = preg_match_all("/(\s)+(\S)+(\s)*=(\s)*/", $String,$VarList);
+        if($VarCount == 0) {
+            return false;
+        }
+        if(count($ValAry) != $VarCount) {
+            return false;
+        }
+        $idx = 0;
+        $ExtVarString = "";
+        foreach($VarList[0] as $VarName)
+        {
+            $VarName = preg_split("/(\s)*=(\s)*/", $VarName);
+            $CR = "";
+            if(strlen($ExtVarString) != 0)
+                $CR = "\n";
+            $ExtVarString  .= $CR . trim($VarName[0]) . ': ' .  $ValAry[$idx];
+            $idx++;
+        }
+        return true;
+    }
+    function getMovementAnsibleExecOption($Pattern_id,&$ExecOption) {
+
+        global $root_dir_path;
+        global $db_model_ch;
+        global $objDBCA;
+        global $objMTS;
+
+        require_once ($root_dir_path . "/libs/backyardlibs/common/common_db_access.php");
+        $dbobj = new BackyardCommonDBAccessCoreClass($db_model_ch,$objDBCA,$objMTS,-1);
+        $in_JobTemplatePropertyInfo = array();
+
+        $sql =            " SELECT ANS_EXEC_OPTIONS FROM C_PATTERN_PER_ORCH ";
+        $sql = $sql .     " WHERE    PATTERN_ID = $Pattern_id ";
+
+        $arrayBind = array();
+        $objQuery  = array();
+
+        $dbobj->ClearLastErrorMsg();
+        $ret = $dbobj->dbaccessExecute($sql, $arrayBind ,$objQuery);
+        if($ret === false) {
+            return $dbobj->GetLastErrorMsg();
+        }
+
+        while($row = $objQuery->resultFetch()) {
+            $ExecOption = $row['ANS_EXEC_OPTIONS'];
+        }
+        unset($objQuery);
+        unset($dbobj);
         return true;
     }
 ?>
