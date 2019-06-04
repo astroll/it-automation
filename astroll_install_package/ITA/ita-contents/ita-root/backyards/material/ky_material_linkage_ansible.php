@@ -177,16 +177,16 @@ try{
         $result = true;
         
         //////////////////////////
-        // Ansible-Legacyのプレイブック素材集に連携する場合
+        // Ansible共通のファイル管理に連携する場合
         //////////////////////////
-        if("1" == $materialLinkageData['ANS_PLAYBOOK_CHK']) {
+        if("1" == $materialLinkageData['ANS_CONTENTS_FILE_CHK']) {
 
-            // プレイブック素材集連携処理を行う
-            $result = linkAnsPlaybook($materialLinkageData, $fileName, $base64File);
+            // ファイル管理連携処理を行う
+            $result = linkAnsContentsFile($materialLinkageData, $fileName, $base64File);
         }
 
         //////////////////////////
-        // Ansible-Legacyのテンプレート管理に連携する場合
+        // Ansible共通のテンプレート管理に連携する場合
         //////////////////////////
         else if("1" == $materialLinkageData['ANS_TEMPLATE_CHK']) {
 
@@ -195,12 +195,12 @@ try{
         }
 
         //////////////////////////
-        // Ansible-Legacyのファイル管理に連携する場合
+        // Ansible-Legacyのプレイブック素材集に連携する場合
         //////////////////////////
-        else if("1" == $materialLinkageData['ANS_CONTENTS_FILE_CHK']) {
+        else if("1" == $materialLinkageData['ANS_PLAYBOOK_CHK']) {
 
-            // ファイル管理連携処理を行う
-            $result = linkAnsContentsFile($materialLinkageData, $fileName, $base64File);
+            // プレイブック素材集連携処理を行う
+            $result = linkAnsPlaybook($materialLinkageData, $fileName, $base64File);
         }
 
         //////////////////////////
@@ -250,6 +250,303 @@ catch(Exception $e){
     if(LOG_LEVEL === 'DEBUG'){
         // 終了ログ出力
         outputLog($objMTS->getSomeMessage('ITAMATERIAL-STD-10003', basename( __FILE__, '.php' )));
+    }
+}
+
+/**
+ * ファイル管理連携処理
+ * 
+ */
+function linkAnsContentsFile($materialLinkageData, $fileName, $base64File) {
+
+    global $objMTS, $objDBCA, $db_model_ch, $ansContentsFileCnt;
+    $tranStartFlg = false;
+    $ansCommonContentsFileTable = new AnsCommonContentsFileTable($objDBCA, $db_model_ch);
+    $cntFlg = false;
+
+    try{
+        // トランザクション開始
+        $result = $objDBCA->transactionStart();
+        if(false === $result){
+            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', array($result));
+            outputLog($msg);
+            throw new Exception();
+        }
+        $tranStartFlg = true;
+
+        //////////////////////////
+        // ファイル管理テーブルを検索
+        //////////////////////////
+        $sql = $ansCommonContentsFileTable->createSselect("WHERE DISUSE_FLAG = '0'");
+
+        // SQL実行
+        $result = $ansCommonContentsFileTable->selectTable($sql);
+        if(!is_array($result)){
+            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
+            outputLog($msg);
+            throw new Exception();
+        }
+        $ansContentsArray = $result;
+
+        $matchFlg = false;
+
+        // ファイル管理テーブルの件数分ループ
+        foreach($ansContentsArray as $key => $ansContents) {
+
+            // 資材名が一致するデータを検索
+            if($materialLinkageData['MATERIAL_LINK_NAME'] == $ansContents['CONTENTS_FILE_VARS_NAME']) {
+                $updateData = $ansContents;
+                $matchFlg = true;
+                break;
+            }
+        }
+
+        // 資材名が一致するデータがあった場合
+        if(true === $matchFlg) {
+
+            $updateFlg = true;
+            // 資材が一致した場合
+            if($fileName == $updateData['CONTENTS_FILE']){
+                $materialPath = ANS_FILE_PATH . sprintf("%010d", $updateData['CONTENTS_FILE_ID']) . "/" . $updateData['CONTENTS_FILE'];
+                if(file_exists($materialPath)){
+                    // 資材に変更がない場合は更新しない
+                    $materialBase64 = base64_encode(file_get_contents($materialPath));
+                    if($base64File == $materialBase64){
+                        $updateFlg = false;
+                    }
+                }
+            }
+
+            if(true === $updateFlg){
+                $cntFlg = true;
+                // 更新する
+                $updateData['CONTENTS_FILE']    = $fileName;                // ファイル素材
+                $updateData['LAST_UPDATE_USER'] = USER_ID_MATERIAL_LINKAGE; // 最終更新者
+
+                //////////////////////////
+                // ファイル管理テーブルを更新
+                //////////////////////////
+                $result = $ansCommonContentsFileTable->updateTable($updateData, $jnlSeqNo);
+                if(true !== $result){
+                    $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
+                    outputLog($msg);
+                    throw new Exception();
+                }
+
+                $upFilePath     = ANS_FILE_PATH . sprintf("%010d", $updateData['CONTENTS_FILE_ID']) . "/";
+                $upJnlFilePath  = $upFilePath . "old/" . sprintf("%010d", $jnlSeqNo) . "/";;
+
+                // ファイルを格納パスに配置する
+                $result = deployUploadFile($objMTS, $base64File, $fileName, $upFilePath, $upJnlFilePath);
+
+                if(true !== $result){
+                    outputLog($result);
+                    throw new Exception();
+                }
+            }
+        }
+        // 資材名が一致するデータが無かった場合
+        else {
+            $cntFlg = true;
+            // 登録する
+            $insertData = array();
+            $insertData['CONTENTS_FILE_VARS_NAME']  = $materialLinkageData['MATERIAL_LINK_NAME'];   // ファイル埋込変数名
+            $insertData['CONTENTS_FILE']            = $fileName;                                    // ファイル素材
+            $insertData['DISUSE_FLAG']              = "0";                                          // 廃止フラグ
+            $insertData['LAST_UPDATE_USER']         = USER_ID_MATERIAL_LINKAGE;                     // 最終更新者
+
+            //////////////////////////
+            // ファイル管理テーブルに登録
+            //////////////////////////
+            $result = $ansCommonContentsFileTable->insertTable($insertData, $seqNo, $jnlSeqNo);
+            if(true !== $result){
+                $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
+                outputLog($msg);
+                throw new Exception();
+            }
+
+            $upFilePath     = ANS_FILE_PATH . sprintf("%010d", $seqNo) . "/";
+            $upJnlFilePath  = $upFilePath . "old/" . sprintf("%010d", $jnlSeqNo). "/";;
+
+            // ファイルを格納パスに配置する
+            $result = deployUploadFile($objMTS, $base64File, $fileName, $upFilePath, $upJnlFilePath);
+
+            if(true !== $result){
+                outputLog($result);
+                throw new Exception();
+            }
+        }
+
+        // コミット
+        $result = $objDBCA->transactionCommit();
+        if(false === $result){
+            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
+            outputLog($msg);
+            throw new Exception();
+        }
+        $tranStartFlg = false;
+
+        if(true === $cntFlg){
+            $ansContentsFileCnt ++;
+        }
+
+        return true;
+    }
+    catch(Exception $e){
+        // ロールバック
+        if(true === $tranStartFlg){
+            $objDBCA->transactionRollback();
+        }
+        return false;
+    }
+}
+
+/**
+ * テンプレート管理連携処理
+ * 
+ */
+function linkAnsTemplate($materialLinkageData, $fileName, $base64File) {
+
+    global $objMTS, $objDBCA, $db_model_ch, $ansTemplateCnt;
+    $tranStartFlg = false;
+    $ansibleCommonTemplateTable = new AnsibleCommonTemplateTable($objDBCA, $db_model_ch);
+    $cntFlg = false;
+
+    try{
+        // トランザクション開始
+        $result = $objDBCA->transactionStart();
+        if(false === $result){
+            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', array($result));
+            outputLog($msg);
+            throw new Exception();
+        }
+        $tranStartFlg = true;
+
+        //////////////////////////
+        // テンプレート管理テーブルを検索
+        //////////////////////////
+        $sql = $ansibleCommonTemplateTable->createSselect("WHERE DISUSE_FLAG = '0'");
+
+        // SQL実行
+        $result = $ansibleCommonTemplateTable->selectTable($sql);
+        if(!is_array($result)){
+            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
+            outputLog($msg);
+            throw new Exception();
+        }
+        $ansTemplateArray = $result;
+
+        $matchFlg = false;
+
+        // テンプレート管理テーブルの件数分ループ
+        foreach($ansTemplateArray as $key => $ansTemplate) {
+
+            // 資材名が一致するデータを検索
+            if($materialLinkageData['MATERIAL_LINK_NAME'] == $ansTemplate['ANS_TEMPLATE_VARS_NAME']) {
+                $updateData = $ansTemplate;
+                $matchFlg = true;
+                break;
+            }
+        }
+
+        // 資材名が一致するデータがあった場合
+        if(true === $matchFlg) {
+
+            $updateFlg = true;
+            // 資材が一致した場合
+            if($fileName == $updateData['ANS_TEMPLATE_FILE']){
+                $materialPath = ANS_TEMPLATE_PATH . sprintf("%010d", $updateData['ANS_TEMPLATE_ID']) . "/" . $updateData['ANS_TEMPLATE_FILE'];
+                if(file_exists($materialPath)){
+                    // 資材に変更がない場合は更新しない
+                    $materialBase64 = base64_encode(file_get_contents($materialPath));
+                    if($base64File == $materialBase64){
+                        $updateFlg = false;
+                    }
+                }
+            }
+
+            if(true === $updateFlg){
+                $cntFlg = true;
+                // 更新する
+                $updateData['ANS_TEMPLATE_FILE']    = $fileName;                // テンプレート素材
+                $updateData['LAST_UPDATE_USER']     = USER_ID_MATERIAL_LINKAGE; // 最終更新者
+
+                //////////////////////////
+                // テンプレート管理テーブルを更新
+                //////////////////////////
+                $result = $ansibleCommonTemplateTable->updateTable($updateData, $jnlSeqNo);
+                if(true !== $result){
+                    $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
+                    outputLog($msg);
+                    throw new Exception();
+                }
+
+                $upFilePath     = ANS_TEMPLATE_PATH . sprintf("%010d", $updateData['ANS_TEMPLATE_ID']) . "/";
+                $upJnlFilePath  = $upFilePath . "old/" . sprintf("%010d", $jnlSeqNo) . "/";;
+
+                // ファイルを格納パスに配置する
+                $result = deployUploadFile($objMTS, $base64File, $fileName, $upFilePath, $upJnlFilePath);
+
+                if(true !== $result){
+                    outputLog($result);
+                    throw new Exception();
+                }
+            }
+        }
+
+        // 資材名が一致するデータが無かった場合
+        else {
+            $cntFlg = true;
+            // 登録する
+            $insertData = array();
+            $insertData['ANS_TEMPLATE_VARS_NAME']   = $materialLinkageData['MATERIAL_LINK_NAME'];   // テンプレート埋込変数名
+            $insertData['ANS_TEMPLATE_FILE']        = $fileName;                                    // テンプレート素材
+            $insertData['DISUSE_FLAG']              = "0";                                          // 廃止フラグ
+            $insertData['LAST_UPDATE_USER']         = USER_ID_MATERIAL_LINKAGE;                     // 最終更新者
+
+            //////////////////////////
+            // テンプレート管理テーブルに登録
+            //////////////////////////
+            $result = $ansibleCommonTemplateTable->insertTable($insertData, $seqNo, $jnlSeqNo);
+            if(true !== $result){
+                $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
+                outputLog($msg);
+                throw new Exception();
+            }
+
+            $upFilePath     = ANS_TEMPLATE_PATH . sprintf("%010d", $seqNo) . "/";
+            $upJnlFilePath  = $upFilePath . "old/" . sprintf("%010d", $jnlSeqNo). "/";;
+
+            // ファイルを格納パスに配置する
+            $result = deployUploadFile($objMTS, $base64File, $fileName, $upFilePath, $upJnlFilePath);
+
+            if(true !== $result){
+                outputLog($result);
+                throw new Exception();
+            }
+        }
+
+        // コミット
+        $result = $objDBCA->transactionCommit();
+        if(false === $result){
+            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
+            outputLog($msg);
+            throw new Exception();
+        }
+        $tranStartFlg = false;
+
+        if(true === $cntFlg){
+            $ansTemplateCnt ++;
+        }
+
+        return true;
+    }
+    catch(Exception $e){
+        // ロールバック
+        if(true === $tranStartFlg){
+            $objDBCA->transactionRollback();
+        }
+        return false;
     }
 }
 
@@ -388,304 +685,6 @@ function linkAnsPlaybook($materialLinkageData, $fileName, $base64File) {
 
         if(true === $cntFlg){
             $ansPlaybookCnt ++;
-        }
-
-        return true;
-    }
-    catch(Exception $e){
-        // ロールバック
-        if(true === $tranStartFlg){
-            $objDBCA->transactionRollback();
-        }
-        return false;
-    }
-}
-
-/**
- * テンプレート管理連携処理
- * 
- */
-function linkAnsTemplate($materialLinkageData, $fileName, $base64File) {
-
-    global $objMTS, $objDBCA, $db_model_ch, $ansTemplateCnt;
-    $tranStartFlg = false;
-    $ansibleLnsTemplateTable = new AnsibleLnsTemplateTable($objDBCA, $db_model_ch);
-    $cntFlg = false;
-
-    try{
-        // トランザクション開始
-        $result = $objDBCA->transactionStart();
-        if(false === $result){
-            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', array($result));
-            outputLog($msg);
-            throw new Exception();
-        }
-        $tranStartFlg = true;
-
-        //////////////////////////
-        // テンプレート管理テーブルを検索
-        //////////////////////////
-        $sql = $ansibleLnsTemplateTable->createSselect("WHERE DISUSE_FLAG = '0'");
-
-        // SQL実行
-        $result = $ansibleLnsTemplateTable->selectTable($sql);
-        if(!is_array($result)){
-            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
-            outputLog($msg);
-            throw new Exception();
-        }
-        $ansTemplateArray = $result;
-
-        $matchFlg = false;
-
-        // テンプレート管理テーブルの件数分ループ
-        foreach($ansTemplateArray as $key => $ansTemplate) {
-
-            // 資材名が一致するデータを検索
-            if($materialLinkageData['MATERIAL_LINK_NAME'] == $ansTemplate['ANS_TEMPLATE_VARS_NAME']) {
-                $updateData = $ansTemplate;
-                $matchFlg = true;
-                break;
-            }
-        }
-
-        // 資材名が一致するデータがあった場合
-        if(true === $matchFlg) {
-
-            $updateFlg = true;
-            // 資材が一致した場合
-            if($fileName == $updateData['ANS_TEMPLATE_FILE']){
-                $materialPath = ANS_TEMPLATE_PATH . sprintf("%010d", $updateData['ANS_TEMPLATE_ID']) . "/" . $updateData['ANS_TEMPLATE_FILE'];
-                if(file_exists($materialPath)){
-                    // 資材に変更がない場合は更新しない
-                    $materialBase64 = base64_encode(file_get_contents($materialPath));
-                    if($base64File == $materialBase64){
-                        $updateFlg = false;
-                    }
-                }
-            }
-
-            if(true === $updateFlg){
-                $cntFlg = true;
-                // 更新する
-                $updateData['ANS_TEMPLATE_FILE']    = $fileName;                // テンプレート素材
-                $updateData['LAST_UPDATE_USER']     = USER_ID_MATERIAL_LINKAGE; // 最終更新者
-
-                //////////////////////////
-                // テンプレート管理テーブルを更新
-                //////////////////////////
-                $result = $ansibleLnsTemplateTable->updateTable($updateData, $jnlSeqNo);
-                if(true !== $result){
-                    $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
-                    outputLog($msg);
-                    throw new Exception();
-                }
-
-                $upFilePath     = ANS_TEMPLATE_PATH . sprintf("%010d", $updateData['ANS_TEMPLATE_ID']) . "/";
-                $upJnlFilePath  = $upFilePath . "old/" . sprintf("%010d", $jnlSeqNo) . "/";;
-
-                // ファイルを格納パスに配置する
-                $result = deployUploadFile($objMTS, $base64File, $fileName, $upFilePath, $upJnlFilePath);
-
-                if(true !== $result){
-                    outputLog($result);
-                    throw new Exception();
-                }
-            }
-        }
-
-        // 資材名が一致するデータが無かった場合
-        else {
-            $cntFlg = true;
-            // 登録する
-            $insertData = array();
-            $insertData['ANS_TEMPLATE_VARS_NAME']   = $materialLinkageData['MATERIAL_LINK_NAME'];   // テンプレート埋込変数名
-            $insertData['ANS_TEMPLATE_FILE']        = $fileName;                                    // テンプレート素材
-            $insertData['DISUSE_FLAG']              = "0";                                          // 廃止フラグ
-            $insertData['LAST_UPDATE_USER']         = USER_ID_MATERIAL_LINKAGE;                     // 最終更新者
-
-            //////////////////////////
-            // テンプレート管理テーブルに登録
-            //////////////////////////
-            $result = $ansibleLnsTemplateTable->insertTable($insertData, $seqNo, $jnlSeqNo);
-            if(true !== $result){
-                $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
-                outputLog($msg);
-                throw new Exception();
-            }
-
-            $upFilePath     = ANS_TEMPLATE_PATH . sprintf("%010d", $seqNo) . "/";
-            $upJnlFilePath  = $upFilePath . "old/" . sprintf("%010d", $jnlSeqNo). "/";;
-
-            // ファイルを格納パスに配置する
-            $result = deployUploadFile($objMTS, $base64File, $fileName, $upFilePath, $upJnlFilePath);
-
-            if(true !== $result){
-                outputLog($result);
-                throw new Exception();
-            }
-        }
-
-        // コミット
-        $result = $objDBCA->transactionCommit();
-        if(false === $result){
-            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
-            outputLog($msg);
-            throw new Exception();
-        }
-        $tranStartFlg = false;
-
-        if(true === $cntFlg){
-            $ansTemplateCnt ++;
-        }
-
-        return true;
-    }
-    catch(Exception $e){
-        // ロールバック
-        if(true === $tranStartFlg){
-            $objDBCA->transactionRollback();
-        }
-        return false;
-    }
-}
-
-/**
- * ファイル管理連携処理
- * 
- */
-function linkAnsContentsFile($materialLinkageData, $fileName, $base64File) {
-
-    global $objMTS, $objDBCA, $db_model_ch, $ansContentsFileCnt;
-    $tranStartFlg = false;
-    $ansLnsContentsFileTable = new AnsLnsContentsFileTable($objDBCA, $db_model_ch);
-    $cntFlg = false;
-
-    try{
-        // トランザクション開始
-        $result = $objDBCA->transactionStart();
-        if(false === $result){
-            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', array($result));
-            outputLog($msg);
-            throw new Exception();
-        }
-        $tranStartFlg = true;
-
-        //////////////////////////
-        // ファイル管理テーブルを検索
-        //////////////////////////
-        $sql = $ansLnsContentsFileTable->createSselect("WHERE DISUSE_FLAG = '0'");
-
-        // SQL実行
-        $result = $ansLnsContentsFileTable->selectTable($sql);
-        if(!is_array($result)){
-            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
-            outputLog($msg);
-            throw new Exception();
-        }
-        $ansContentsArray = $result;
-
-        $matchFlg = false;
-
-        // ファイル管理テーブルの件数分ループ
-        foreach($ansContentsArray as $key => $ansContents) {
-
-            // 資材名が一致するデータを検索
-            if($materialLinkageData['MATERIAL_LINK_NAME'] == $ansContents['CONTENTS_FILE_VARS_NAME']) {
-                $updateData = $ansContents;
-                $matchFlg = true;
-                break;
-            }
-        }
-
-        // 資材名が一致するデータがあった場合
-        if(true === $matchFlg) {
-
-            $updateFlg = true;
-            // 資材が一致した場合
-            if($fileName == $updateData['CONTENTS_FILE']){
-                $materialPath = ANS_FILE_PATH . sprintf("%010d", $updateData['CONTENTS_FILE_ID']) . "/" . $updateData['CONTENTS_FILE'];
-                if(file_exists($materialPath)){
-                    // 資材に変更がない場合は更新しない
-                    $materialBase64 = base64_encode(file_get_contents($materialPath));
-                    if($base64File == $materialBase64){
-                        $updateFlg = false;
-                    }
-                }
-            }
-
-            if(true === $updateFlg){
-                $cntFlg = true;
-                // 更新する
-                $updateData['CONTENTS_FILE']    = $fileName;                // ファイル素材
-                $updateData['LAST_UPDATE_USER'] = USER_ID_MATERIAL_LINKAGE; // 最終更新者
-
-                //////////////////////////
-                // ファイル管理テーブルを更新
-                //////////////////////////
-                $result = $ansLnsContentsFileTable->updateTable($updateData, $jnlSeqNo);
-                if(true !== $result){
-                    $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
-                    outputLog($msg);
-                    throw new Exception();
-                }
-
-                $upFilePath     = ANS_FILE_PATH . sprintf("%010d", $updateData['CONTENTS_FILE_ID']) . "/";
-                $upJnlFilePath  = $upFilePath . "old/" . sprintf("%010d", $jnlSeqNo) . "/";;
-
-                // ファイルを格納パスに配置する
-                $result = deployUploadFile($objMTS, $base64File, $fileName, $upFilePath, $upJnlFilePath);
-
-                if(true !== $result){
-                    outputLog($result);
-                    throw new Exception();
-                }
-            }
-        }
-
-        // 資材名が一致するデータが無かった場合
-        else {
-            $cntFlg = true;
-            // 登録する
-            $insertData = array();
-            $insertData['CONTENTS_FILE_VARS_NAME']  = $materialLinkageData['MATERIAL_LINK_NAME'];   // ファイル埋込変数名
-            $insertData['CONTENTS_FILE']            = $fileName;                                    // ファイル素材
-            $insertData['DISUSE_FLAG']              = "0";                                          // 廃止フラグ
-            $insertData['LAST_UPDATE_USER']         = USER_ID_MATERIAL_LINKAGE;                     // 最終更新者
-
-            //////////////////////////
-            // ファイル管理テーブルに登録
-            //////////////////////////
-            $result = $ansLnsContentsFileTable->insertTable($insertData, $seqNo, $jnlSeqNo);
-            if(true !== $result){
-                $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
-                outputLog($msg);
-                throw new Exception();
-            }
-
-            $upFilePath     = ANS_FILE_PATH . sprintf("%010d", $seqNo) . "/";
-            $upJnlFilePath  = $upFilePath . "old/" . sprintf("%010d", $jnlSeqNo). "/";;
-
-            // ファイルを格納パスに配置する
-            $result = deployUploadFile($objMTS, $base64File, $fileName, $upFilePath, $upJnlFilePath);
-
-            if(true !== $result){
-                outputLog($result);
-                throw new Exception();
-            }
-        }
-
-        // コミット
-        $result = $objDBCA->transactionCommit();
-        if(false === $result){
-            $msg = $objMTS->getSomeMessage('ITAMATERIAL-ERR-5001', $result);
-            outputLog($msg);
-            throw new Exception();
-        }
-        $tranStartFlg = false;
-
-        if(true === $cntFlg){
-            $ansContentsFileCnt ++;
         }
 
         return true;
