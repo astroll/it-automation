@@ -44,7 +44,7 @@
     // オーケストレータ識別子ディレクトリ名
     $vg_OrchestratorSubId_dir = "rl";
     // インターフェース情報テーブル名
-    $vg_info_table_name               = "D_ANSIBLE_LRL_IF_INFO";
+    $vg_info_table_name               = "B_ANSIBLE_IF_INFO";  
     // 作業インスタンステーブル名
     $vg_exe_ins_msg_table_name        = "C_ANSIBLE_LRL_EXE_INS_MNG";
     // 作業インスタンスジャーナルテーブル名
@@ -83,6 +83,11 @@
     // 結果ファイル格納先ディレクトリ
     $vg_exe_ins_result_file_dir         = $root_dir_path . "/uploadfiles/2100020314";
 
-    // ITA側で管理している legacy Role用 copyファイル格納先ディレクトリ
-    $vg_copy_contents_dir = $root_dir_path . "/uploadfiles/2100020321/CONTENTS_FILE";
+    // AnsibleTowerのastroll_executions_prepare_buildで使用している変数
+    $vg_tower_driver_type               = "legacy";
+    $vg_tower_driver_id                 = "rl";
+    $vg_tower_driver_name               = "legacy_role";
+    // 親Playbookのファイル名
+    $vg_parent_playbook_name            = "site.yml";
+
 ?>
