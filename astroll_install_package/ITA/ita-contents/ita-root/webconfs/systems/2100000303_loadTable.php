@@ -222,9 +222,7 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
     $table->addColumn($c);
 
     $wanted_filename = "astroll_ansible-driver";
-    $wanted_filename_2 = "astroll_ansibletower-driver";
-    if(file_exists($root_dir_path . "/libs/release/" . $wanted_filename) ||
-        file_exists($root_dir_path . "/libs/release/" . $wanted_filename_2)){
+    if(file_exists($root_dir_path . "/libs/release/" . $wanted_filename)) {
         // Ansible利用情報
         $cg2 = new ColumnGroup($g['objMTS']->getSomeMessage("ITABASEH-MNU-102024"));
 
@@ -388,17 +386,15 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
         $c->setValidator($objVldt);
         $cg2->addColumn($c);
 
-        if(file_exists($root_dir_path . "/libs/release/" . $wanted_filename_2)){
-            // AnsibleTower利用情報
-            $cg = new ColumnGroup($g['objMTS']->getSomeMessage("ITABASEH-MNU-102026"));
+        // AnsibleTower利用情報
+        $cg = new ColumnGroup($g['objMTS']->getSomeMessage("ITABASEH-MNU-102026"));
 
-                // インスタンスグループ
-                $c = new IDColumn('ANSTWR_INSTANCE_GRP_ITA_MNG_ID',$g['objMTS']->getSomeMessage("ITABASEH-MNU-104630"),'B_ANSTWR_INSTANCE_GROUP','INSTANCE_GROUP_ITA_MANAGED_ID','INSTANCE_GROUP_NAME','');
-                $c->setDescription($g['objMTS']->getSomeMessage("ITABASEH-MNU-104631"));
-                $cg->addColumn($c);
+           // インスタンスグループ
+           $c = new IDColumn('ANSTWR_INSTANCE_GRP_ITA_MNG_ID',$g['objMTS']->getSomeMessage("ITABASEH-MNU-104630"),'B_ANS_TWR_INSTANCE_GROUP','INSTANCE_GROUP_ITA_MANAGED_ID','INSTANCE_GROUP_NAME','');
+           $c->setDescription($g['objMTS']->getSomeMessage("ITABASEH-MNU-104631"));
+           $cg->addColumn($c);
 
-            $cg2->addColumn($cg);
-        }
+        $cg2->addColumn($cg);
 
         $table->addColumn($cg2);
     }
@@ -475,6 +471,38 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
 
         $table->addColumn($cg);
     }
+
+    // 登録/更新/廃止/復活があった場合、データベースを更新した事をマークする。
+    $tmpObjFunction = function($objColumn, $strEventKey, &$exeQueryData, &$reqOrgData=array(), &$aryVariant=array()){
+        $boolRet = true;
+        $intErrorType = null;
+        $aryErrMsgBody = array();
+        $strErrMsg = "";
+        $strErrorBuf = "";
+        $strFxName = "";
+
+        $modeValue = $aryVariant["TCA_PRESERVED"]["TCA_ACTION"]["ACTION_MODE"];
+        if( $modeValue=="DTUP_singleRecRegister" || $modeValue=="DTUP_singleRecUpdate" || $modeValue=="DTUP_singleRecDelete" ){
+
+            $strQuery = "UPDATE A_PROC_LOADED_LIST "
+                       ."SET LOADED_FLG='0' ,LAST_UPDATE_TIMESTAMP = NOW(6) "
+                       ."WHERE ROW_ID IN (2100020002,2100020004,2100020006) ";
+
+            $aryForBind = array();
+
+            $aryRetBody = singleSQLExecuteAgent($strQuery, $aryForBind, $strFxName);
+
+            if( $aryRetBody[0] !== true ){
+                $boolRet = false;
+                $strErrMsg = $aryRetBody[2];
+                $intErrorType = 500;
+            }
+        }
+        $retArray = array($boolRet,$intErrorType,$aryErrMsgBody,$strErrMsg,$strErrorBuf);
+        return $retArray;
+    };
+    $tmpAryColumn = $table->getColumns();
+    $tmpAryColumn['SYSTEM_ID']->setFunctionForEvent('beforeTableIUDAction',$tmpObjFunction);
 
     $table->fixColumn();
 
