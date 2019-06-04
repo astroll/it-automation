@@ -253,54 +253,57 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
     unset($objFunction04);
     unset($objFunction05);
 
-
-    $cg1 = new ColumnGroup($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101112"));
-
-        $c = new IDColumn('ANS_PLAYBOOK_CHK',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101113"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
-        $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101114"));//エクセル・ヘッダでの説明
-        $objVldt = new LinkageCheckValidator($c);
-        $c->setValidator($objVldt);
-        $cg1->addColumn($c);
-
-        $c = new IDColumn('ANS_TEMPLATE_CHK',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101115"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
-        $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101116"));//エクセル・ヘッダでの説明
-        $objVldt = new LinkageCheckValidator($c);
-        $c->setValidator($objVldt);
-        $cg1->addColumn($c);
+    $cg1 = new ColumnGroup($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101127"));
 
         $c = new IDColumn('ANS_CONTENTS_FILE_CHK',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101117"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
         $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101118"));//エクセル・ヘッダでの説明
         $objVldt = new LinkageCheckValidator($c);
         $c->setValidator($objVldt);
         $cg1->addColumn($c);
+    
+        $c = new IDColumn('ANS_TEMPLATE_CHK',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101115"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
+        $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101116"));//エクセル・ヘッダでの説明
+        $objVldt = new LinkageCheckValidator($c);
+        $c->setValidator($objVldt);
+        $cg1->addColumn($c);
 
     $table->addColumn($cg1);
 
-    $cg2 = new ColumnGroup($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101119"));
+    $cg2 = new ColumnGroup($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101112"));
 
-        $c = new IDColumn('OS_TYPE_ID',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101120"),'D_OS_TYPE','OS_TYPE_ID','OS_TYPE_NAME','');
-        $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101121"));//エクセル・ヘッダでの説明
-        $objVldt = new OsTypeNameValidator($c);
-        $c->setValidator($objVldt);
-        $cg2->addColumn($c);
-
-        $c = new IDColumn('ANSIBLE_DIALOG_CHK',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101122"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
-        $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101123"));//エクセル・ヘッダでの説明
-        $objVldt = new AnsibleDialogCheckValidator($c);
+        $c = new IDColumn('ANS_PLAYBOOK_CHK',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101113"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
+        $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101114"));//エクセル・ヘッダでの説明
+        $objVldt = new LinkageCheckValidator($c);
         $c->setValidator($objVldt);
         $cg2->addColumn($c);
 
     $table->addColumn($cg2);
 
-    $cg3 = new ColumnGroup($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101124"));
+    $cg3 = new ColumnGroup($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101119"));
+
+        $c = new IDColumn('OS_TYPE_ID',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101120"),'D_OS_TYPE','OS_TYPE_ID','OS_TYPE_NAME','');
+        $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101121"));//エクセル・ヘッダでの説明
+        $objVldt = new OsTypeNameValidator($c);
+        $c->setValidator($objVldt);
+        $cg3->addColumn($c);
+
+        $c = new IDColumn('ANSIBLE_DIALOG_CHK',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101122"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
+        $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101123"));//エクセル・ヘッダでの説明
+        $objVldt = new AnsibleDialogCheckValidator($c);
+        $c->setValidator($objVldt);
+        $cg3->addColumn($c);
+
+    $table->addColumn($cg3);
+
+    $cg4 = new ColumnGroup($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101124"));
 
         $c = new IDColumn('ANSIBLE_ROLE_CHK',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101125"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
         $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-101126"));//エクセル・ヘッダでの説明
         $objVldt = new LinkageCheckValidator($c);
         $c->setValidator($objVldt);
-        $cg3->addColumn($c);
+        $cg4->addColumn($c);
 
-    $table->addColumn($cg3);
+    $table->addColumn($cg4);
 
 //----head of setting [multi-set-unique]
 
