@@ -391,8 +391,6 @@ configure_ansible() {
     # Install some pip packages.
     pip install ${PIP_PACKAGE["ansible"]} >> "$ITA_BUILDER_LOG_FILE" 2>&1
     
-    # Copy SSH config file.
-    copy_and_backup "$ITA_EXT_FILE_DIR/root_.ssh/config" "/root/.ssh/"
 }
 
 
@@ -443,9 +441,6 @@ configure_cobbler() {
         service xinetd start >> "$ITA_BUILDER_LOG_FILE" 2>&1
         chkconfig xinetd on >> "$ITA_BUILDER_LOG_FILE" 2>&1
         
-        #cobbler loader arrangement
-        cp -p $ITA_EXT_FILE_DIR/var_lib_cobbler_loaders/* /var/lib/cobbler/loaders/ >> "$ITA_BUILDER_LOG_FILE" 2>&1
-        
         #restart cobbler
         #service cobbler restart
         service cobblerd stop >> "$ITA_BUILDER_LOG_FILE" 2>&1
@@ -469,9 +464,6 @@ configure_cobbler() {
         #start and startup setting(xinetd)
         systemctl enable xinetd >> "$ITA_BUILDER_LOG_FILE" 2>&1
         systemctl start xinetd >> "$ITA_BUILDER_LOG_FILE" 2>&1
-        
-        #cobbler loader arrangement
-        cp -p $ITA_EXT_FILE_DIR/var_lib_cobbler_loaders/* /var/lib/cobbler/loaders/ >> "$ITA_BUILDER_LOG_FILE" 2>&1
         
         #restart Apache(httpd)
         systemctl restart httpd >> "$ITA_BUILDER_LOG_FILE" 2>&1
