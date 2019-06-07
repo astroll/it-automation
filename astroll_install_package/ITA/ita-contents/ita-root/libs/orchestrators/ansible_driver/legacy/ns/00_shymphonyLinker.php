@@ -231,6 +231,7 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         unset($objQuery);
 
         $user_name = '';
+        $symphony_name = '';
         list($strTmpRunMode,$boolKeyExists) = isSetInArrayNestThenAssign($aryProperParameter,array('RUN_MODE'),"");
         if( $boolKeyExists === false ){
             //----シンフォニーから呼ばれる場合を想定
@@ -261,7 +262,32 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
                 // DBアクセス事後処理
                 unset($objQuery);
             }
-
+            
+            // シンフォニークラス名情報を取得する
+            if(isset($g['__SYMPHONY_INSTANCE_NO__'])) {
+                // SQL作成
+                $sql = "SELECT I_SYMPHONY_NAME FROM C_SYMPHONY_INSTANCE_MNG WHERE SYMPHONY_INSTANCE_NO = $int_Symphony_instance_no";
+                // SQL準備
+                $objQuery = $objDBCA->sqlPrepare($sql);
+                if( $objQuery->getStatus()===false ){
+                    $strErrStepIdInFx="00000001";
+                    throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+                }
+                // SQL発行
+                $r = $objQuery->sqlExecute();
+                if (!$r){
+                    unset($objQuery);
+                    $strErrStepIdInFx="00000001";
+                    throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+                }
+                // レコードFETCH
+                while ( $row = $objQuery->resultFetch() ){
+                    $symphony_name = $row['I_SYMPHONY_NAME'];
+                }
+                // DBアクセス事後処理
+                unset($objQuery);
+            }
+            
             //シンフォニーから呼ばれる場合を想定----
         }
         else{
@@ -383,6 +409,7 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         "JOURNAL_ACTION_CLASS"=>"",
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>$p_execution_utn_no,
+        "SYMPHONY_NAME"=>$symphony_name,
         "EXECUTION_USER"=>$user_name,
         "STATUS_ID"=>$status_id_for_update,
 
