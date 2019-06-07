@@ -82,6 +82,11 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
     $c->setRequired(true);//登録/更新時には、入力必須
     $table->addColumn($c);
 
+    //シンフォニークラス
+    $c = new TextColumn('SYMPHONY_NAME',$g['objMTS']->getSomeMessage("ITAOPENST-MNU-130300"));
+    $c->setDescription($g['objMTS']->getSomeMessage("ITAOPENST-MNU-130310"));//エクセル・ヘッダでの説明
+    $table->addColumn($c);
+    
     //実行ユーザ
     $c = new TextColumn('EXECUTION_USER',$g['objMTS']->getSomeMessage("ITAOPENST-MNU-130280"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAOPENST-MNU-130290"));//エクセル・ヘッダでの説明
