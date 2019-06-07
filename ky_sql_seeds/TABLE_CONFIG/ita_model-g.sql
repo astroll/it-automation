@@ -427,6 +427,7 @@ EXECUTION_NO                      %INT%                            ,
 
 STATUS_ID                         %INT%                            , -- 実行ステータスID
 EXECUTION_USER                    %VARCHR%(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     %VARCHR%(128)                    , -- シンフォニークラス名
 SYMPHONY_INSTANCE_NO              %INT%                            , -- Symphonyインスタンス番号
 PATTERN_ID                        %INT%                            , -- パターンID
 I_PATTERN_NAME                    %VARCHR%(256)                    ,
@@ -466,6 +467,7 @@ EXECUTION_NO                      %INT%                            ,
 
 STATUS_ID                         %INT%                            , -- 実行ステータスID
 EXECUTION_USER                    %VARCHR%(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     %VARCHR%(128)                    , -- シンフォニークラス名
 SYMPHONY_INSTANCE_NO              %INT%                            , -- Symphonyインスタンス番号
 PATTERN_ID                        %INT%                            , -- パターンID
 I_PATTERN_NAME                    %VARCHR%(256)                    ,
@@ -952,6 +954,7 @@ SELECT
          TAB_A.EXECUTION_NO              ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.SYMPHONY_INSTANCE_NO      , -- Symphonyインスタンス番号
          TAB_A.PATTERN_ID                ,
@@ -991,6 +994,7 @@ SELECT
          TAB_A.EXECUTION_NO              ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.SYMPHONY_INSTANCE_NO      , -- Symphonyインスタンス番号
          TAB_A.PATTERN_ID                ,
