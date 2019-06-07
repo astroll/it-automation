@@ -52,6 +52,7 @@
 
         //----オーケストレータ別の設定記述
         $sql = "SELECT  TAB_A.EXECUTION_NO,
+                        TAB_A.SYMPHONY_NAME,
                         TAB_A.EXECUTION_USER,
                         TAB_A.PATTERN_ID,
                         TAB_A.I_PATTERN_NAME,
@@ -117,6 +118,7 @@
         
         $COLUMN_01 = nl2br(htmlspecialchars($showTgtRow['EXECUTION_NO']));
         $COLUMN_42 = nl2br(htmlspecialchars($showTgtRow['EXECUTION_USER']));
+        $COLUMN_43 = nl2br(htmlspecialchars($showTgtRow['SYMPHONY_NAME']));
         $COLUMN_03 = nl2br(htmlspecialchars($showTgtRow['I_TIME_LIMIT']));
         
         $COLUMN_04 = nl2br(htmlspecialchars($showTgtRow['OPERATION_NO_UAPK']));
@@ -205,6 +207,10 @@
                     <tr>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="3" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1103050")}</span><!--ステータス//--></td>
                         <td                                     >{$COLUMN_14}</td>
+                    </tr>
+                    <tr>
+                        <td class="likeHeader" scope="row" rowspan="1" colspan="3" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-103110")}</span><!--シンフォニークラス//--></td>
+                        <td                                     >{$COLUMN_43}</td>
                     </tr>
                     <tr>
                         <td class="likeHeader" scope="row" rowspan="1" colspan="3" ><span class="generalBold">{$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1103100")}</span><!--実行ユーザ//--></td>
