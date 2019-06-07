@@ -27,6 +27,7 @@ function CreateExecInstMngArray(&$ary) {
     $ary["JOURNAL_REG_DATETIME"]         = ""; 
     $ary["JOURNAL_ACTION_CLASS"]         = ""; 
     $ary["EXECUTION_NO"]                 = ""; 
+    $ary["SYMPHONY_NAME"]                = ""; 
     $ary["EXECUTION_USER"]               = ""; 
     $ary["STATUS_ID"]                    = ""; 
     $ary["SYMPHONY_INSTANCE_NO"]         = "";
