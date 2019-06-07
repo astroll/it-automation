@@ -44,6 +44,7 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>"",
         "EXECUTION_USER"=>"",
+        "SYMPHONY_NAME"=>"",
         "STATUS_ID"=>"",
         "PATTERN_ID"=>"",
         "I_PATTERN_NAME"=>"",
@@ -67,6 +68,7 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>"",
         "EXECUTION_USER"=>"",
+        "SYMPHONY_NAME"=>"",
         "STATUS_ID"=>"",
         "PATTERN_ID"=>"",
         "I_PATTERN_NAME"=>"",
@@ -240,6 +242,8 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
     }
     // 処理開始
     try{
+        $user_name = "";
+        $symphony_name = '';
         list($strTmpRunMode,$boolKeyExists) = isSetInArrayNestThenAssign($aryProperParameter,array('RUN_MODE'),"");
         if( $boolKeyExists === false ){
             //----シンフォニーから呼ばれる場合を想定
@@ -265,6 +269,30 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
                 // レコードFETCH
                 while ( $row = $objQuery->resultFetch() ){
                     $user_name = $row['EXECUTION_USER'];
+                }
+                // DBアクセス事後処理
+                unset($objQuery);
+            }
+                        // シンフォニークラス名情報を取得する
+            if(isset($g['__SYMPHONY_INSTANCE_NO__'])) {
+                // SQL作成
+                $sql = "SELECT I_SYMPHONY_NAME FROM C_SYMPHONY_INSTANCE_MNG WHERE SYMPHONY_INSTANCE_NO = $int_Symphony_instance_no";
+                // SQL準備
+                $objQuery = $objDBCA->sqlPrepare($sql);
+                if( $objQuery->getStatus()===false ){
+                    $strErrStepIdInFx="00000001";
+                    throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+                }
+                // SQL発行
+                $r = $objQuery->sqlExecute();
+                if (!$r){
+                    unset($objQuery);
+                    $strErrStepIdInFx="00000001";
+                    throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+                }
+                // レコードFETCH
+                while ( $row = $objQuery->resultFetch() ){
+                    $symphony_name = $row['I_SYMPHONY_NAME'];
                 }
                 // DBアクセス事後処理
                 unset($objQuery);
@@ -370,6 +398,7 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>"",
         "EXECUTION_USER"=>"",
+        "SYMPHONY_NAME"=>"",
         "STATUS_ID"=>"",
         "PATTERN_ID"=>"",
         "I_PATTERN_NAME"=>"",
@@ -412,6 +441,7 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>$p_execution_utn_no,
         "EXECUTION_USER"=>$user_name,
+        "SYMPHONY_NAME"=>$symphony_name,
         "STATUS_ID"=>$status_id_for_update,
         "PATTERN_ID"=>$intPatternId,
         "I_PATTERN_NAME"=>$arySinglePatternSource["PATTERN_NAME"],
@@ -638,6 +668,8 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
         "DISP_SEQ"=>"",
         "DISUSE_FLAG"=>"",
         "EXECUTION_NO"=>"",
+        "EXECUTION_USER"=>"",
+        "SYMPHONY_NAME"=>"",
         "HEAT_INPUT"=>"",
         "HEAT_RESULT"=>"",
         "I_OPERATION_NAME"=>"",
