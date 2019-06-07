@@ -86,7 +86,12 @@ Ansible(Pioneer)作業管理
     $c->setJournalKeyIDOfMaster('STATUS_ID');
     $c->setJournalDispIDOfMaster('STATUS_NAME');
     $table->addColumn($c);
-
+    
+    //シンフォニークラス
+    $c = new TextColumn('SYMPHONY_NAME',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-309120"));
+    $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-309130"));//エクセル・ヘッダでの説明
+    $table->addColumn($c);
+    
     //実行ユーザ
     $c = new TextColumn('EXECUTION_USER',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-309100"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-309110"));//エクセル・ヘッダでの説明
