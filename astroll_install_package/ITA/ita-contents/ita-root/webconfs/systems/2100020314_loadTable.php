@@ -88,7 +88,12 @@ Ansible(Legacy)作業管理
     $c->setJournalKeyIDOfMaster('STATUS_ID');
     $c->setJournalDispIDOfMaster('STATUS_NAME');
     $table->addColumn($c);
-
+    
+    //シンフォニークラス
+    $c = new TextColumn('SYMPHONY_NAME',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1108120"));
+    $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1108130"));//エクセル・ヘッダでの説明
+    $table->addColumn($c);
+    
     //実行ユーザ
     $c = new TextColumn('EXECUTION_USER',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1108100"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1108110"));//エクセル・ヘッダでの説明
