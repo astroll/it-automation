@@ -688,6 +688,7 @@ CREATE TABLE C_ANSIBLE_LNS_EXE_INS_MNG
 EXECUTION_NO                      NUMBER                           ,
 
 EXECUTION_USER                    VARCHAR2(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     VARCHAR2(128)                    , -- シンフォニークラス名
 STATUS_ID                         NUMBER                           ,
 SYMPHONY_INSTANCE_NO              NUMBER                           ,
 PATTERN_ID                        NUMBER                           ,
@@ -729,6 +730,7 @@ JOURNAL_ACTION_CLASS              VARCHAR2(8)                      , -- 履歴�
 EXECUTION_NO                      NUMBER                           ,
 
 EXECUTION_USER                    VARCHAR2(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     VARCHAR2(128)                    , -- シンフォニークラス名
 STATUS_ID                         NUMBER                           ,
 SYMPHONY_INSTANCE_NO              NUMBER                           ,
 PATTERN_ID                        NUMBER                           ,
@@ -940,6 +942,7 @@ AND TAB_C.DISUSE_FLAG = '0'
 CREATE VIEW E_ANSIBLE_LNS_EXE_INS_MNG AS
 SELECT 
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -986,6 +989,7 @@ SELECT
          TAB_A.JOURNAL_REG_DATETIME      ,
          TAB_A.JOURNAL_ACTION_CLASS      ,
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -1372,6 +1376,7 @@ CREATE TABLE C_ANSIBLE_PNS_EXE_INS_MNG
 (
 EXECUTION_NO                      NUMBER                           , -- 識別シーケンス
 EXECUTION_USER                    VARCHAR2(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     VARCHAR2(128)                    , -- シンフォニークラス名
 
 STATUS_ID                         NUMBER                           ,
 SYMPHONY_INSTANCE_NO              NUMBER                           ,
@@ -1413,6 +1418,7 @@ JOURNAL_ACTION_CLASS              VARCHAR2(8)                      , -- 履歴�
 
 EXECUTION_NO                      NUMBER                           , -- 識別シーケンス
 EXECUTION_USER                    VARCHAR2(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     VARCHAR2(128)                    , -- シンフォニークラス名
 
 STATUS_ID                         NUMBER                           ,
 SYMPHONY_INSTANCE_NO              NUMBER                           ,
@@ -1629,6 +1635,7 @@ AND TAB_C.DISUSE_FLAG = '0'
 CREATE VIEW E_ANSIBLE_PNS_EXE_INS_MNG AS
 SELECT 
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -1675,6 +1682,7 @@ SELECT
          TAB_A.JOURNAL_REG_DATETIME      ,
          TAB_A.JOURNAL_ACTION_CLASS      ,
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -1778,6 +1786,7 @@ CREATE TABLE C_ANSIBLE_LRL_EXE_INS_MNG
 (
 EXECUTION_NO                      NUMBER                           ,
 EXECUTION_USER                    VARCHAR2(80)                     , -- 作業パターン名
+SYMPHONY_NAME                     VARCHAR2(128)                    , -- シンフォニークラス名
 
 STATUS_ID                         NUMBER                           , -- 状態
 SYMPHONY_INSTANCE_NO              NUMBER                           ,
@@ -1819,6 +1828,7 @@ JOURNAL_ACTION_CLASS              VARCHAR2(8)                      , -- 履歴�
 
 EXECUTION_NO                      NUMBER                           ,
 EXECUTION_USER                    VARCHAR2(80)                     , -- 作業パターン名
+SYMPHONY_NAME                     VARCHAR2(128)                    , -- シンフォニークラス名
 
 STATUS_ID                         NUMBER                           , -- 状態
 SYMPHONY_INSTANCE_NO              NUMBER                           ,
@@ -2624,6 +2634,7 @@ CREATE VIEW E_ANSIBLE_LRL_EXE_INS_MNG AS
 SELECT 
          TAB_A.EXECUTION_NO              ,
          TAB_A.EXECUTION_USER            ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
          TAB_A.SYMPHONY_INSTANCE_NO      ,
@@ -2669,6 +2680,7 @@ SELECT
          TAB_A.JOURNAL_REG_DATETIME      ,
          TAB_A.JOURNAL_ACTION_CLASS      ,
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
