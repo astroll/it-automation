@@ -129,10 +129,9 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
 
 
     // 正規表現
-    $objVldt = new SingleTextValidator(0,1024,false);
     $c = new TextColumn('PREG_MATCH',$g['objMTS']->getSomeMessage("ITACREPAR-MNU-102115"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITACREPAR-MNU-102116"));//エクセル・ヘッダでの説明
-    $c->setValidator($objVldt);
+    $c->setValidator(new PregMatchValidator(0,1024));
     $cg->addColumn($c);
 
     $table->addColumn($cg);
