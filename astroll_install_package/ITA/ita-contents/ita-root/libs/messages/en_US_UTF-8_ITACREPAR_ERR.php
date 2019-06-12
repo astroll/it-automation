@@ -34,6 +34,7 @@ $ary[1017] = "It can not be disabled, because it is set to parent column group. 
 $ary[1018] = "Cannot use \"/\" symbols.";
 $ary[1019] = "The Item of the same menu can not be registered. Id = [{}].";
 $ary[1020] = "Cannot use \"\/:*?\"<>|[]：￥／＊［］\" symbols.";
+$ary[1021] = "Enter the form of the first argument of PHP function preg_match.";
 $ary[5001] = "File does not exist. File=[{}].";
 $ary[5002] = "Failed to read the file. File=[{}].";
 $ary[5003] = "Failed to execution of SQL. SQL error = [{}].";
