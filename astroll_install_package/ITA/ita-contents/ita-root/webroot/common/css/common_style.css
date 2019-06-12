@@ -1095,3 +1095,40 @@ hr {
 #export_form label:hover {
 	background-color: #FFFFCC;
 }
+
+/* data import style */
+#import_form .import_all_div {
+	padding: 8px;
+	background-color: #E5EBF2;
+	border: 1px solid #CCC;
+	border-bottom: 1px dashed #CCC;
+	border-radius: 8px 8px 0 0;
+}
+#import_form .import_all_div + div {
+	padding: 8px;
+	border: 1px solid #CCC;
+	border-top: none;
+	border-radius: 0 0 8px 8px;
+}
+#import_form .import_all_div + div::after {
+	content: '';
+	display: block;
+	clear: both;
+}
+#import_form .import_all_div + div p {
+	width: 25%;
+	display: block;
+	float: left;
+}
+#import_form label,
+#import_form input {
+	cursor: pointer;
+}
+#import_form label {
+	box-sizing: content-box;
+	display: inline-block;
+	padding: 2px 8px;
+}
+#import_form label:hover {
+	background-color: #FFFFCC;
+}
