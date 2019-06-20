@@ -77,6 +77,17 @@ class ControlGit {
 
         if(0 != $return_var){
             $errMsg = print_r($output, true);
+            return $return_var;
+        }
+
+        // 日本語文字化け対応
+        $output = NULL;
+        $cmd = "sudo git " . $this->gitOption . " config --local core.quotepath false  2>&1";
+        exec($cmd, $output, $return_var);
+
+        if(0 != $return_var){
+            $errMsg = print_r($output, true);
+            return $return_var;
         }
         return $return_var;
     }
@@ -388,7 +399,7 @@ class ControlGit {
         // Git管理上にディレクトリがあるか確認する
         $matchFlg = false;
         foreach($output as $gitFile){
-            if(substr("/" . $gitFile, 0, strlen($orgDirPath)) === $orgDirPath){
+            if(substr("/" . ltrim($gitFile, '"'), 0, strlen($orgDirPath)) === $orgDirPath){
                 $matchFlg = true;
                 break;
             }
