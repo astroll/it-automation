@@ -464,10 +464,12 @@
                 $UIExecLogPath  = $ansdrv->getAnsible_out_Dir() . "/" . "exec.log";
                 $UIErrorLogPath = $ansdrv->getAnsible_out_Dir() . "/" . "error.log";
                 $Status = 0;
+
                 ////////////////////////////////////////////////////////////////
                 // AnsibleTowerから実行                                       //
                 ////////////////////////////////////////////////////////////////
                 $ret = AnsibleTowerExecution(DF_CHECKCONDITION_FUNCTION,$lv_ans_if_info,$tgt_execution_row,$ansdrv->getAnsible_out_Dir(),$UIExecLogPath,$UIErrorLogPath,$Status);
+
                 if( $Status == 5 ||
                     $Status == 6 ||
                     $Status == 7 ||
@@ -477,6 +479,8 @@
                     // 7:想定外エラー
                     // 8:緊急停止
                     $sql_exec_flag =  1;
+                } else {
+                    $Status = -1;
                 }
             }
             if ( $log_level === 'DEBUG' ){
@@ -552,7 +556,7 @@
             ////////////////////////////////////////////////////////////////
             // statusによって処理を分岐                                   //
             ////////////////////////////////////////////////////////////////
-            if( $Status != -1){
+            if($Status != -1) {
                 // SQL(UPDATE)をEXECUTEする
                 $sql_exec_flag =  1;
 
