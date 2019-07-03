@@ -59,6 +59,7 @@ $ary[104080] = "Name";
 $ary[104085] = "ID";
 $ary[104090] = "Input data";
 $ary[104100] = "Execution user";
+$ary[104110] = "Execution symphony";
 $ary[105010] = "Populated data";
 $ary[105020] = "Output data";
 $ary[105030] = "Result data";
@@ -614,6 +615,9 @@ Ansible Tower:
 　　-as,--allow_simultaneous　
 　　-jsc,--job_slice_count
 　Refer to the Ansible User Manual for details.";
+$ary[1204017] = "Execution user";
+$ary[1204018] = "Set the execution user when ansible-playbook command' is executed by sudo command.
+If not entered, the execution user is root.";
 $ary[1204020] = "Status monitoring cycle (milliseconds)";
 $ary[1204030] = "It is interval to refresh execution log when performing an execution. \n Although tuning is required for each environment, recommended value is 3000 milliseconds.";
 $ary[1204040] = "Number of rows to display progress status";
