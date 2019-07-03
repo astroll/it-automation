@@ -194,6 +194,10 @@
 
         $lv_anstwr_organization   = $lv_ans_if_info['ANSTWR_ORGANIZATION'];
         $lv_anstwr_auth_token     = $lv_ans_if_info['ANSTWR_AUTH_TOKEN'];
+        $lv_ans_exec_user         = $lv_ans_if_info['ANSIBLE_EXEC_USER'];
+        if(strlen(trim($lv_ans_exec_user)) == 0) {
+            $lv_ans_exec_user = 'root';
+        }
         
         ////////////////////////////////////////////////////////////////////////////////////////////////
         // 作業インスタンステーブルから処理対象レコードの一意キーを取得(レコードロック)
@@ -805,10 +809,9 @@
                             "ORCHESTRATOR_SUB_ID"=>$vg_OrchestratorSubId,
                             //作業実行ID
                             "EXE_NO"=>$tgt_execution_no,
-
                             "PARALLEL_EXE"=>$tgt_exec_count_array[$tgt_execution_no],
-    
-                            "RUN_MODE"=>$tgt_run_mode_array[$tgt_execution_no]);
+                            "RUN_MODE"=>$tgt_run_mode_array[$tgt_execution_no],
+                            "EXEC_USER"=>$lv_ans_exec_user);
                         
                     $rest_api_response = ansible_restapi_access( $lv_ans_protocol,
                                                                  $lv_ans_hostname,
