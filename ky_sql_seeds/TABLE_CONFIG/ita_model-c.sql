@@ -52,6 +52,7 @@ ANSIBLE_STORAGE_PATH_ANS        %VARCHR%(256)                     ,
 SYMPHONY_STORAGE_PATH_ANS       %VARCHR%(256)                     ,
 ANSIBLE_EXEC_OPTIONS            %VARCHR%(512)                     , -- ansible-playbook実行時のオプションパラメータ
 -- ansible独自情報
+ANSIBLE_EXEC_USER               %VARCHR%(64)                      , -- ansible-playbook実行ユーザー
 ANSIBLE_ACCESS_KEY_ID           %VARCHR%(64)                      , 
 ANSIBLE_SECRET_ACCESS_KEY       %VARCHR%(64)                      , 
 -- ansible Tower独自情報
@@ -90,6 +91,7 @@ ANSIBLE_STORAGE_PATH_ANS        %VARCHR%(256)                     ,
 SYMPHONY_STORAGE_PATH_ANS       %VARCHR%(256)                     ,
 ANSIBLE_EXEC_OPTIONS            %VARCHR%(512)                     , -- ansible-playbook実行時のオプションパラメータ
 -- ansible独自情報
+ANSIBLE_EXEC_USER               %VARCHR%(64)                      , -- ansible-playbook実行ユーザー
 ANSIBLE_ACCESS_KEY_ID           %VARCHR%(64)                      , 
 ANSIBLE_SECRET_ACCESS_KEY       %VARCHR%(64)                      , 
 -- ansible Tower独自情報
