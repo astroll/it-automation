@@ -37,4 +37,3 @@ ansible_driver:yes
 cobbler_driver:no
 openstack_driver:no
 dsc_driver:no
-ansibletower_driver:no
