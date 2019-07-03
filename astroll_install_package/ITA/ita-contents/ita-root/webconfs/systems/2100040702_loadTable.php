@@ -40,7 +40,7 @@ Ansibleインターフェース情報
         'TT_SYS_NDB_LUP_TIME_ID'=>'UPD_UPDATE_TIMESTAMP'
     );
 
-    $table = new TableControlAgent('B_ANSIBLE_IF_INFO','ANSIBLE_IF_INFO_ID', $g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1202030"), ' B_ANSIBLE_IF_INFO_JNL', $tmpAry);
+    $table = new TableControlAgent('B_ANSIBLE_IF_INFO','ANSIBLE_IF_INFO_ID', $g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1202030"), 'B_ANSIBLE_IF_INFO_JNL', $tmpAry);
     $tmpAryColumn = $table->getColumns();
     $tmpAryColumn['ANSIBLE_IF_INFO_ID']->setSequenceID('B_ANSIBLE_IF_INFO_RIC');
     $tmpAryColumn['JOURNAL_SEQ_NO']->setSequenceID('B_ANSIBLE_IF_INFO_JSQ');
@@ -113,13 +113,20 @@ Ansibleインターフェース情報
     $objVldt = new SingleTextValidator(0,512,false);
     $c = new TextColumn('ANSIBLE_EXEC_OPTIONS',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1204015"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1204016"));
-    $objVldt = new SingleTextValidator(0,512,false);
     $c->setValidator($objVldt);
     $c->setRequired(false);
     $table->addColumn($c);
 
     // ----- Ansible情報
     $acg = new ColumnGroup($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000004"));
+
+        /* ansible-playbook実行ユーザー */
+        $objVldt = new SingleTextValidator(0,64,false);
+        $c = new TextColumn('ANSIBLE_EXEC_USER',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1204017"));
+        $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1204018"));
+        $c->setValidator($objVldt);
+        $c->setRequired(false);
+        $acg->addColumn($c);
 
         /* 認証キー Key */
         $objVldt = new SingleTextValidator(1,64,false);
