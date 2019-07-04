@@ -587,7 +587,7 @@ class ExecuteDirector {
 
             $instanceGroupId = null;
             if(!empty($hostInfo['ANSTWR_INSTANCE_GRP_ITA_MNG_ID'])) {
-                $instanceGroup = $this->dbAccess->selectRow("B_AN_STWR_INSTANCE_GROUP", $hostInfo['ANSTWR_INSTANCE_GRP_ITA_MNG_ID']);  
+                $instanceGroup = $this->dbAccess->selectRow("B_ANS_TWR_INSTANCE_GROUP", $hostInfo['ANSTWR_INSTANCE_GRP_ITA_MNG_ID']);  
                 if(empty($instanceGroup)) {
                     $this->logger->error("Not exists or disabled instance group. ANSTWR_INSTANCE_GRP_ITA_MNG_ID: " . $hostInfo['ANSTWR_INSTANCE_GRP_ITA_MNG_ID']);
                     return false;
@@ -1391,7 +1391,9 @@ class ExecuteDirector {
 
 function getSshKeyFileContent($systemId, $sshKeyFileName) {
 
-    global $ssh_key_file_dir;
+    global $root_dir_path;
+
+    $ssh_key_file_dir = $root_dir_path . "/uploadfiles/2100000303/CONN_SSH_KEY_FILE/";
 
     $content = "";
 
