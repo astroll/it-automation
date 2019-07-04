@@ -713,6 +713,16 @@
 
                 // Tower実行の場合にオプションパラメータをチェックする。
                 if($lv_ans_if_info['ANSIBLE_EXEC_MODE'] != DF_EXEC_MODE_ANSIBLE) {
+
+                    // Pioneerの場合の並列実行数のパラメータ設定 
+                    switch($vg_driver_id){
+                    case DF_PIONEER_DRIVER_ID:
+                        if(strlen(trim($tgt_exec_count_array[$tgt_execution_no])) != 0) {
+                            $OptionParameter .= sprintf(" -f %s ",$tgt_exec_count_array[$tgt_execution_no]); 
+                        }
+                        break;
+                    }
+
                     $ret = getAnsiblePlaybookOptionParameter($OptionParameter,$JobTemplatePropertyParameterAry,$JobTemplatePropertyNameAry,$ErrorMsgAry);
                     if($ret === false)
                     {
