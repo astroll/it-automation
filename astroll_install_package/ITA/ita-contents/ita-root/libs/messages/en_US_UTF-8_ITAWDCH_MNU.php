@@ -44,7 +44,9 @@ $ary[1030203] = "Characters other than single-byte colon, tab, and linefeed.";
 $ary[1030301] = "Menu information";
 $ary[1039101] = "Discard";
 $ary[1030401] = "Display order";
-$ary[1030402] = "Multiple lines of integer value are not allowed, only numeric value can be entered";
+$ary[1030402] = "Multiple lines of integer value are not allowed, only numeric value can be entered\n\n
+「Display order」 is optional, but if it is blank, the menu group is not displayed on the main menu.\n
+Displayed in the main menu in ascending order of 「Display order」. If 「Display order」 is the same, they are displayed in ascending order of 「Menu group ID」.";
 $ary[1030501] = "Image for panel";
 $ary[1039201] = "Last update date/time";
 $ary[1039301] = "Last updated by";
