@@ -108,6 +108,13 @@ yum_install() {
     fi
 }
 
+download_check() {
+    DOWNLOAD_CHK=`echo $?`
+    if [ $DOWNLOAD_CHK -ne 0 ]; then
+        log "ERROR:Download of materials failed[$key]"
+        func_exit
+    fi
+}
 
 # enable yum repository
 # ex.
@@ -119,11 +126,21 @@ yum_repository() {
         
         if [ "$LINUX_OS" == "RHEL7" ]; then
             rpm -ivh "$repo" >> "$ITA_BUILDER_LOG_FILE" 2>&1
+            CREATEREPO_CHK=`echo $?`
+            if [ $? -ne 0 ]; then
+                log "ERROR:Failed to get repository"
+                func_exit
+            fi
         fi
 
         # no repo to be installed if the first argument starts "-".
         if [[ "$repo" =~ ^[^-] ]]; then
             yum install -y "$repo" >> "$ITA_BUILDER_LOG_FILE" 2>&1
+            CREATEREPO_CHK=`echo $?`
+            if [ $? -ne 0 ]; then
+                log "ERROR:Failed to get repository"
+                func_exit
+            fi
             shift
         fi
     fi
@@ -195,7 +212,14 @@ baseurl=file://"${YUM_ALL_PACKAGE_LOCAL_DIR}"
 gpgcheck=0
 enabled=0
 " >> /etc/yum.repos.d/ita.repo
+
+            #create repository "ita_repo"
             createrepo "${YUM_ALL_PACKAGE_LOCAL_DIR}" >> "$ITA_BUILDER_LOG_FILE" 2>&1
+            CREATEREPO_CHK=`echo $?`
+            if [ "${CREATEREPO_CHK}" -ne 0 ]; then
+                log "ERROR:Repository creation failure"
+                func_exit
+            fi
         else
             log "Already exist[/etc/yum.repos.d/ita.repo]"
             log "nothing to do"
@@ -540,6 +564,7 @@ download() {
     for key in ${YUM__ENV_PACKAGE}; do
         log "Download packages[$key]"
         yum install -y --downloadonly --downloaddir=${YUM_ENV_PACKAGE_DOWNLOAD_DIR["yum-env"]} ${YUMDOWNLOADER_REPO["yum-env"]} $key >> "$ITA_BUILDER_LOG_FILE" 2>&1
+        download_check
     done
 
 
@@ -557,6 +582,7 @@ download() {
     for key in ${!YUM_PACKAGE[@]}; do
         log "Download packages[${YUM_PACKAGE[${key}]}]"
         yumdownloader --resolve --destdir ${YUM_ALL_PACKAGE_DOWNLOAD_DIR[$key]} ${YUM_PACKAGE[${key}]} >> "$ITA_BUILDER_LOG_FILE" 2>&1
+        download_check
     done
 
     #----------------------------------------------------------------------
@@ -571,6 +597,7 @@ download() {
             cd "$download_dir" >> "$ITA_BUILDER_LOG_FILE" 2>&1;
             log "Download packages[${PEAR_PACKAGE[$key]}]"
             pear download ${PEAR_PACKAGE[$key]} >> "$ITA_BUILDER_LOG_FILE" 2>&1
+            download_check
         )
     done
 
@@ -584,6 +611,7 @@ download() {
             cd "$download_dir" >> "$ITA_BUILDER_LOG_FILE" 2>&1;
             log "Download packages[$key]"
             curl -L ${PHP_TAR_GZ_PACKAGE[$key]} -O >> "$ITA_BUILDER_LOG_FILE" 2>&1
+            download_check
         )
     done
 
@@ -627,10 +655,12 @@ download() {
         if [ "$LINUX_OS" == "CentOS6" ]; then
             log "Download packages[${PIP_PACKAGE[$key]}]"
             pip download -d "$download_dir" ${PIP_PACKAGE[$key]} --trusted-host ${PIP_PACKAGE_HOST[$key]} >> "$ITA_BUILDER_LOG_FILE" 2>&1
+            download_check
         else
             mkdir -p "$download_dir" >> "$ITA_BUILDER_LOG_FILE" 2>&1
             log "Download packages[${PIP_PACKAGE[$key]}]"
             pip download -d "$download_dir" ${PIP_PACKAGE[$key]} >> "$ITA_BUILDER_LOG_FILE" 2>&1
+            download_check
         fi
     done
 
@@ -792,32 +822,33 @@ fi
 
 ################################################################################
 # set subscription
+if [ "$exec_mode" != "2" ]; then
+    if [ "$LINUX_OS" == "RHEL7" -o "$LINUX_OS" == "RHEL6" ]; then
+        #IDPW
+        REDHAT_USER_NAME="${redhat_user_name}"
+        REDHAT_USER_PASSWORD="${redhat_user_password}"
+        POOL_ID="${pool_id}"
 
-if [ "$LINUX_OS" == "RHEL7" -o "$LINUX_OS" == "RHEL6" ]; then
-    #IDPW
-    REDHAT_USER_NAME="${redhat_user_name}"
-    REDHAT_USER_PASSWORD="${redhat_user_password}"
-    POOL_ID="${pool_id}"
+        #Delete subscription
+        #SUBSCRIPTION_SERIAL_NUM=`subscription-manager list --consumed | grep "Serial" | sed "s/ //g" | cut -f 2 -d ":"`
+        #subscription-manager unsubscribe --serial="${SUBSCRIPTION_SERIAL_NUM}"
 
-    #Delete subscription
-    #SUBSCRIPTION_SERIAL_NUM=`subscription-manager list --consumed | grep "Serial" | sed "s/ //g" | cut -f 2 -d ":"`
-    #subscription-manager unsubscribe --serial="${SUBSCRIPTION_SERIAL_NUM}"
-
-    #Subscription registration
-    subscription-manager register --username=${REDHAT_USER_NAME} --password=${REDHAT_USER_PASSWORD}
-    REGISTER_CHK=`echo $?`
-    
-    if [ "${REGISTER_CHK}" -ne 0 -a "${REGISTER_CHK}" -ne 64 ]; then
-        log "user not found"
-        func_exit
-    fi
-    
-    #Subscribe
-    SUBSCRIPTION_POOL_ID=`subscription-manager list --available | grep "$POOL_ID" | sed "s/ //g" | cut -f 2 -d ":"`
-    if [ "${SUBSCRIPTION_POOL_ID}" != "" ]; then
-        subscription-manager attach --pool="${POOL_ID}"
-    else
-        func_exit
+        #Subscription registration
+        subscription-manager register --username=${REDHAT_USER_NAME} --password=${REDHAT_USER_PASSWORD}
+        REGISTER_CHK=`echo $?`
+        
+        if [ "${REGISTER_CHK}" -ne 0 -a "${REGISTER_CHK}" -ne 64 ]; then
+            log "user not found"
+            func_exit
+        fi
+        
+        #Subscribe
+        SUBSCRIPTION_POOL_ID=`subscription-manager list --available | grep "$POOL_ID" | sed "s/ //g" | cut -f 2 -d ":"`
+        if [ "${SUBSCRIPTION_POOL_ID}" != "" ]; then
+            subscription-manager attach --pool="${POOL_ID}"
+        else
+            func_exit
+        fi
     fi
 fi
 
