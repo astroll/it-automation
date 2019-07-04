@@ -1978,6 +1978,7 @@ class CreateAnsibleExecFiles {
                 if($in_exec_mode == DF_EXEC_MODE_ANSIBLE) {
                     $value =          "- hosts: all\n";
                     $value = $value . "  remote_user: \"{{ " . self::LC_ANS_USERNAME_VAR_NAME . " }}\"\n";
+                    $value = $value . "  gather_facts: no\n";
 
                     // 対象ホストがwindowsか判別。windows以外の場合は become: yes を設定
                     if($this->lv_winrm_id != 1){
@@ -1985,7 +1986,11 @@ class CreateAnsibleExecFiles {
                     }
                 } else {
                     $value =          "- hosts: all\n";
-                    $value = $value . "  become: yes\n";
+                    $value = $value . "  gather_facts: no\n";
+                    // 対象ホストがwindowsか判別。windows以外の場合は become: yes を設定
+                    if($this->lv_winrm_id != 1){
+                        $value = $value . "  become: yes\n";
+                    }
                 }
             } else {
                 $value  = $in_exec_playbook_hed_def;
