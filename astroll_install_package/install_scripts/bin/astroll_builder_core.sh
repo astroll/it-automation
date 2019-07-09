@@ -225,12 +225,15 @@ enabled=0
             log "nothing to do"
         fi
     fi
-    
+
     # enable yum repository
-    sed -i s/"enabled.*$"/"enabled=0"/g /etc/yum.repos.d/* >> "$ITA_BUILDER_LOG_FILE" 2>&1
-    yum clean all >> "$ITA_BUILDER_LOG_FILE" 2>&1
+    if [ "$MODE" == "local" ]; then
+        sed -i s/"enabled.*$"/"enabled=0"/g /etc/yum.repos.d/* >> "$ITA_BUILDER_LOG_FILE" 2>&1
+    fi
+
     yum_repository ${YUM_REPO_PACKAGE["yum-env-enable-repo"]}
     yum_repository ${YUM_REPO_PACKAGE["yum-env-disable-repo"]}
+    yum clean all >> "$ITA_BUILDER_LOG_FILE" 2>&1
 }
 
 
