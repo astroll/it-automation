@@ -16,9 +16,9 @@
 ////en_US_UTF-8_ITAWDCC_STD
 $ary["ITAWDCC-10101"] = "*List is displayed here.";
 $ary["ITAWDCC-10102"] = "Please Wait... Loading";
-$ary["ITAWDCC-10103"] = "*Graph is displayed here.";
-$ary["ITAWDCC-10104"] = "operation results";
-$ary["ITAWDCC-10105"] = "<br>execution status ratio";
+$ary["ITAWDCC-10103"] = "* Graph displayed here.";
+$ary["ITAWDCC-10104"] = "Operation results";
+$ary["ITAWDCC-10105"] = "Execution<br>Percentage complete";
 $ary["ITAWDCC-20101"] = "Are you sure you want to register?";
 $ary["ITAWDCC-20102"] = "Are you sure you want to update?";
 $ary["ITAWDCC-20103"] = "Are you sure you want to discard?";
