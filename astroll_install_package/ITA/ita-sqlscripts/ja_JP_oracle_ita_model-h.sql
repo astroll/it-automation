@@ -256,6 +256,7 @@ CREATE TABLE C_OPENST_RESULT_MNG
 EXECUTION_NO                      NUMBER                           ,
 STATUS_ID                         NUMBER                           ,
 EXECUTION_USER                    VARCHAR2(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     VARCHAR2(128)                    , -- シンフォニークラス名
 PATTERN_ID                        NUMBER                           ,
 I_PATTERN_NAME                    VARCHAR2(256)                    ,
 I_TIME_LIMIT                      NUMBER                           ,
@@ -286,6 +287,7 @@ JOURNAL_ACTION_CLASS              VARCHAR2(8)                      , -- 履歴�
 EXECUTION_NO                      NUMBER                           ,
 STATUS_ID                         NUMBER                           ,
 EXECUTION_USER                    VARCHAR2(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     VARCHAR2(128)                    , -- シンフォニークラス名
 PATTERN_ID                        NUMBER                           ,
 I_PATTERN_NAME                    VARCHAR2(256)                    ,
 I_TIME_LIMIT                      NUMBER                           ,
@@ -447,6 +449,7 @@ WHERE TAB_A.ITA_EXT_STM_ID = 9
 CREATE VIEW E_OPENST_RESULT_MNG AS
 SELECT
         TAB_A.EXECUTION_NO           ,
+        TAB_A.SYMPHONY_NAME          ,
         TAB_A.EXECUTION_USER         ,
         TAB_A.STATUS_ID              ,
         TAB_C.STATUS_NAME            ,
@@ -477,6 +480,7 @@ LEFT JOIN D_OPENST_LNS_INS_RUN_MODE TAB_D ON (TAB_A.RUN_MODE = TAB_D.RUN_MODE_ID
 CREATE VIEW E_OPENST_RESULT_MNG_JNL AS
 SELECT
         TAB_A.JOURNAL_SEQ_NO         ,
+        TAB_A.SYMPHONY_NAME          ,
         TAB_A.EXECUTION_USER         ,
         TAB_A.JOURNAL_REG_DATETIME   ,
         TAB_A.JOURNAL_ACTION_CLASS   ,

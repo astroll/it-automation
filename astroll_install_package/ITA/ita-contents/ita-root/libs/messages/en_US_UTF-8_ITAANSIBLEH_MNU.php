@@ -25,7 +25,7 @@ $ary[102010] = "Delay timer (minutes)";
 $ary[102011] = "Dedicated information for ansible";
 $ary[102012] = "Host specific format";
 $ary[102013] = "WinRM connection";
-$ary[102014] = "Number of parallel execution";
+$ary[102014] = "Number of parallel executions";
 $ary[102015] = "gather_facts";
 $ary[102030] = "Operation";
 $ary[102040] = "No.";
@@ -43,6 +43,7 @@ $ary[103050] = "Status";
 $ary[103085] = "Item";
 $ary[103090] = "Value";
 $ary[103100] = "Execution user";
+$ary[103110] = "Caller symphony";
 $ary[104010] = "Execution No.";
 $ary[104015] = "Execution type";
 $ary[104020] = "Movement";
@@ -51,13 +52,14 @@ $ary[104036] = "Name";
 $ary[104040] = "Delay timer (minutes)";
 $ary[104041] = "Dedicated information for ansible";
 $ary[104042] = "Host specific format";
-$ary[104043] = "Number of parallel execution";
+$ary[104043] = "Number of parallel executions";
 $ary[104060] = "Operation";
 $ary[104070] = "No.";
 $ary[104080] = "Name";
 $ary[104085] = "ID";
 $ary[104090] = "Input data";
 $ary[104100] = "Execution user";
+$ary[104110] = "Execution symphony";
 $ary[105010] = "Populated data";
 $ary[105020] = "Output data";
 $ary[105030] = "Result data";
@@ -66,15 +68,15 @@ $ary[105050] = "Scheduled date/time";
 $ary[105060] = "Start date/time";
 $ary[105070] = "End date/time";
 $ary[105080] = "Status";
-$ary[105090] = "You can perform maintenance (view/register/update/discard) of the template file used in the template module of Ansible. <br><br>Assign “VAR_\" as a prefix string for the variable of template file. <br>  Variables with prefix string \"VAR_\" can be selected from substitution value list. <br>(Example) {{ VAR_OMCS }}";
+$ary[105090] = "You can perform maintenance (view/register/update/discard) of the template file in the Playbook. <br><br>Assign “VAR_\" as a prefix string for the variable of template file. <br>  Variables with prefix string \"VAR_\" can be selected from substitution value list. <br>(Example) {{ VAR_OMCS }}";
 $ary[106010] = "Template ID";
-$ary[106020] = "Legacy template list";
-$ary[106030] = "Legacy template list";
+$ary[106020] = "Ansible template list";
+$ary[106030] = "Ansible template list";
 $ary[106040] = "Template embedded variable name";
 $ary[106045] = "(Prefix string TPF_) Alphanumeric characters and available symbols (_)";
 $ary[106050] = "Make sure to assign \"TPF_\" as prefix string.";
 $ary[106060] = "Template files";
-$ary[106070] = "Files that can be used as template are limited to the text file. \n (Ansible specifications)";
+$ary[106070] = "Files that can be used as template are limited to the Jinja2 template file. \n (Ansible specifications)";
 $ary[106080] = "Display order";
 $ary[106090] = "To control display order";
 $ary[108020] = "You can view execution list (execution history). <br>When you click “Check execution status”, you transition to Check execution status menu.";
@@ -102,6 +104,8 @@ $ary[108085] = "Movement";
 $ary[108090] = "ID";
 $ary[108100] = "Execution user";
 $ary[108110] = "[Original data] User list";
+$ary[108120] = "Caller symphony";
+$ary[108130] = "[Original data] Symphony class list";
 $ary[109010] = "[Original data] Movement list";
 $ary[109020] = "Name";
 $ary[109030] = "[Original data] Movement list";
@@ -132,7 +136,7 @@ $ary[202012] = "Host specific format";
 $ary[202013] = "[Original data] Movement list";
 $ary[202014] = "WinRM connection";
 $ary[202015] = "[Original data] Movement list";
-$ary[202016] = "Number of parallel execution";
+$ary[202016] = "Number of parallel executions";
 $ary[202017] = "NULL or positive integer";
 $ary[202018] = "gather_facts";
 $ary[202019] = "[Original data] Movement list";
@@ -189,7 +193,7 @@ $ary[207040] = "Method to specify build node.";
 $ary[207043] = "WinRM connection";
 $ary[207044] = "gather_facts";
 $ary[207046] = "Select when the build node connects to a WinRM through a WindowsServer.";
-$ary[207047] = "Number of parallel execution";
+$ary[207047] = "Number of parallel executions";
 $ary[207048] = "NULL or positive integer";
 $ary[207049] = "Select if you want to get the build node information (gather_facts) at the time of executing Playbook.";
 $ary[207050] = "Display order";
@@ -310,11 +314,13 @@ $ary[309080] = "[Original data] Movement list";
 $ary[309090] = "Name";
 $ary[309100] = "Execution user";
 $ary[309110] = "[Original data] User list";
+$ary[309120] = "Caller symphony";
+$ary[309130] = "[Original data] Symphony class list";
 $ary[401010] = "[Original data] Movement list";
 $ary[401015] = "Operation";
 $ary[401020] = "No.";
 $ary[401030] = "[Original data] Input operation list";
-$ary[401031] = "Number of parallel execution";
+$ary[401031] = "Number of parallel executions";
 $ary[401032] = "NULL or positive integer";
 $ary[401040] = "Name";
 $ary[401050] = "[Original data] Input operation list";
@@ -401,8 +407,8 @@ $ary[409030] = "If there is a delay in the Movement as per the specified period 
 $ary[409035] = "Dedicated information for ansible";
 $ary[409040] = "Host specific format";
 $ary[409050] = "Method to specify build node.";
-$ary[409051] = "Number of parallel execution";
-$ary[409052] = "NULL or positive integer";
+$ary[409051] = "Number of parallel executions";
+$ary[409052] = "Set the --forks parameter of the ansible-playbook command.";
 $ary[409053] = "Variable count";
 $ary[409054] = "The count of variable used in Movement gets displayed.";
 $ary[409060] = "Display order";
@@ -485,7 +491,7 @@ $ary[1102010] = "Delay timer (minutes)";
 $ary[1102011] = "Dedicated information for ansible";
 $ary[1102012] = "Host specific format";
 $ary[1102013] = "WinRM connection";
-$ary[1102014] = "Number of parallel execution";
+$ary[1102014] = "Number of parallel executions";
 $ary[1102015] = "gather_facts";
 $ary[1102030] = "Operation";
 $ary[1102040] = "No.";
@@ -501,6 +507,7 @@ $ary[1103030] = "Start date/time";
 $ary[1103040] = "End date/time";
 $ary[1103050] = "Status";
 $ary[1103100] = "Execution user";
+$ary[1103110] = "Caller symphony";
 $ary[1108020] = "You can view execution list (execution history). <br>When you click “Check execution status”, you transition to Check execution status menu.";
 $ary[1108030] = "Execution No.";
 $ary[1108040] = "Role Operation tracking list";
@@ -526,6 +533,8 @@ $ary[1108085] = "Movement";
 $ary[1108090] = "ID";
 $ary[1108100] = "Execution user";
 $ary[1108110] = "[Original data] User list";
+$ary[1108120] = "Caller symphony";
+$ary[1108130] = "[Original data] Symphony class list";
 $ary[1109010] = "[Original data] Movement list";
 $ary[1109020] = "Name";
 $ary[1109030] = "[Original data] Movement list";
@@ -556,7 +565,7 @@ $ary[1202012] = "Host specific format";
 $ary[1202013] = "[Original data] Movement list";
 $ary[1202014] = "WinRM connection";
 $ary[1202015] = "[Original data] Movement list";
-$ary[1202016] = "Number of parallel execution";
+$ary[1202016] = "Number of parallel executions";
 $ary[1202017] = "NULL or positive integer";
 $ary[1202018] = "gather_facts";
 $ary[1202019] = "[Original data] Movement list";
@@ -565,24 +574,50 @@ $ary[1202030] = "";
 $ary[1202040] = "Ansible Interface information";
 $ary[1202050] = "Ansible Interface information";
 $ary[1202060] = "Data relay storage path (astroll)";
-$ary[1202070] = "This is a shared directory with Ansible server.";
-$ary[1202080] = "Data relay storage path (ANS)";
-$ary[1202090] = "This is a shared directory with astroll server.";
-$ary[1202095] = "Symphony instance data relay storage path(ANS)";
-$ary[1202096] = "This is the path for the Ansible server to share the directory shared by each Movemen of the Symphony instance.";
+$ary[1202070] = "This is a shared directory with astroll server.";
+$ary[1202080] = "Data relay storage path (Ansible)";
+$ary[1202090] = "This is a shared directory with Ansible or Ansible Tower server.";
+$ary[1202095] = "Symphony instance data relay storage path(Ansible)";
+$ary[1202096] = "This is the path for the Ansible or Ansible Tower server to share the directory shared by each Movemen of the Symphony instance.";
 $ary[1203010] = "Protocol";
-$ary[1203020] = "Enter http or https.";
+$ary[1203020] = "Enter http or https.\nAnsible Tower is enter https.";
 $ary[1203030] = "Host";
-$ary[1203040] = "It is host name (or IP address) of Ansible server. \n * It is recommended to use host name for https communication.";
+$ary[1203040] = "It is host name (or IP address) of Ansible or Ansible Tower server. \n * It is recommended to use host name for https communication.";
 $ary[1203050] = "Port";
-$ary[1203060] = "It is a connection port of Ansible server. 
-Generally it is 80 for http and 443 for https.";
+$ary[1203060] = "It is a connection port of Ansible or Ansible Tower server. 
+Generally it is 80 for http and 443 for https.\nAnsible Tower is enter 443.";
+$ary[1203065] = "execution engine";
+$ary[1203066] = "Select the execution engine.";
 $ary[1203070] = "Access_key_id";
 $ary[1203080] = "Access Key ID that is used for authentication to connect with the Ansible server.";
 $ary[1203090] = "Secret_access_key";
 $ary[1204010] = "Secret access key that is used for authentication to connect with the Ansible server.";
 $ary[1204015] = "Optional parameter";
-$ary[1204016] = "Optional parameter of ansible-playbook command.\nastroll sets -i option.\n-f option recommends the setting that is Number of parallel execution of Movement details.";
+$ary[1204016] = "Optional parameter of ansible-playbook command.
+Movement-specific optional parameters are set in the Movement list.
+Ansible:
+　Set the parameters of nible-playbook command.
+　astroll sets -i option.
+
+Ansible Tower:
+　Options that can be set
+　　-verbosity
+　　-f FORKS,--forks=FORKS
+　　-l SUBSET,--limit=SUBSET
+　　-e EXTRA_VARS,--extra-vars=EXTRA_VARS
+　　-t TAGS,--tags=TAGS
+　　-b,--become
+　　-D,--diff
+　　--skip-tags=SKIP_TAGS
+　　--start-at-task=START_AT_TASK
+  Ansible Tower only parameters
+　　-ufc,--use_fact_cache　　　
+　　-as,--allow_simultaneous　
+　　-jsc,--job_slice_count
+　Refer to the Ansible User Manual for details.";
+$ary[1204017] = "Execution user";
+$ary[1204018] = "Set the execution user when ansible-playbook command' is executed by sudo command.
+If not entered, the execution user is root.";
 $ary[1204020] = "Status monitoring cycle (milliseconds)";
 $ary[1204030] = "It is interval to refresh execution log when performing an execution. \n Although tuning is required for each environment, recommended value is 3000 milliseconds.";
 $ary[1204040] = "Number of rows to display progress status";
@@ -614,7 +649,7 @@ $ary[1207020] = "If there is a delay in the Movement as per the specified period
 $ary[1207025] = "Dedicated information for ansible";
 $ary[1207030] = "Host specific format";
 $ary[1207040] = "Method to specify build node.";
-$ary[1207047] = "Number of parallel execution";
+$ary[1207047] = "Number of parallel executions";
 $ary[1207048] = "NULL or positive integer";
 $ary[1207050] = "Display order";
 $ary[1207060] = "To control display order";
@@ -671,7 +706,7 @@ $ary[1303070] = "Variable name";
 $ary[1303080] = "Auto acquire from Playbook and template of Role, and default vars file";
 $ary[1303090] = "Select Movement";
 $ary[1303091] = "Member variable name";
-$ary[1303092] = "If nested variable is specified in the variable name, input is required. Otherwise, input is not allowed.";
+$ary[1303092] = "If a nested variable is specified in the variable name, input is required. Otherwise, input is not allowed.";
 $ary[1303093] = "Select variable name";
 $ary[1303094] = "Column order";
 $ary[1303095] = "If array variable is specified in the variable name, input is required. Otherwise, input is not allowed.";
@@ -843,12 +878,12 @@ $ary[1707110] = "All column order";
 $ary[1707120] = "";
 $ary[1800000] = "You can perform maintenance (view/register/update/discard) of the files used in the Playbook. <br><br> In file embedded variable name, enter a variable name that starts with \"CPF_\". <br> This variable name is written in a Playbook. <br>(Example)<br>　　　- copy: src={{ CPF_sample }} dest=/usr/local/src<br>　　　- unarchive src={{ CPF_sample }} dest=/usr/local/bin remote_src=yes<br>";
 $ary[1800001] = "File ID";
-$ary[1800002] = "Legacy File list";
-$ary[1800003] = "Legacy File list";
+$ary[1800002] = "Ansible file list";
+$ary[1800003] = "Ansible file list";
 $ary[1800010] = "File embedded variable name";
 $ary[1800011] = "Make sure to assign \"CPF_\" as prefix string.";
 $ary[1800020] = "Files";
-$ary[1800021] = "Specify file to be used in copy module.";
+$ary[1800021] = "Specify the file to be used by playbook.";
 $ary[1900000] = "You can perform maintenance (view/register/update/discard) of operations registered in the associated menu, and Movement and variables associated with the setting value of item for each host. <br><br> There are three methods to register the setting value of item. <br> Value type: Setting value of item is registered in the substitution value list as a specific value of associated variable. <br>Key-Value type: Name (Key) and setting value (Value) of item are registered in the substitution value list as a specific value of associated variable. <br> Key type: Item name is registered in the substitution value list as a specific value of associated variable. When the setting value of the item is blank, it is not registered in the substitution value list";
 $ary[1900001] = "Item No.";
 $ary[1900002] = "Role Substitut val-auto-reg";
@@ -1055,7 +1090,7 @@ $ary[5000200] = "Role";
 $ary[5000201] = "";
 $ary[5000300] = "Translation variable";
 $ary[5000301] = "";
-$ary[5000400] = "Any variable";
+$ary[5000400] = "User variable";
 $ary[5000401] = "";
 $ary[5010000] = "Host management";
 $ary[5010001] = "confirmation";
@@ -1064,4 +1099,68 @@ $ary[5010003] = "confirmation";
 $ary[6000000] = "NULL link";
 $ary[6000001] = "If specific value of parameter sheet is NULL, set whether to enable Substitution value list registration.\nBlank: Follow Null linkage of Ansible common interface information.\nvalid: Register NULL data.\nInvalid: Do not register null data.";
 $ary[6000002] = "If specific value of parameter sheet is NULL in Substitut val-auto-reg, validates registration in Substitution value list or set default.\nvalid: Register NULL data.\nInvalid: Do not register null data.";
+$ary[907350509] = "Select whether to delete temporary objects created in Ansible Tower.";
+$ary[907390509] = "Delete runtime data";
+$ary[907342701] = "AnsibleTowerInstanceGroupList";
+$ary[907352702] = "Instance group name";
+$ary[907352703] = "The instance group ID set in AnsibleTower.";
+$ary[907362701] = "AnsibleTowerInstanceGroupList";
+$ary[907392701] = "No.";
+$ary[907392702] = "Instance group name";
+$ary[907392703] = "Instance group ID";
+$ary[9010000000] = "Authentication token";
+$ary[9010000001] = "A user authentication token for connecting to AnsibleTower from astrol using RestAPI. Enter the token generated by AnsibleTower.. Enter the token generated by AnsibleTower.";
+$ary[9010000002] = "Organization name";
+$ary[9010000003] = "Enter the Organization name registered in AnsibleTower.";
+$ary[9010000004] = "Ansible core interface";
+$ary[9010000005] = "Tower interface";
+$ary[9010000006] = "Legacy\n";
+$ary[9010000007] = "Legacy Role\n";
+$ary[9010000008] = "Header section";
+$ary[9010000009] = "Edit the section from the top of the parent Playbook automatically generated by astroll is executed to the tasks section.
+Setting value when not enter.
+Ansible:
+  - hosts: all
+    remote_user: '{{ __loginuser__ }}'
+    gather_facts: no
+    become: yes;
+
+Ansible Tower:
+  - hosts: all
+    gather_facts: no
+    become: yes
+\"become: yes\" is omitted for winrm connection.";
+$ary[9010000010] = "Optional parameter";
+$ary[9010000011] = "Movement-specific ansible-playbook command optional parameters.
+Optional parameters common to Movement are set in interface information.
+Ansible:
+　Set the parameters of nible-playbook command.
+　astroll sets -i option.
+
+Ansible Tower:
+　Options that can be set
+　　-verbosity
+　　-f FORKS,--forks=FORKS
+　　-l SUBSET,--limit=SUBSET
+　　-e EXTRA_VARS,--extra-vars=EXTRA_VARS
+　　-t TAGS,--tags=TAGS
+　　-b,--become
+　　-D,--diff
+　　--skip-tags=SKIP_TAGS
+　　--start-at-task=START_AT_TASK
+  Ansible Tower only parameters
+　　-ufc,--use_fact_cache　　　
+　　-as,--allow_simultaneous　
+　　-jsc,--job_slice_count
+　Refer to the Ansible User Manual for details.";
+$ary[9010000012] = "Edit the section from the top of the parent Playbook automatically generated by astroll is executed roles tasks section.
+Setting value when not enter.
+Ansible:
+  - hosts: all
+    remote_user: '{{ __loginuser__ }}'
+    become: yes;
+
+Ansible Tower:
+  - hosts: all
+    become: yes";
 ?>

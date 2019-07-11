@@ -38,62 +38,16 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
     $strExeCurTableIdForIU = 'C_ANSIBLE_LRL_EXE_INS_MNG'; //■■■
     $strExeJnlTableIdForIU = 'C_ANSIBLE_LRL_EXE_INS_MNG_JNL'; //■■■
     
-    $arrayConfigForSelect = array(
-        "JOURNAL_SEQ_NO"=>"",
-        "EXECUTION_USER"=>"",
-        "JOURNAL_ACTION_CLASS"=>"",
-        "JOURNAL_REG_DATETIME"=>"",
-        "EXECUTION_NO"=>"",
-        "STATUS_ID"=>"",
-        "SYMPHONY_INSTANCE_NO"=>"",
-        "PATTERN_ID"=>"",
-        "I_PATTERN_NAME"=>"",
-        "I_TIME_LIMIT"=>"",
-        "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-        "I_ANS_PARALLEL_EXE"=>"",
-        "I_ANS_WINRM_ID"=>"",
-        "I_ANS_GATHER_FACTS"=>"",
-        "OPERATION_NO_UAPK"=>"",
-        "I_OPERATION_NAME"=>"",
-        "I_OPERATION_NO_IDBH"=>"",
-        "TIME_BOOK"=>"DATETIME",
-        "TIME_START"=>"DATETIME",
-        "TIME_END"=>"DATETIME",
-        "RUN_MODE"=>"",
-        "DISUSE_FLAG"=>"",
-        "NOTE"=>"",
-        "LAST_UPDATE_TIMESTAMP"=>"",
-        "LAST_UPDATE_USER"=>""
-    );
-    
-    $arrayValueTmpl = array(
-        "JOURNAL_SEQ_NO"=>"",
-        "JOURNAL_ACTION_CLASS"=>"",
-        "JOURNAL_REG_DATETIME"=>"",
-        "EXECUTION_NO"=>"",
-        "EXECUTION_USER"=>"",
-        "STATUS_ID"=>"",
-        "SYMPHONY_INSTANCE_NO"=>"",
-        "PATTERN_ID"=>"",
-        "I_PATTERN_NAME"=>"",
-        "I_TIME_LIMIT"=>"",
-        "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-        "I_ANS_PARALLEL_EXE"=>"",
-        "I_ANS_WINRM_ID"=>"",
-        "I_ANS_GATHER_FACTS"=>"",
-        "OPERATION_NO_UAPK"=>"",
-        "I_OPERATION_NAME"=>"",
-        "I_OPERATION_NO_IDBH"=>"",
-        "TIME_BOOK"=>"",
-        "TIME_START"=>"",
-        "TIME_END"=>"",
-        "RUN_MODE"=>"",
-        "DISUSE_FLAG"=>"",
-        "NOTE"=>"",
-        "LAST_UPDATE_TIMESTAMP"=>"",
-        "LAST_UPDATE_USER"=>""
-    );
-    
+    global $root_dir_path;
+    require_once ($root_dir_path . '/libs/backyardlibs/ansible_driver/AnsibleTableDefinition.php');
+
+    $arrayConfigForSelect = array();
+    CreateExecInstMngArray($arrayConfigForSelect);
+    SetExecInstMngColumnType($arrayConfigForSelect);
+
+    $arrayValueTmpl= array();
+    CreateExecInstMngArray($arrayValueTmpl);
+
     //オーケストレータ別の設定記述----
     
     $objMTS = $objOLA->getMessageTemplateStorage();
@@ -251,7 +205,32 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
     
     // 処理開始
     try{
+        // インターフェース情報から実行エンジンを取得　SQL作成
+        $sql = "SELECT * FROM B_ANSIBLE_IF_INFO";
+        // SQL準備
+        $objQuery = $objDBCA->sqlPrepare($sql);
+        if( $objQuery->getStatus()===false ){
+            $strErrStepIdInFx="00000001";
+            throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+        }
+        // SQL発行
+        $r = $objQuery->sqlExecute();
+
+        if (!$r){
+            unset($objQuery);
+            $strErrStepIdInFx="00000001";
+            throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+        }
+        // レコードFETCH
+        while ( $row = $objQuery->resultFetch() ){
+            $exec_mode = $row['ANSIBLE_EXEC_MODE'];
+            $exec_opt  = $row['ANSIBLE_EXEC_OPTIONS'];
+        }
+        // DBアクセス事後処理
+        unset($objQuery);
+
         $user_name = '';
+        $symphony_name = '';
         list($strTmpRunMode,$boolKeyExists) = isSetInArrayNestThenAssign($aryProperParameter,array('RUN_MODE'),"");
         if( $boolKeyExists === false ){
             //----シンフォニーから呼ばれる場合を想定
@@ -277,6 +256,30 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
                 // レコードFETCH
                 while ( $row = $objQuery->resultFetch() ){
                     $user_name = $row['EXECUTION_USER'];
+                }
+                // DBアクセス事後処理
+                unset($objQuery);
+            }
+            // シンフォニークラス名情報を取得する
+            if(isset($g['__SYMPHONY_INSTANCE_NO__'])) {
+                // SQL作成
+                $sql = "SELECT I_SYMPHONY_NAME FROM C_SYMPHONY_INSTANCE_MNG WHERE SYMPHONY_INSTANCE_NO = $int_Symphony_instance_no";
+                // SQL準備
+                $objQuery = $objDBCA->sqlPrepare($sql);
+                if( $objQuery->getStatus()===false ){
+                    $strErrStepIdInFx="00000001";
+                    throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+                }
+                // SQL発行
+                $r = $objQuery->sqlExecute();
+                if (!$r){
+                    unset($objQuery);
+                    $strErrStepIdInFx="00000001";
+                    throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+                }
+                // レコードFETCH
+                while ( $row = $objQuery->resultFetch() ){
+                    $symphony_name = $row['I_SYMPHONY_NAME'];
                 }
                 // DBアクセス事後処理
                 unset($objQuery);
@@ -371,33 +374,12 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         
         // 実行インスタンス管理テーブルにレコードをINSERT
         
-        $arrayConfig = array(
-        "JOURNAL_SEQ_NO"=>"",
-        "JOURNAL_ACTION_CLASS"=>"",
-        "JOURNAL_REG_DATETIME"=>"",
-        "EXECUTION_NO"=>"",
-        "EXECUTION_USER"=>"",
-        "STATUS_ID"=>"",
-        "SYMPHONY_INSTANCE_NO"=>"",
-        "PATTERN_ID"=>"",
-        "I_PATTERN_NAME"=>"",
-        "I_TIME_LIMIT"=>"",
-        "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-        "I_ANS_PARALLEL_EXE"=>"",
-        "I_ANS_WINRM_ID"=>"",
-        "I_ANS_GATHER_FACTS"=>"",
-        "OPERATION_NO_UAPK"=>"",
-        "I_OPERATION_NAME"=>"",
-        "I_OPERATION_NO_IDBH"=>"",
-        "TIME_BOOK"=>"DATETIME",
-        "TIME_START"=>"DATETIME",
-        "TIME_END"=>"DATETIME",
-        "RUN_MODE"=>"",
-        "DISUSE_FLAG"=>"",
-        "NOTE"=>"",
-        "LAST_UPDATE_TIMESTAMP"=>"",
-        "LAST_UPDATE_USER"=>""
-        );
+        global $root_dir_path;
+        require_once ($root_dir_path . '/libs/backyardlibs/ansible_driver/AnsibleTableDefinition.php');
+
+        $arrayConfig = array();
+        CreateExecInstMngArray($arrayConfig);
+        SetExecInstMngColumnType($arrayConfig);
         
         if( empty($strPreserveDatetime) ){
             // ステータスを「未実行」にする
@@ -424,6 +406,7 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>$p_execution_utn_no,
         "EXECUTION_USER"=>$user_name,
+        "SYMPHONY_NAME"=>$symphony_name,
         "STATUS_ID"=>$status_id_for_update,
 
         "SYMPHONY_INSTANCE_NO"=>$int_Symphony_instance_no,
@@ -434,7 +417,6 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         "I_ANS_HOST_DESIGNATE_TYPE_ID"=>$arySinglePatternSource["ANS_HOST_DESIGNATE_TYPE_ID"],
         "I_ANS_PARALLEL_EXE"=>$arySinglePatternSource["ANS_PARALLEL_EXE"],
         "I_ANS_WINRM_ID"=>$arySinglePatternSource["ANS_WINRM_ID"],
-        "I_ANS_GATHER_FACTS"=>$arySinglePatternSource["ANS_GATHER_FACTS"],
         "OPERATION_NO_UAPK"=>$intOperationNoUAPK,
         "I_OPERATION_NAME"=>$aryRowOfOperationTable["OPERATION_NAME"],
         "I_OPERATION_NO_IDBH"=>$aryRowOfOperationTable["OPERATION_NO_IDBH"],
@@ -442,6 +424,11 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         "TIME_START"=>"",
         "TIME_END"=>"",
         "RUN_MODE"=>$strRunMode,
+
+        "I_ANS_PLAYBOOK_HED_DEF"=>$arySinglePatternSource["ANS_PLAYBOOK_HED_DEF"],
+        "I_ANS_EXEC_OPTIONS"=>$exec_opt . ' ' . $arySinglePatternSource["ANS_EXEC_OPTIONS"],
+        "EXEC_MODE"=>$exec_mode,
+
         "DISUSE_FLAG"=>"0",
         "NOTE"=>"",
         "LAST_UPDATE_TIMESTAMP"=>"",
@@ -641,7 +628,7 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
     // テーブル情報
     $strExeCurTableIdForSelect   = 'E_ANSIBLE_LRL_EXE_INS_MNG';
     
-    $strIfTableIdForSelect       = 'D_ANSIBLE_LRL_IF_INFO';
+    $strIfTableIdForSelect       = 'B_ANSIBLE_IF_INFO';
     $strColIdOfDRSRPathFromWebSv = 'ANSIBLE_STORAGE_PATH_LNX';
     $strColIdOfDRSRPathFromDrvSv = 'ANSIBLE_STORAGE_PATH_ANS';
     
@@ -650,6 +637,9 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
     $strColIdOfRestAPIPort       = 'ANSIBLE_PORT';
     $strColIdOfRestAPIAccessKey  = 'ANSIBLE_ACCESS_KEY_ID';
     $strColIdOfRestAPISAKey      = 'ANSIBLE_SECRET_ACCESS_KEY';
+
+    $strColIdOfRestAPIiAuthToken = 'ANSTWR_AUTH_TOKEN';
+    $strColIdOfExecMode          = 'ANSIBLE_EXEC_MODE';
     
     $strIncludeLibFileName       = 'common_ansible_restapi.php';
     $strCallFunctionName         = 'ansible_restapi_access';
@@ -669,6 +659,8 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
     
     // 処理開始
     try{
+        require_once ($aryVariant['root_dir_path'] . '/libs/backyardlibs/ansible_driver/ky_ansible_common_setenv.php');
+
         ////////////////////////////////////////////////////////////////
         //  REST API接続function定義ファイル読み込み                  //
         ////////////////////////////////////////////////////////////////
@@ -787,42 +779,84 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
         $strPort            = $row_if_info[$strColIdOfRestAPIPort];
         $strAccessKeyId     = $row_if_info[$strColIdOfRestAPIAccessKey];
         $strSecretAccessKey = ky_decrypt( $row_if_info[$strColIdOfRestAPISAKey] );
-        
-        ////////////////////////////////////////////////////////////////
-        // ワークフロー実行キャンセルのREST APIをコール               //
-        ////////////////////////////////////////////////////////////////
-        // REST API向けのリクエストURLを準備
-        $aryRequestContents = array('DATA_RELAY_STORAGE_TRUNK'=>$strDRSRPathFromDrv, "ORCHESTRATOR_SUB_ID"=>$strOrchestratorSubId,"EXE_NO"=>$target_execution_no);
-        
-        // REST APIコール
-        $aryRestAPIResponse = $strCallFunctionName( $strProtocol
-                                                   ,$strHostname
-                                                   ,$strPort
-                                                   ,$strAccessKeyId
-                                                   ,$strSecretAccessKey
-                                                   ,$strRequestURI
-                                                   ,$strMethod
-                                                   ,$aryRequestContents );
-        
-        // 結果判定
-        if( $aryRestAPIResponse['StatusCode'] != 200 ){
-            $intResultDetail = 11;
-            // $strInfoBodyにリターン情報をメモ
-            $strInfoBody .= $objMTS->getSomeMessage("ITABASEH-ERR-804",array($aryRestAPIResponse['StatusCode'], json_encode( $aryRestAPIResponse['ResponsContents'] )));
 
-        }
-        else if( $aryRestAPIResponse['ResponsContents'] == null ){
-            $intResultDetail = 12;
-            // $strInfoBodyにリターン情報をメモ
-            $strInfoBody .= $objMTS->getSomeMessage("ITABASEH-ERR-805");
+        $strAuthToken       = $row_if_info[$strColIdOfRestAPIiAuthToken];
+        $strExecMode        = $row_if_info[$strColIdOfExecMode];
 
-        }
-        else{
-            $intResultDetail = 0;
-        }
+        if($strExecMode == DF_EXEC_MODE_ANSIBLE) {
+            ////////////////////////////////////////////////////////////////
+            // ワークフロー実行キャンセルのREST APIをコール               //
+            ////////////////////////////////////////////////////////////////
+            // REST API向けのリクエストURLを準備
+            $aryRequestContents = array('DATA_RELAY_STORAGE_TRUNK'=>$strDRSRPathFromDrv, "ORCHESTRATOR_SUB_ID"=>$strOrchestratorSubId,"EXE_NO"=>$target_execution_no);
         
-        // 正常向けの結果メッセージを作成
-        $strOutputMsgBody = $objMTS->getSomeMessage("ITAANSIBLEH-STD-1101010",$target_execution_no);
+            // REST APIコール
+            $aryRestAPIResponse = $strCallFunctionName( $strProtocol
+                                                       ,$strHostname
+                                                       ,$strPort
+                                                       ,$strAccessKeyId
+                                                       ,$strSecretAccessKey
+                                                       ,$strRequestURI
+                                                       ,$strMethod
+                                                       ,$aryRequestContents );
+        
+            // 結果判定
+            if( $aryRestAPIResponse['StatusCode'] != 200 ){
+                $intResultDetail = 11;
+                // $strInfoBodyにリターン情報をメモ
+                $strInfoBody .= $objMTS->getSomeMessage("ITABASEH-ERR-804",array($aryRestAPIResponse['StatusCode'], json_encode( $aryRestAPIResponse['ResponsContents'] )));
+
+            }
+            else if( $aryRestAPIResponse['ResponsContents'] == null ){
+                $intResultDetail = 12;
+                // $strInfoBodyにリターン情報をメモ
+                $strInfoBody .= $objMTS->getSomeMessage("ITABASEH-ERR-805");
+
+            }
+            else{
+                $intResultDetail = 0;
+            }
+            // 正常向けの結果メッセージを作成
+            $strOutputMsgBody = $objMTS->getSomeMessage("ITAANSIBLEH-STD-1101010",$target_execution_no);
+        } else {
+            // Ansible Tower
+            ////////////////////////////////////////////////////////////////
+            // ワークフロー実行キャンセルのREST APIをコール               //
+            ////////////////////////////////////////////////////////////////
+            require_once($aryVariant['root_dir_path'] . "/libs/backyardlibs/ansible_driver/ansibletowerlibs/RestApiCaller.php");
+            require_once($aryVariant['root_dir_path'] . "/libs/backyardlibs/ansible_driver/ansibletowerlibs/restapi_command/AnsibleTowerRestApiJobs.php");
+            require_once($aryVariant['root_dir_path'] . "/libs/backyardlibs/ansible_driver/ansibletowerlibs/restapi_command/AnsibleTowerRestApiWorkflowJobs.php");
+
+            // 認証
+            $restApiCaller = new RestApiCaller($strProtocol,
+                                               $strHostname,
+                                               $strPort,
+                                               $strAuthToken); // 暗号復号は内部処理
+
+            $log_file_prefix = 'ky_legacy_role_' . basename( __FILE__, '.php' ) . "_";
+            $restApiCaller->setUp($aryVariant['root_dir_path'] . '/libs/backyardlibs/backyard_log_output.php', $aryVariant['root_dir_path'] . '/logs/backyardlogs', $log_file_prefix, 'NORMAL', ' ', ' ');
+
+            $response_array = $restApiCaller->authorize();
+            if($response_array['success'] != true) {
+                // TODO
+                throw new Exception("Faild to authorize to ansible_tower. " . $response_array['responseContents']['errorMessage']);
+            }
+
+            global $g;
+            $g['TOWER_DRIVER_NAME'] = 'legacy_role';
+            $response_array = AnsibleTowerRestApiWorkflowJobs::cancelRelatedCurrnetExecution($restApiCaller, $target_execution_no);
+            // 結果判定
+            if( $response_array['success'] == false ){
+                $intResultDetail = 0;
+                $strOutputMsgBody = $objMTS->getSomeMessage("ITAANSIBLEH-STD-101010",$target_execution_no);
+                $strInfoBody .= $objMTS->getSomeMessage("ITABASEH-ERR-804",array($response_array['statusCode'], json_encode( $response_array['responseContents'] )));
+            }
+            else{
+                $intResultDetail = 0;
+                // 正常向けの結果メッセージを作成
+                $strOutputMsgBody = $objMTS->getSomeMessage("ITAANSIBLEH-STD-101010",$target_execution_no);
+            }
+        }
     }
     catch (Exception $e){
         $tmpErrMsgBody = $e->getMessage();

@@ -134,7 +134,7 @@
 .sDefault th, .sDefault td {
 	border: 1px solid #DDDDDD;
 	padding: 3px;
-	white-space: nowrap;
+	white-space: pre;
 }
 .sDefault th {
 	background-color: #CCD5E0;
@@ -157,7 +157,7 @@
 .sSky th, .sSky td {
 	border: 1px solid #9eb6ce;
 	padding: 3px 6px 3px 4px;
-	white-space: nowrap;
+	white-space: pre;
 }
 .sSky th {
 	background-color: #CFDCEE;
@@ -177,7 +177,7 @@
 .sOrange th, .sOrange td {
 	border: 1px solid #cebb9e;
 	padding: 3px 6px 3px 4px;
-	white-space: nowrap;
+	white-space: pre;
 }
 .sOrange th {
 	background-color: #ECD8C7;
@@ -198,7 +198,7 @@
 .sDark th, .sDark td {
 	border: 1px solid #555555;
 	padding: 3px 6px 3px 4px;
-	white-space: nowrap;
+	white-space: pre;
 }
 .sDark th {
 	background-color: #000000;

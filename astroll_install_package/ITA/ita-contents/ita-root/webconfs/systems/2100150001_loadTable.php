@@ -66,6 +66,7 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
 
 
 
+    // リモートリポジトリURL
     $c = new TextColumn('REMORT_REPO_URL',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100707"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100708"));//エクセル・ヘッダでの説明
     $c->getOutputType('filter_table')->setTextTagLastAttr('style = "ime-mode :inactive"');
@@ -77,7 +78,17 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
     $c->setRequired(true);//登録/更新時には、入力必須
     $table->addColumn($c);
 
+    // ブランチ
+    $c = new TextColumn('BRANCH',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100715"));
+    $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100716"));//エクセル・ヘッダでの説明
+    $c->getOutputType('filter_table')->setTextTagLastAttr('style = "ime-mode :inactive"');
+    $c->getOutputType('register_table')->setTextTagLastAttr('style = "ime-mode :inactive"');
+    $c->getOutputType('update_table')->setTextTagLastAttr('style = "ime-mode :inactive"');
+    $objVldt = new RemortRepoUrlValidator(0, 256, false);
+	$c->setValidator($objVldt);
+    $table->addColumn($c);
 
+    // クローンリポジトリ
     $c = new TextColumn('CLONE_REPO_DIR',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100709"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100710"));//エクセル・ヘッダでの説明
     $c->getOutputType('filter_table')->setTextTagLastAttr('style = "ime-mode :inactive"');
@@ -89,7 +100,7 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
     $c->setRequired(true);//登録/更新時には、入力必須
     $table->addColumn($c);
 
-
+    // パスワード
 	$objVldt = new SingleTextValidator(0,64,false);
     $c = new PasswordColumn('PASSWORD',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100711"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100712"));//エクセル・ヘッダでの説明
@@ -100,7 +111,7 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
 
 
     //----リンクボタン
-    $c = new LinkButtonColumn('SYNCHRONIZATION_BUTTON',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100713"), $g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100714"), 'initial_sync',array(':REMORT_REPO_URL', ':CLONE_REPO_DIR', ':PASSWORD', 'this')); 
+    $c = new LinkButtonColumn('SYNCHRONIZATION_BUTTON',$g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100713"), $g['objMTS']->getSomeMessage("ITAMATERIAL-MNU-100714"), 'initial_sync',array(':REMORT_REPO_URL', ':BRANCH', ':CLONE_REPO_DIR', ':PASSWORD', 'this')); 
     $table->addColumn($c);
     //リンクボタン----
 

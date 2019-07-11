@@ -312,7 +312,7 @@
         $intFetchedFromAnsTmpl = null;
 
 // <<<<<<<<<<pioneer/legacy差分箇所>>>>>>>>>> ここから
-        $strTableCurAnsTemplate = "B_ANSIBLE_LNS_TEMPLATE";
+        $strTableCurAnsTemplate = "B_ANS_TEMPLATE_FILE"; 
 
         ////////////////////////////////////////////////////////////////
         // テンプレート管理から必要なデータを取得
@@ -1745,7 +1745,7 @@ LocalLogPrint(basename(__FILE__),__LINE__,"作業パターン変数紐付マス�
         global          $log_level;
         global          $objMTS;
         global          $vg_playbook_contents_dir;
-        global          $vg_legacy_template_contents_dir;
+        global          $vg_template_contents_dir;
 
         $ina_vars     = array();
         $intNumPadding = 10;
@@ -1867,7 +1867,7 @@ LocalLogPrint(basename(__FILE__),__LINE__,"作業パターン変数紐付マス�
             // ITAで管理しているテンプレートファイルのパスを取得
             // テンプレートファイル名は Pkey(10桁)-子テンプレートファイル名 する。
             $file_name = sprintf("%s/%s/%s",
-                                 $vg_legacy_template_contents_dir,
+                                 $vg_template_contents_dir,
                                  str_pad( $tpf_pkey, $intNumPadding, "0", STR_PAD_LEFT ),
                                  $tpf_file_name);
             // テンプレートファイルの存在確認
@@ -1963,7 +1963,7 @@ LocalLogPrint(basename(__FILE__),__LINE__,"作業パターン変数紐付マス�
                 // ITAで管理しているテンプレートファイルのパスを取得
                 // テンプレートファイル名は Pkey(10桁)-子テンプレートファイル名 する。
                 $file_name = sprintf("%s/%s/%s",
-                                     $vg_legacy_template_contents_dir,
+                                     $vg_template_contents_dir,
                                      str_pad( $tpf_pkey, $intNumPadding, "0", STR_PAD_LEFT ),
                                      $tpf_file_name);
                 // テンプレートファイルの存在確認
@@ -2017,7 +2017,7 @@ LocalLogPrint(basename(__FILE__),__LINE__,"作業パターン変数紐付マス�
     function getVarsInTempfile(&$ina_var_value_tpf_vars_list,$ina_aryTmplFilePerTmplVarName){
         global          $log_level;
         global          $objMTS;
-        global          $vg_legacy_template_contents_dir;
+        global          $vg_template_contents_dir;
 
         $intNumPadding = 10;
 
@@ -2060,7 +2060,7 @@ LocalLogPrint(basename(__FILE__),__LINE__,"作業パターン変数紐付マス�
             // ITAで管理しているテンプレートファイルのパスを取得
             // テンプレートファイル名は Pkey(10桁)-子テンプレートファイル名 する。
             $file_name = sprintf("%s/%s/%s",
-                                     $vg_legacy_template_contents_dir,
+                                     $vg_template_contents_dir,
                                      str_pad( $tpf_pkey, $intNumPadding, "0", STR_PAD_LEFT ),
                                      $tpf_file_name);
             // テンプレートファイルの存在確認

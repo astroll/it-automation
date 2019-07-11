@@ -92,9 +92,10 @@ function updateGitDir($intBaseMode, $strNumberForRI, $reqUpdateData, $strTCASRKe
         }
 
         $remortRepoUrl = $materialIfInfoArray[0]['REMORT_REPO_URL'];
+        $branch = $materialIfInfoArray[0]['BRANCH'];
         $cloneRepoDir = $materialIfInfoArray[0]['CLONE_REPO_DIR'];
         $password = ky_decrypt($materialIfInfoArray[0]['PASSWORD']);
-        $controlGit = new ControlGit($remortRepoUrl, $cloneRepoDir, $password, "{$g['root_dir_path']}/libs/backyardlibs/material/");
+        $controlGit = new ControlGit($remortRepoUrl, $branch, $cloneRepoDir, $password, "{$g['root_dir_path']}/libs/backyardlibs/material/");
 
         $fromDIrPath = $beforeData['DIR_NAME_FULLPATH'];
         $fromDIrFullpath = $cloneRepoDir .  $fromDIrPath;
@@ -451,9 +452,10 @@ function deleteGitDir($intBaseMode, $strNumberForRI, $reqDeleteData, $strTCASRKe
         }
 
         $remortRepoUrl = $materialIfInfoArray[0]['REMORT_REPO_URL'];
+        $branch = $materialIfInfoArray[0]['BRANCH'];
         $cloneRepoDir = $materialIfInfoArray[0]['CLONE_REPO_DIR'];
         $password = ky_decrypt($materialIfInfoArray[0]['PASSWORD']);
-        $controlGit = new ControlGit($remortRepoUrl, $cloneRepoDir, $password, "{$g['root_dir_path']}/libs/backyardlibs/material/");
+        $controlGit = new ControlGit($remortRepoUrl, $branch, $cloneRepoDir, $password, "{$g['root_dir_path']}/libs/backyardlibs/material/");
 
         // ディレクトリが存在する場合
         if(is_dir($cloneRepoDir . $reqDeleteData['DIR_NAME_FULLPATH'])){
@@ -520,9 +522,10 @@ function updateGitFile($intBaseMode, $strNumberForRI, $reqUpdateData, $strTCASRK
         }
 
         $remortRepoUrl = $materialIfInfoArray[0]['REMORT_REPO_URL'];
+        $branch = $materialIfInfoArray[0]['BRANCH'];
         $cloneRepoDir = $materialIfInfoArray[0]['CLONE_REPO_DIR'];
         $password = ky_decrypt($materialIfInfoArray[0]['PASSWORD']);
-        $controlGit = new ControlGit($remortRepoUrl, $cloneRepoDir, $password, "{$g['root_dir_path']}/libs/backyardlibs/material/");
+        $controlGit = new ControlGit($remortRepoUrl, $branch, $cloneRepoDir, $password, "{$g['root_dir_path']}/libs/backyardlibs/material/");
 
         $uploadPath = "{$g['root_dir_path']}/uploadfiles/2100150101/file_management_1/";
 
@@ -932,9 +935,10 @@ function deleteGitFile($intBaseMode, $strNumberForRI, $reqDeleteData, $strTCASRK
         }
 
         $remortRepoUrl = $materialIfInfoArray[0]['REMORT_REPO_URL'];
+        $branch = $materialIfInfoArray[0]['BRANCH'];
         $cloneRepoDir = $materialIfInfoArray[0]['CLONE_REPO_DIR'];
         $password = ky_decrypt($materialIfInfoArray[0]['PASSWORD']);
-        $controlGit = new ControlGit($remortRepoUrl, $cloneRepoDir, $password, "{$g['root_dir_path']}/libs/backyardlibs/material/");
+        $controlGit = new ControlGit($remortRepoUrl, $branch, $cloneRepoDir, $password, "{$g['root_dir_path']}/libs/backyardlibs/material/");
 
         //////////////////////////
         // ファイル管理テーブル（初期登録用）を検索

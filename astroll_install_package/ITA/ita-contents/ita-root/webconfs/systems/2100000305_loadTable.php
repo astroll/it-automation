@@ -27,7 +27,7 @@ $tmpFx = function (&$aryVariant=array(),&$arySetting=array()){
     $arrayWebSetting = array();
     $arrayWebSetting['page_info'] = $g['objMTS']->getSomeMessage("ITABASEH-MNU-107070");
 /*
-Ansible(Legacy(SV))作業パターン
+作業パターン
 */
     $tmpAry = array(
         'TT_SYS_01_JNL_SEQ_ID'=>'JOURNAL_SEQ_NO',
@@ -63,10 +63,10 @@ Ansible(Legacy(SV))作業パターン
 
     $table->addUniqueColumnSet(array('ITA_EXT_STM_ID','PATTERN_NAME'));
 
-	$objVldt = new SingleTextValidator(1,256,false);
+    $objVldt = new SingleTextValidator(1,256,false);
     $c = new TextColumn('PATTERN_NAME',$g['objMTS']->getSomeMessage("ITABASEH-MNU-108020"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITABASEH-MNU-108030"));//エクセル・ヘッダでの説明
-	$c->setValidator($objVldt);
+    $c->setValidator($objVldt);
     $c->setRequired(true);//登録/更新時には、入力必須
     $c->setUnique(true);//登録/更新時には、DB上ユニークな入力であること必須
     $table->addColumn($c);
@@ -101,21 +101,25 @@ Ansible(Legacy(SV))作業パターン
             $c->setJournalDispIDOfMaster('HOST_DESIGNATE_TYPE_NAME');
             $cg->addColumn($c);
 
-            // 並列実行数
-            $c = new NumColumn('ANS_PARALLEL_EXE',$g['objMTS']->getSomeMessage("ITABASEH-MNU-108091"));
-            $c->setDescription($g['objMTS']->getSomeMessage("ITABASEH-MNU-108092"));//エクセル・ヘッダでの説明
-            $c->setSubtotalFlag(false);
-            $c->setValidator(new IntNumValidator(0,null));
-            $cg->addColumn($c);
-
             $c = new IDColumn('ANS_WINRM_ID',$g['objMTS']->getSomeMessage("ITABASEH-MNU-108100"),'D_FLAG_LIST_01','    FLAG_ID','FLAG_NAME','');
             $c->setDescription($g['objMTS']->getSomeMessage("ITABASEH-MNU-108110"));//エクセル・ヘッダでの説明
             $c->setHiddenMainTableColumn(true);//コンテンツのソースがヴューの場合、登録/更新の対象とする際に、trueとすること。setDBColumn(true    )であることも必要。
             $cg->addColumn($c);
             
-            $c = new IDColumn('ANS_GATHER_FACTS',$g['objMTS']->getSomeMessage("ITABASEH-MNU-108120"),'D_GATHER_FACTS_LIST_01','FLAG_ID','FLAG_NAME','');
-            $c->setDescription($g['objMTS']->getSomeMessage("ITABASEH-MNU-108130"));//エクセル・ヘッダでの説明
-            $c->setHiddenMainTableColumn(true);//コンテンツのソースがヴューの場合、登録/更新の対象とする際に、trueとすること。setDBColumn(true)であることも必要。
+            /* 親Playbookのヘッダーセクション */
+            $objVldt = new MultiTextValidator(0,512,false);
+            $c = new MultiTextColumn('ANS_PLAYBOOK_HED_DEF',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000008"));
+            $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000009"));//エクセル・ヘッダでの説明
+            $c->setValidator($objVldt);
+            $c->setRequired(false);
+            $cg->addColumn($c);
+
+            /* Ansible-Playbook実行時のMovement固有オプションパラメータ */
+            $objVldt = new SingleTextValidator(0,512,false);
+            $c = new TextColumn('ANS_EXEC_OPTIONS',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000010"));
+            $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000011"));
+            $c->setValidator($objVldt);
+            $c->setRequired(false);
             $cg->addColumn($c);
 
         $table->addColumn($cg);

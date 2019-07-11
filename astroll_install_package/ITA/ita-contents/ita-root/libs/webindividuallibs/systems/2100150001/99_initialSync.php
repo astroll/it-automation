@@ -39,7 +39,7 @@ class InitialSync {
     /**
      * 処理実行
      */
-    public function execute($remortRepoUrl, $cloneRepoDir, $password, $strTid){
+    public function execute($remortRepoUrl, $branch, $cloneRepoDir, $password, $strTid){
 
         global $g;
         $this->strLogMsg = "";
@@ -95,7 +95,7 @@ class InitialSync {
             }
 
             $cloneRepoFlg = true;
-            $controlGit = new ControlGit($remortRepoUrl, $cloneRepoDir, $decPassword, "{$g['root_dir_path']}/libs/backyardlibs/material/");
+            $controlGit = new ControlGit($remortRepoUrl, $branch, $cloneRepoDir, $decPassword, "{$g['root_dir_path']}/libs/backyardlibs/material/");
 
             // Gitのクローンを作成する
             $errMsg = NULL;

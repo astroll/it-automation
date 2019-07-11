@@ -32,7 +32,8 @@
 
     //----BASIC認証
     $tmpArrayReqHeaderRaw = getallheaders();
-    list($tmpStrReqAuthInfo, $strKeyExists) = isSetInArrayNestThenAssign($tmpArrayReqHeaderRaw,array('Authorization'),"");
+    $tmpArrayReqHeaderPrepare=array_change_key_case($tmpArrayReqHeaderRaw);
+    list($tmpStrReqAuthInfo, $strKeyExists) = isSetInArrayNestThenAssign($tmpArrayReqHeaderPrepare,array('authorization'),"");
     unset($tmpArrayReqHeaderRaw);
 
     $strReqUsername = "";

@@ -442,6 +442,7 @@ class MaterialIfInfoTable extends BaseTable {
         $this->jnlSeqName   = $this->tableName . '_JSQ';
         $this->columnNames  = array('ROW_ID',
                                     'REMORT_REPO_URL',
+                                    'BRANCH',
                                     'CLONE_REPO_DIR',
                                     'PASSWORD',
                                     'NOTE',
@@ -630,6 +631,36 @@ class FileMasterView extends BaseTable {
 }
 
 /**
+ * 資材一覧ビュークラス
+ */
+class FileManegementNewestView extends BaseTable {
+
+    /**
+     * コンストラクタ
+     */
+    public function __construct($objDBCA, $db_model_ch) {
+
+        parent::__construct($objDBCA, $db_model_ch);
+        $this->tableName    = 'G_FILE_MANAGEMENT_NEWEST';
+        $this->seqName      = $this->tableName . '_RIC';
+        $this->jnlSeqName   = $this->tableName . '_JSQ';
+        $this->columnNames  = array('FILE_M_ID',
+                                    'FILE_ID',
+                                    'RETURN_FILE',
+                                    'FILE_NAME_FULLPATH',
+                                    'CLOSE_DATE',
+                                    'RETURN_USER_ID',
+                                    'CLOSE_REVISION',
+                                    'NOTE',
+                                    'DISUSE_FLAG',
+                                    'LAST_UPDATE_TIMESTAMP',
+                                    'LAST_UPDATE_USER',
+                                    'NEWEST_FLAG',
+                                   );
+    }
+}
+
+/**
  * 資材管理紐付(Ansible)テーブルクラス
  */
 class MaterialLinkageAnsTable extends BaseTable {
@@ -662,9 +693,9 @@ class MaterialLinkageAnsTable extends BaseTable {
 }
 
 /**
- * ファイル管理ビュークラス
+ * ファイル管理テーブルクラス
  */
-class FileManegementNewestView extends BaseTable {
+class AnsCommonContentsFileTable extends BaseTable {
 
     /**
      * コンストラクタ
@@ -672,42 +703,12 @@ class FileManegementNewestView extends BaseTable {
     public function __construct($objDBCA, $db_model_ch) {
 
         parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'G_FILE_MANAGEMENT_NEWEST';
+        $this->tableName    = 'B_ANS_CONTENTS_FILE';
         $this->seqName      = $this->tableName . '_RIC';
         $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('FILE_M_ID',
-                                    'FILE_ID',
-                                    'RETURN_FILE',
-                                    'FILE_NAME_FULLPATH',
-                                    'CLOSE_DATE',
-                                    'RETURN_USER_ID',
-                                    'CLOSE_REVISION',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                    'NEWEST_FLAG',
-                                   );
-    }
-}
-
-/**
- * プレイブック素材集テーブルクラス
- */
-class AnsibleLnsPlaybookTable extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'B_ANSIBLE_LNS_PLAYBOOK';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('PLAYBOOK_MATTER_ID',
-                                    'PLAYBOOK_MATTER_NAME',
-                                    'PLAYBOOK_MATTER_FILE',
+        $this->columnNames  = array('CONTENTS_FILE_ID',
+                                    'CONTENTS_FILE_VARS_NAME',
+                                    'CONTENTS_FILE',
                                     'DISP_SEQ',
                                     'NOTE',
                                     'DISUSE_FLAG',
@@ -720,7 +721,7 @@ class AnsibleLnsPlaybookTable extends BaseTable {
 /**
  * テンプレート管理テーブルクラス
  */
-class AnsibleLnsTemplateTable extends BaseTable {
+class AnsibleCommonTemplateTable extends BaseTable {
 
     /**
      * コンストラクタ
@@ -728,7 +729,7 @@ class AnsibleLnsTemplateTable extends BaseTable {
     public function __construct($objDBCA, $db_model_ch) {
 
         parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'B_ANSIBLE_LNS_TEMPLATE';
+        $this->tableName    = 'B_ANS_TEMPLATE_FILE';
         $this->seqName      = $this->tableName . '_RIC';
         $this->jnlSeqName   = $this->tableName . '_JSQ';
         $this->columnNames  = array('ANS_TEMPLATE_ID',
@@ -744,9 +745,9 @@ class AnsibleLnsTemplateTable extends BaseTable {
 }
 
 /**
- * ファイル管理テーブルクラス
+ * プレイブック素材集テーブルクラス
  */
-class AnsLnsContentsFileTable extends BaseTable {
+class AnsibleCommonPlaybookTable extends BaseTable {
 
     /**
      * コンストラクタ
@@ -754,12 +755,12 @@ class AnsLnsContentsFileTable extends BaseTable {
     public function __construct($objDBCA, $db_model_ch) {
 
         parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'B_ANS_LNS_CONTENTS_FILE';
+        $this->tableName    = 'B_ANSIBLE_LNS_PLAYBOOK';
         $this->seqName      = $this->tableName . '_RIC';
         $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('CONTENTS_FILE_ID',
-                                    'CONTENTS_FILE_VARS_NAME',
-                                    'CONTENTS_FILE',
+        $this->columnNames  = array('PLAYBOOK_MATTER_ID',
+                                    'PLAYBOOK_MATTER_NAME',
+                                    'PLAYBOOK_MATTER_FILE',
                                     'DISP_SEQ',
                                     'NOTE',
                                     'DISUSE_FLAG',
@@ -909,62 +910,6 @@ class PatternPerOrchTable extends BaseTable {
     }
 }
 
-
-/**
- * 資材管理紐付(OpenShift)テーブルクラス
- */
-class MaterialLinkageOpenShiftTable extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'F_MATERIAL_LINKAGE_OPENSHIFT';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('ROW_ID',
-                                    'MATERIAL_LINK_NAME',
-                                    'FILE_ID',
-                                    'CLOSE_REVISION_ID',
-                                    'CFG_CLS_MST_ID_CHK',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                   );
-    }
-}
-
-/**
- * OpenShiftテーブルクラス
- */
-class OpenShiftPostConfigTable extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'B_OPENSHIFT_POST_CONFIG';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('POST_CONFIG_ID',
-                                    'CONFIG_NAME',
-                                    'CFG_CLS_MST_ID',
-                                    'CONFIG_FILE',
-                                    'CONFIG_DETAIL',
-                                    'DISP_SEQ',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                   );
-    }
-}
-
 /**
  * 資材管理紐付(DSC)テーブルクラス
  */
@@ -1017,218 +962,6 @@ class DscResourceTable extends BaseTable {
     }
 }
 
-/**
- * 資材管理紐付(TestPlayer)テーブルクラス
- */
-class MaterialLinkageTPTable extends BaseTable {
 
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
 
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'F_MATERIAL_LINKAGE_TP';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('ROW_ID',
-                                    'MATERIAL_LINK_NAME',
-                                    'FILE_ID',
-                                    'CLOSE_REVISION_ID',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                   );
-    }
-}
 
-/**
- * TestPlayerテーブルクラス
- */
-class TpScenarioMasterTable extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'B_TP_SCENARIO_MASTER';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('SCENARIO_ID',
-                                    'SCENARIO_NAME',
-                                    'SCENARIO_FILE',
-                                    'DISP_SEQ',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                   );
-    }
-}
-
-/**
- * 資材紐付け管理(SCRAB 標準シナリオSGファイル管理)テーブルクラス
- */
-class MaterialLinkageScrabSgfileMaster extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'F_MATERIAL_LINKAGE_SC_SGFILE';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('ROW_ID',
-                                    'SCRAB_CONFIG_ID',
-                                    'FILE_ID',
-                                    'CLOSE_REVISION_ID',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                   );
-    }
-}
-
-/**
- * SCRAB 標準シナリオSGファイル管理テーブルクラス
- */
-class ScrabSgfileMasterTable extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'B_SCRAB_NS_SGFILE_MASTER';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('SGFILE_ID',
-                                    'SCRAB_CONFIG_ID',
-                                    'SG_FILE',
-                                    'DISP_SEQ',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                   );
-    }
-}
-
-/**
- * 資材紐付け管理(SCRAB ユーザーシナリオ詳細管理)テーブルクラス
- */
-class MaterialLinkageScrabUserSceDetail extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'F_MATERIAL_LINKAGE_SC_USERSCNARIO';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('ROW_ID',
-                                    'SCENARIO_ID',
-                                    'USER_SCRIPT_FILE_ID',
-                                    'SCRIPT_CLOSE_REVISION_ID',
-                                    'USER_SCRIPT_CSV_FILE_ID',
-                                    'CSV_CLOSE_REVISION_ID',
-                                    'USER_SCRIPT_SG_FILE_ID',
-                                    'SG_CLOSE_REVISION_ID',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                   );
-    }
-}
-
-/**
- * SCRAB ユーザーシナリオ詳細管理テーブルクラス
- */
-class ScrabUserSceDerailTable extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'B_SCRAB_NS_SCENARIO_DETAIL';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('SCENARIO_DETAIL_ID',
-                                    'SCENARIO_ID',
-                                    'SCENARIO_TYPE',
-                                    'FORMAT_TYPE',
-                                    'SCRAB_CONFIG_ID',
-                                    'USER_SCRIPT_TYPE',
-                                    'USER_SCRIPT_FILE',
-                                    'USER_SCRIPT_SG_FILE',
-                                    'USER_SCRIPT_CSV_FILE',
-                                    'USER_SCRIPT_CONFIG_ID',
-                                    'USER_SCRIPT_CSV_FILE_MD5',
-                                    'FLAT_COMMAND',
-                                    'FLAT_METHOD',
-                                    'FLAT_CONFIG_ID',
-                                    'PROPERTY_COMMAND',
-                                    'PROPERTY_METHOD',
-                                    'PROPERTY_PARSE_SEP',
-                                    'PROPERTY_BUILDSPEC_SEP',
-                                    'PROPERTY_COMMENT',
-                                    'PROPERTY_CONFIG_ID',
-                                    'MF_RHEL6',
-                                    'MF_RHEL7',
-                                    'MF_WIN2012',
-                                    'MF_WIN2016',
-                                    'MF_HP_UX',
-                                    'DISP_SEQ',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                   );
-    }
-}
-
-/**
- * SCRAB ユーザーシナリオ詳細管理用
- * ユーザーシナリオ管理テーブルクラス
- */
-class ScrabNsUserSceListTable extends BaseTable {
-
-    /**
-     * コンストラクタ
-     */
-    public function __construct($objDBCA, $db_model_ch) {
-
-        parent::__construct($objDBCA, $db_model_ch);
-        $this->tableName    = 'E_SCRAB_NS_USER_SCE_LIST';
-        $this->seqName      = $this->tableName . '_RIC';
-        $this->jnlSeqName   = $this->tableName . '_JSQ';
-        $this->columnNames  = array('SCENARIO_ID',
-                                    'SCENARIO_NAME',
-                                    'SCENARIO_TYPE',
-                                    'MF_RHEL6',
-                                    'MF_RHEL7',
-                                    'MF_WIN2012',
-                                    'MF_WIN2016',
-                                    'MF_HP_UX',
-                                    'ITA_SCENARIO_SUPPORT',
-                                    'DISP_SEQ',
-                                    'NOTE',
-                                    'DISUSE_FLAG',
-                                    'LAST_UPDATE_TIMESTAMP',
-                                    'LAST_UPDATE_USER',
-                                    'SCENARIO_PULLDOWN_NAME',
-                                   );
-    }
-}

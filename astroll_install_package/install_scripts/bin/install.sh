@@ -114,12 +114,7 @@ func_set_total_cnt() {
 
     if [ "$HOSTGROUP3_FLG" -eq 1 ]; then
         PROCCESS_TOTAL_CNT=$((PROCCESS_TOTAL_CNT+3))
-    fi    
-    
-    if [ "$ANSIBLETOWER_FLG" -eq 1 ]; then
-        PROCCESS_TOTAL_CNT=$((PROCCESS_TOTAL_CNT+4))
     fi
-
     
     echo $PROCCESS_TOTAL_CNT
 }
@@ -181,10 +176,6 @@ func_install_messasge() {
     if [ HOSTGROUP3_FLG = ${1} ]; then
         MESSAGE="Hostgroup3"
     fi    
-    
-    if [ ANSIBLETOWER_FLG = ${1} ]; then
-        MESSAGE="AnsibleTower driver"
-    fi
     
     echo "$MESSAGE"
 }
@@ -373,7 +364,6 @@ func_crontab_set() {
 CREATE_DATARELAYSTORAGE=(
     ANSIBLE_FLG
     COBBLER_FLG
-    ANSIBLETOWER_FLG
 )
 #テーブル作成作成関数用配列
 #テーブルを作成するドライバを記載する
@@ -390,7 +380,6 @@ CREATE_TABLES=(
     HOSTGROUP_FLG
     HOSTGROUP2_FLG
     HOSTGROUP3_FLG
-    ANSIBLETOWER_FLG
 )
 
 #リリースファイル設置作成関数用配列
@@ -408,7 +397,6 @@ RELEASE_PLASE=(
     astroll_hostgroup
     astroll_hostgroup2
     astroll_hostgroup3
-    astroll_ansibletower-driver
 )
 
 #コンフィグファイル設置確認作成関数用配列
@@ -433,7 +421,6 @@ SERVICES_SET=(
     HOSTGROUP_FLG
     HOSTGROUP2_FLG
     HOSTGROUP3_FLG
-    ANSIBLETOWER_FLG
 )
 
 #クーロンタブ設定関数用配列
@@ -463,13 +450,12 @@ CREATEPARAM_FLG=0
 HOSTGROUP_FLG=0
 HOSTGROUP2_FLG=0
 HOSTGROUP3_FLG=0
-ANSIBLETOWER_FLG=0
 
 REPLACE_CHAR="%%%%%ITA_DIRECTORY%%%%%"
 
 DRIVER_CNT=0
 ANSWER_DRIVER_CNT=0
-ARR_DRIVER_CHK=('ita_base' 'ansible_driver' 'cobbler_driver' 'openstack_driver' 'dsc_driver' 'material'  'createparam'  'hostgroup' 'ansibletower_driver')
+ARR_DRIVER_CHK=('ita_base' 'ansible_driver' 'cobbler_driver' 'openstack_driver' 'dsc_driver' 'material'  'createparam'  'hostgroup')
 
 
 #answerファイル読み取り
@@ -539,11 +525,6 @@ while read LINE; do
             if [ "$val" = 'yes' ]; then
                 HOSTGROUP_FLG=1
             fi
-        elif [ "$key" = 'ansibletower_driver' ]; then
-            func_answer_format_check
-            if [ "$val" = 'yes' ]; then
-                ANSIBLETOWER_FLG=1
-            fi
         fi
     fi
 done < "$COPY_ANSWER_FILE"
@@ -592,9 +573,6 @@ if [ $CREATEPARAM_FLG -eq 1 ]; then
 fi
 if [ $HOSTGROUP_FLG -eq 1 ]; then
     log "INFO : Installation target : hostgroup"
-fi
-if [ $ANSIBLETOWER_FLG -eq 1 ]; then
-    log "INFO : Installation target : ansibletower_driver"
 fi
 
 
@@ -675,13 +653,6 @@ if [ "$HOSTGROUP_FLG" -eq 1 ]; then
     if test -e "$ITA_DIRECTORY"/ita-root/libs/release/astroll_hostgroup ; then
         log 'WARNING : Hostgroup has already been installed.'
         HOSTGROUP_FLG=0
-    fi
-fi
-
-if [ "$ANSIBLETOWER_FLG" -eq 1 ]; then
-    if test -e "$ITA_DIRECTORY"/ita-root/libs/release/astroll_ansibletower-driver ; then
-        log 'WARNING : AnsibleTower driver has already been installed.'
-        ANSIBLETOWER_FLG=0
     fi
 fi
 

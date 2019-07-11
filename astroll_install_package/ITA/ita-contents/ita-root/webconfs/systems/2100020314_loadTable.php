@@ -88,7 +88,12 @@ Ansible(Legacy)作業管理
     $c->setJournalKeyIDOfMaster('STATUS_ID');
     $c->setJournalDispIDOfMaster('STATUS_NAME');
     $table->addColumn($c);
-
+    
+    //シンフォニークラス
+    $c = new TextColumn('SYMPHONY_NAME',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1108120"));
+    $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1108130"));//エクセル・ヘッダでの説明
+    $table->addColumn($c);
+    
     //実行ユーザ
     $c = new TextColumn('EXECUTION_USER',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1108100"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1108110"));//エクセル・ヘッダでの説明
@@ -112,7 +117,7 @@ Ansible(Legacy)作業管理
     $c->setJournalDispIDOfMaster('PATTERN_ID');
     $cg->addColumn($c);
 
-	$objVldt = new SingleTextValidator(1,256,false);
+    $objVldt = new SingleTextValidator(1,256,false);
     $c = new TextColumn('I_PATTERN_NAME',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1109020"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1109030"));//エクセル・ヘッダでの説明
     $c->setValidator($objVldt);
@@ -130,11 +135,6 @@ Ansible(Legacy)作業管理
     // ホスト指定形式
     $c = new IDColumn('I_ANS_HOST_DESIGNATE_TYPE_ID',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1202012"),'B_HOST_DESIGNATE_TYPE_LIST','HOST_DESIGNATE_TYPE_ID','HOST_DESIGNATE_TYPE_NAME','');
     $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1202013"));//エクセル・ヘッダでの説明
-    $c->getOutputType('update_table')->setVisible(false);
-    $c->getOutputType('register_table')->setVisible(false);
-    $c->getOutputType('delete_table')->setVisible(false);
-    $c->getOutputType('excel')->setVisible(false);
-    $c->getOutputType('csv')->setVisible(false);
     $cg2->addColumn($c);
 
     // 並列実行数
@@ -146,16 +146,11 @@ Ansible(Legacy)作業管理
     // WinRM接続
     $c = new IDColumn('I_ANS_WINRM_ID',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1202014"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
     $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1202015"));//エクセル・ヘッダでの説明
-    $c->getOutputType('update_table')->setVisible(false);
-    $c->getOutputType('register_table')->setVisible(false);
-    $c->getOutputType('delete_table')->setVisible(false);
-    $c->getOutputType('excel')->setVisible(false);
-    $c->getOutputType('csv')->setVisible(false);
     $cg2->addColumn($c);
 
-    $c = new IDColumn('I_ANS_GATHER_FACTS',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1202018"),'D_GATHER_FACTS_LIST_01','FLAG_ID','FLAG_NAME','');
-    $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1202019"));//エクセル・ヘッダでの説明
-    $c->setHiddenMainTableColumn(true);//コンテンツのソースがヴューの場合、登録/更新の対象とする際に、trueとするこ>と。setDBColumn(true)であることも必要。
+    // セクションヘッダー
+    $c = new MultiTextColumn('I_ANS_PLAYBOOK_HED_DEF',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000008"));
+    $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000009"));//エクセル・ヘッダでの説明
     $cg2->addColumn($c);
 
     $cg->addColumn($cg2);
@@ -181,10 +176,10 @@ Ansible(Legacy)作業管理
     $cg->addColumn($c);
 
 
-	$objVldt = new SingleTextValidator(1,128,false);
+    $objVldt = new SingleTextValidator(1,128,false);
     $c = new TextColumn('I_OPERATION_NAME',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1109070"));
     $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1109080"));//エクセル・ヘッダでの説明
-	$c->setValidator($objVldt);
+    $c->setValidator($objVldt);
     $c->setRequired(true);//登録/更新時には、入力必須
     $cg->addColumn($c);
 

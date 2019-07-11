@@ -22,6 +22,9 @@
     $db_connect_php      = '/libs/commonlibs/common_db_connect.php';
     $ansible_restapi_php = '/libs/commonlibs/common_ansible_restapi.php';
     $ansible_create_files_php        = '/libs/backyardlibs/ansible_driver/CreateAnsibleExecFiles.php';
+    $ansible_table_define_php        = '/libs/backyardlibs/ansible_driver/AnsibleTableDefinition.php';
+    // AnsibleTower実行モジュール
+    $AnsibleTowerExecute_php         = "/libs/backyardlibs/ansible_driver/ansibletowerlibs/AnsibleTowerExecute.php";
 
     // DB更新時のユーザーID設定
     switch($vg_driver_id){
@@ -70,6 +73,8 @@
         ////////////////////////////////
         $aryOrderToReqGate = array('DBConnect'=>'LATE');
         require ($root_dir_path . $php_req_gate_php );
+        require_once ($root_dir_path . $ansible_table_define_php);
+        require_once ($root_dir_path . $AnsibleTowerExecute_php);
         
         // 開始メッセージ
         if ( $log_level === 'DEBUG' ){
@@ -261,161 +266,24 @@
             ////////////////////////////////////////////////////////////////
             // 該当レコードをSELECT(ロック)                               //
             ////////////////////////////////////////////////////////////////
-            // $arrayConfigをlegacyとpioneerで分ける
-            $arrayConfig_legacy = array(
-                "JOURNAL_SEQ_NO"=>"",
-                "JOURNAL_ACTION_CLASS"=>"",
-                "JOURNAL_REG_DATETIME"=>"",
-                "EXECUTION_NO"=>"",
-                "EXECUTION_USER"=>"",
-                "STATUS_ID"=>"",
-                "SYMPHONY_INSTANCE_NO"=>"",
-                "PATTERN_ID"=>"",
-                "OPERATION_NO_UAPK"=>"",
-                // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-                "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-                "I_PATTERN_NAME"=>"",
-                "I_OPERATION_NAME"=>"",
-                "FILE_INPUT"=>"",
-                "FILE_RESULT"=>"",
-                // ドライラン 1:通常 2:ドライラン/オペレーションNO
-                "I_OPERATION_NO_IDBH"=>"",
-                "RUN_MODE"=>"",
-                "I_ANS_WINRM_ID"=>"",
-                "I_ANS_GATHER_FACTS"=>"",
-                "TIME_BOOK"=>"DATETIME",
-                "TIME_START"=>"DATETIME",
-                "TIME_END"=>"DATETIME",
-                "I_TIME_LIMIT"=>"",
-                "I_ANS_PARALLEL_EXE"=>"",
-                "DISUSE_FLAG"=>"",
-                "NOTE"=>"",
-                "LAST_UPDATE_TIMESTAMP"=>"",
-                "LAST_UPDATE_USER"=>""
-            );
 
-            // SQL生成
-            $arrayConfig_pioneer = array(
-                "JOURNAL_SEQ_NO"=>"",
-                "JOURNAL_ACTION_CLASS"=>"",
-                "JOURNAL_REG_DATETIME"=>"",
-                "EXECUTION_NO"=>"",
-                "EXECUTION_USER"=>"",
-                "STATUS_ID"=>"",
-                "SYMPHONY_INSTANCE_NO"=>"",
-                "PATTERN_ID"=>"",
-                "OPERATION_NO_UAPK"=>"",
-                // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-                "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-                "I_PATTERN_NAME"=>"",
-                "I_OPERATION_NAME"=>"",
-                "FILE_INPUT"=>"",
-                "FILE_RESULT"=>"",
-                // ドライラン 1:通常 2:ドライラン/オペレーションNO
-                "I_OPERATION_NO_IDBH"=>"",
-                "RUN_MODE"=>"",
-                "TIME_BOOK"=>"DATETIME",
-                "TIME_START"=>"DATETIME",
-                "TIME_END"=>"DATETIME",
-                "I_TIME_LIMIT"=>"",
-                "I_ANS_PARALLEL_EXE"=>"",
-                "DISUSE_FLAG"=>"",
-                "NOTE"=>"",
-                "LAST_UPDATE_TIMESTAMP"=>"",
-                "LAST_UPDATE_USER"=>""
-            );
-            
+            $arrayConfig = array();
+            CreateExecInstMngArray($arrayConfig);
+            SetExecInstMngColumnType($arrayConfig);
+
             $temp_array = array('WHERE'=>" EXECUTION_NO = :EXECUTION_NO AND DISUSE_FLAG = '0' AND STATUS_ID IN (3, 4) ");
             
-            // $arrayConfigをlegacyとpioneerで分ける
-            $arrayValue_legacy = array(
-                "JOURNAL_SEQ_NO"=>"",
-                "JOURNAL_ACTION_CLASS"=>"",
-                "JOURNAL_REG_DATETIME"=>"",
-                "EXECUTION_NO"=>"",
-                "EXECUTION_USER"=>"",
-                "STATUS_ID"=>"",
-                "SYMPHONY_INSTANCE_NO"=>"",
-                "PATTERN_ID"=>"",
-                "OPERATION_NO_UAPK"=>"",
-                // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-                "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-                "I_PATTERN_NAME"=>"",
-                "I_OPERATION_NAME"=>"",
-                "FILE_INPUT"=>"",
-                "FILE_RESULT"=>"",
-                // ドライラン 1:通常 2:ドライラン/オペレーションNO
-                "I_OPERATION_NO_IDBH"=>"",
-                "RUN_MODE"=>"",
-                "I_ANS_WINRM_ID"=>"",
-                "I_ANS_GATHER_FACTS"=>"",
-                "TIME_BOOK"=>"",
-                "TIME_START"=>"",
-                "TIME_END"=>"",
-                "I_TIME_LIMIT"=>"",
-                "I_ANS_PARALLEL_EXE"=>"",
-                "DISUSE_FLAG"=>"",
-                "NOTE"=>"",
-                "LAST_UPDATE_TIMESTAMP"=>"",
-                "LAST_UPDATE_USER"=>""
-            );
+            $arrayValue = array();
+            CreateExecInstMngArray($arrayValue);
 
-            $arrayValue_pioneer = array(
-                "JOURNAL_SEQ_NO"=>"",
-                "JOURNAL_ACTION_CLASS"=>"",
-                "JOURNAL_REG_DATETIME"=>"",
-                "EXECUTION_NO"=>"",
-                "EXECUTION_USER"=>"",
-                "STATUS_ID"=>"",
-                "SYMPHONY_INSTANCE_NO"=>"",
-                "PATTERN_ID"=>"",
-                "OPERATION_NO_UAPK"=>"",
-                // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-                "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-                "I_PATTERN_NAME"=>"",
-                "I_OPERATION_NAME"=>"",
-                "FILE_INPUT"=>"",
-                "FILE_RESULT"=>"",
-                // ドライラン 1:通常 2:ドライラン/オペレーションNO
-                "I_OPERATION_NO_IDBH"=>"",
-                "RUN_MODE"=>"",
-                "TIME_BOOK"=>"",
-                "TIME_START"=>"",
-                "TIME_END"=>"",
-                "I_TIME_LIMIT"=>"",
-                "I_ANS_PARALLEL_EXE"=>"",
-                "DISUSE_FLAG"=>"",
-                "NOTE"=>"",
-                "LAST_UPDATE_TIMESTAMP"=>"",
-                "LAST_UPDATE_USER"=>""
-            );
-            
-            // Legacy-Role対応
-            // $arrayConfigをlegacyとpioneerで分ける
-            // $arrayValueをlegacyとpioneerで分ける
-            switch($vg_driver_id){
-            case DF_LEGACY_DRIVER_ID:
-            case DF_LEGACY_ROLE_DRIVER_ID:
-                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                     "SELECT FOR UPDATE",
-                                                     "EXECUTION_NO",
-                                                     $vg_exe_ins_msg_table_name,
-                                                     $vg_exe_ins_msg_table_jnl_name,
-                                                     $arrayConfig_legacy,
-                                                     $arrayValue_legacy,
-                                                     $temp_array );
-                break;
-            case DF_PIONEER_DRIVER_ID:
-                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                     "SELECT FOR UPDATE",
-                                                     "EXECUTION_NO",
-                                                     $vg_exe_ins_msg_table_name,
-                                                     $vg_exe_ins_msg_table_jnl_name,
-                                                     $arrayConfig_pioneer,
-                                                     $arrayValue_pioneer,
-                                                     $temp_array );
-                break;
-            }
+            $retArray = makeSQLForUtnTableUpdate($db_model_ch,
+                                                 "SELECT FOR UPDATE",
+                                                 "EXECUTION_NO",
+                                                 $vg_exe_ins_msg_table_name,
+                                                 $vg_exe_ins_msg_table_jnl_name,
+                                                 $arrayConfig,
+                                                 $arrayValue,
+                                                 $temp_array );
             
             $sqlUtnBody = $retArray[1];
             $arrayUtnBind = $retArray[2];
@@ -497,71 +365,129 @@
                 $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-50008",$tgt_execution_no);
                 require ($root_dir_path . $log_output_php );
             }
-            
-            ////////////////////////////////////////////////////////////////
-            // REST APIコール                                             //
-            ////////////////////////////////////////////////////////////////            
-            // トレースメッセージ
-            if ( $log_level === 'DEBUG' ){
-                $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-50009");
-                require ($root_dir_path . $log_output_php );
-            }
-            ////////////////////////////////////////////////////////////////
-            // REST API向けのリクエストURLを準備                          //
-            ////////////////////////////////////////////////////////////////
-            $RequestContents
-            = array(
-                    //データリレイパス
-                    'DATA_RELAY_STORAGE_TRUNK'=>$lv_ans_storage_path_ans,
-                    //オーケストレータ識別子
-                    "ORCHESTRATOR_SUB_ID"=>$vg_OrchestratorSubId,
-                    //作業実行ID
-                    "EXE_NO"=>$tgt_execution_no);
-                    //ドライランモードは不要なので追加しない。
 
-            ////////////////////////////////////////////////////////////////
-            // REST APIコール                                             //
-            ////////////////////////////////////////////////////////////////
-            $rest_api_response = ansible_restapi_access( $lv_ans_protocol,
-                                                         $lv_ans_hostname,
-                                                         $lv_ans_port,
-                                                         $lv_ans_access_key_id,
-                                                         $lv_ans_secret_access_key,
-                                                         $RequestURI,
-                                                         $Method,
-                                                         $RequestContents );
+            require_once ($root_dir_path . $ansible_create_files_php);
 
-            ////////////////////////////////////////////////////////////////
-            // REST API結果判定                                           //
-            ////////////////////////////////////////////////////////////////
-            $restapi_err_flag = 0;
-            $sql_exec_flag =  0;
-            $Status = RESTAPIResponsCheck($tgt_execution_no,
-                                          $rest_api_response,
-                                          $restapi_err_flag);
-
-            // REST APIの戻り値が異常の場合にログ出力
-            if( $restapi_err_flag != 0 ){
-                //  REST APIの戻り値が異常は$Statusを想定外エラーにしている
-                $sql_exec_flag =  1;
-
-                // 警告フラグON
-                $warning_flag = 1;
+            $ansdrv = new CreateAnsibleExecFiles($vg_driver_id,
+                                                 $lv_ans_storage_path_lnx,
+                                                 $lv_ans_storage_path_ans,
+                                                 $lv_sym_storage_path_ans,
+                                                 $vg_legacy_playbook_contents_dir,
+                                                 $vg_pioneer_playbook_contents_dir,
+                                                 $vg_template_contents_dir,
+                                                 $vg_template_contents_dir,
+                                                 $vg_copy_contents_dir,
+                                                 $vg_ansible_vars_masterDB,
+                                                 $vg_ansible_vars_assignDB,
+                                                 $vg_ansible_pattern_vars_linkDB,
+                                                 $vg_ansible_pho_linkDB,
+                                                 $vg_ansible_master_fileDB,
+                                                 $vg_ansible_master_file_pkeyITEM,
+                                                 $vg_ansible_master_file_nameITEM,
+                                                 $vg_ansible_pattern_linkDB,
+                                                 $vg_ansible_role_packageDB,
+                                                 $vg_ansible_roleDB,
+                                                 $vg_ansible_role_varsDB,
+                                                 $objMTS,
+                                                 $objDBCA);
                 
-                // 警告メッセージ出力
-                $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50019",$tgt_execution_no);
-                require ($root_dir_path . $log_output_php );
+            $tmp_array_dirs = $ansdrv->getAnsibleWorkingDirectories($vg_OrchestratorSubId_dir,$tgt_execution_no);
+            $zip_data_source_dir = $tmp_array_dirs[4];
+                
+            // 実行エンジンを判定
+            if($lv_ans_if_info['ANSIBLE_EXEC_MODE'] == DF_EXEC_MODE_ANSIBLE) {
 
-                // REST APIの戻り値を出力
-                ob_start();
-                var_dump($rest_api_response);
-                $FREE_LOG = "REST API Response\n" . ob_get_contents();
-                ob_clean();
-                require ($root_dir_path . $log_output_php );
+                ////////////////////////////////////////////////////////////////
+                // REST APIコール                                             //
+                ////////////////////////////////////////////////////////////////            
+                // トレースメッセージ
+                if ( $log_level === 'DEBUG' ){
+                    $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-50009");
+                    require ($root_dir_path . $log_output_php );
+                }
+                ////////////////////////////////////////////////////////////////
+                // REST API向けのリクエストURLを準備                          //
+                ////////////////////////////////////////////////////////////////
+                $RequestContents
+                = array(
+                        //データリレイパス
+                        'DATA_RELAY_STORAGE_TRUNK'=>$lv_ans_storage_path_ans,
+                        //オーケストレータ識別子
+                        "ORCHESTRATOR_SUB_ID"=>$vg_OrchestratorSubId,
+                        //作業実行ID
+                        "EXE_NO"=>$tgt_execution_no);
+                        //ドライランモードは不要なので追加しない。
+    
+                ////////////////////////////////////////////////////////////////
+                // REST APIコール                                             //
+                ////////////////////////////////////////////////////////////////
+                $rest_api_response = ansible_restapi_access( $lv_ans_protocol,
+                                                             $lv_ans_hostname,
+                                                             $lv_ans_port,
+                                                             $lv_ans_access_key_id,
+                                                             $lv_ans_secret_access_key,
+                                                             $RequestURI,
+                                                             $Method,
+                                                             $RequestContents );
+    
+                ////////////////////////////////////////////////////////////////
+                // REST API結果判定                                           //
+                ////////////////////////////////////////////////////////////////
+                $restapi_err_flag = 0;
+                $sql_exec_flag =  0;
+                $Status = RESTAPIResponsCheck($tgt_execution_no,
+                                              $rest_api_response,
+                                              $restapi_err_flag);
+    
+                // REST APIの戻り値が異常の場合にログ出力
+                if( $restapi_err_flag != 0 ){
+                    //  REST APIの戻り値が異常は$Statusを想定外エラーにしている
+                    $sql_exec_flag =  1;
+    
+                    // 警告フラグON
+                    $warning_flag = 1;
+                    
+                    // 警告メッセージ出力
+                    $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-ERR-50019",$tgt_execution_no);
+                    require ($root_dir_path . $log_output_php );
 
+                    // REST APIの戻り値を出力
+                    ob_start();
+                    var_dump($rest_api_response);
+                    $FREE_LOG = "REST API Response\n" . ob_get_contents();
+                    ob_clean();
+                    require ($root_dir_path . $log_output_php );
+
+                }
+            } else {
+                $sql_exec_flag =  0;
+                $UIExecLogPath  = $ansdrv->getAnsible_out_Dir() . "/" . "exec.log";
+                $UIErrorLogPath = $ansdrv->getAnsible_out_Dir() . "/" . "error.log";
+                $Status = 0;
+
+                ////////////////////////////////////////////////////////////////
+                // AnsibleTowerから実行                                       //
+                ////////////////////////////////////////////////////////////////
+                $ret = AnsibleTowerExecution(DF_CHECKCONDITION_FUNCTION,$lv_ans_if_info,$tgt_execution_row,$ansdrv->getAnsible_out_Dir(),$UIExecLogPath,$UIErrorLogPath,$Status);
+
+                if( $Status == 5 ||
+                    $Status == 6 ||
+                    $Status == 7 ||
+                    $Status == 8 ) {
+                    // 5:正常終了時
+                    // 6:完了(異常)
+                    // 7:想定外エラー
+                    // 8:緊急停止
+                    $sql_exec_flag =  1;
+                } else {
+                    $Status = -1;
+                }
             }
-
-            //----RedMineチケット#997
+            if ( $log_level === 'DEBUG' ){
+                // 状態をログに出力
+                $FREE_LOG = sprintf("ExecutionNo:%s  Status:%s",$tgt_execution_no,$Status);
+                require ($root_dir_path . $log_output_php );
+            }
             if( $Status == 5 ||
                 $Status == 6 ||
                 $Status == 7 ||
@@ -571,35 +497,6 @@
                 // 6:完了(異常)
                 // 7:想定外エラー
                 // 8:緊急停止
-                
-                require_once ($root_dir_path . $ansible_create_files_php);
-
-                $ansdrv = new CreateAnsibleExecFiles($vg_driver_id,
-                                                     $lv_ans_storage_path_lnx,
-                                                     $lv_ans_storage_path_ans,
-                                                     $lv_sym_storage_path_ans,
-                                                     $vg_legacy_playbook_contents_dir,
-                                                     $vg_pioneer_playbook_contents_dir,
-                                                     $vg_legacy_template_contents_dir,
-                                                     $vg_pioneer_template_contents_dir,
-                                                     $vg_copy_contents_dir,
-                                                     $vg_ansible_vars_masterDB,
-                                                     $vg_ansible_vars_assignDB,
-                                                     $vg_ansible_pattern_vars_linkDB,
-                                                     $vg_ansible_pho_linkDB,
-                                                     $vg_ansible_master_fileDB,
-                                                     $vg_ansible_master_file_pkeyITEM,
-                                                     $vg_ansible_master_file_nameITEM,
-                                                     $vg_ansible_pattern_linkDB,
-                                                     $vg_ansible_role_packageDB,
-                                                     $vg_ansible_roleDB,
-                                                     $vg_ansible_role_varsDB,
-                                                     $objMTS,
-                                                     $objDBCA);
-                
-                $tmp_array_dirs = $ansdrv->getAnsibleWorkingDirectories($vg_OrchestratorSubId_dir,$tgt_execution_no);
-                $zip_data_source_dir = $tmp_array_dirs[4];
-                unset($ansdrv);
                 
                 // zipファイル名を作成
                 $zip_result_file = 'ResultData_' . str_pad( $tgt_execution_no, $intNumPadding, "0", STR_PAD_LEFT ) . '.zip';
@@ -659,7 +556,7 @@
             ////////////////////////////////////////////////////////////////
             // statusによって処理を分岐                                   //
             ////////////////////////////////////////////////////////////////
-            if( $Status != -1){
+            if($Status != -1) {
                 // SQL(UPDATE)をEXECUTEする
                 $sql_exec_flag =  1;
 
@@ -787,93 +684,18 @@
                 ////////////////////////////////////////////////////////////////
                 // SQL作成＋バインド用変数準備
 
-                // $arrayConfig2をlegacyとpioneerで分ける
                 // SQL作成＋バインド用変数準備
-                $arrayConfig2_legacy = array(
-                    "JOURNAL_SEQ_NO"=>"",
-                    "JOURNAL_ACTION_CLASS"=>"",
-                    "JOURNAL_REG_DATETIME"=>"",
-                    "EXECUTION_NO"=>"",
-                    "EXECUTION_USER"=>"",
-                    "STATUS_ID"=>"",
-                    "SYMPHONY_INSTANCE_NO"=>"",
-                    "PATTERN_ID"=>"",
-                    "OPERATION_NO_UAPK"=>"",
-                    // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-                    "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-                    "I_PATTERN_NAME"=>"",
-                    "I_OPERATION_NAME"=>"",
-                    "FILE_INPUT"=>"",
-                    "FILE_RESULT"=>"",
-                    // ドライラン 1:通常 2:ドライラン/オペレーションNO
-                    "I_OPERATION_NO_IDBH"=>"",
-                    "RUN_MODE"=>"",
-                    "I_ANS_WINRM_ID"=>"",
-                    "I_ANS_GATHER_FACTS"=>"",
-                    "TIME_BOOK"=>"DATETIME",
-                    "TIME_START"=>"DATETIME",
-                    "TIME_END"=>"DATETIME",
-                    "I_TIME_LIMIT"=>"",
-                    "I_ANS_PARALLEL_EXE"=>"",
-                    "DISUSE_FLAG"=>"",
-                    "NOTE"=>"",
-                    "LAST_UPDATE_TIMESTAMP"=>"",
-                    "LAST_UPDATE_USER"=>""
-                );
+                $arrayConfig2 = array();
+                CreateExecInstMngArray($arrayConfig2);
+                SetExecInstMngColumnType($arrayConfig2);
 
-                $arrayConfig2_pioneer = array(
-                    "JOURNAL_SEQ_NO"=>"",
-                    "JOURNAL_ACTION_CLASS"=>"",
-                    "JOURNAL_REG_DATETIME"=>"",
-                    "EXECUTION_NO"=>"",
-                    "EXECUTION_USER"=>"",
-                    "STATUS_ID"=>"",
-                    "SYMPHONY_INSTANCE_NO"=>"",
-                    "PATTERN_ID"=>"",
-                    "OPERATION_NO_UAPK"=>"",
-                    // ホストアドレス指定方式（I_ANS_HOST_DESIGNATE_TYPE_ID）追加 null or 1 がIP方式 2 がホスト名方式  I_PATTERN_NAMEとI_OPERATION_NAMEを追加
-                    "I_ANS_HOST_DESIGNATE_TYPE_ID"=>"",
-                    "I_PATTERN_NAME"=>"",
-                    "I_OPERATION_NAME"=>"",
-                    "FILE_INPUT"=>"",
-                    "FILE_RESULT"=>"",
-                    // ドライラン 1:通常 2:ドライラン/オペレーションNO
-                    "I_OPERATION_NO_IDBH"=>"",
-                    "RUN_MODE"=>"",
-                    "TIME_BOOK"=>"DATETIME",
-                    "TIME_START"=>"DATETIME",
-                    "TIME_END"=>"DATETIME",
-                    "I_TIME_LIMIT"=>"",
-                    "I_ANS_PARALLEL_EXE"=>"",
-                    "DISUSE_FLAG"=>"",
-                    "NOTE"=>"",
-                    "LAST_UPDATE_TIMESTAMP"=>"",
-                    "LAST_UPDATE_USER"=>""
-                );
-
-                // Legacy-Role対応
-                // $arrayConfig2をlegacyとpioneerで分ける
-                switch($vg_driver_id){
-                case DF_LEGACY_DRIVER_ID:
-                case DF_LEGACY_ROLE_DRIVER_ID:
-                    $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                         "UPDATE",
-                                                         "EXECUTION_NO",
-                                                         $vg_exe_ins_msg_table_name,
-                                                         $vg_exe_ins_msg_table_jnl_name,
-                                                         $arrayConfig2_legacy,
-                                                         $cln_execution_row );
-                    break;
-                case DF_PIONEER_DRIVER_ID:
-                    $retArray = makeSQLForUtnTableUpdate($db_model_ch,
-                                                         "UPDATE",
-                                                         "EXECUTION_NO",
-                                                         $vg_exe_ins_msg_table_name,
-                                                         $vg_exe_ins_msg_table_jnl_name,
-                                                         $arrayConfig2_pioneer,
-                                                         $cln_execution_row );
-                    break;
-                }
+                $retArray = makeSQLForUtnTableUpdate($db_model_ch,
+                                                     "UPDATE",
+                                                     "EXECUTION_NO",
+                                                     $vg_exe_ins_msg_table_name,
+                                                     $vg_exe_ins_msg_table_jnl_name,
+                                                     $arrayConfig2,
+                                                     $cln_execution_row );
                 
                 $sqlUtnBody = $retArray[1];
                 $arrayUtnBind = $retArray[2];
@@ -995,12 +817,26 @@
             
             // トランザクションフラグ(初期値はfalse)
             $transaction_flag = false;
+
+            // 実行エンジンを判定
+            if($lv_ans_if_info['ANSIBLE_EXEC_MODE'] != DF_EXEC_MODE_ANSIBLE) {
+                if( $Status == 5 ||
+                    $Status == 6 ||
+                    $Status == 7 ||
+                    $Status == 8 ) {
+                        ////////////////////////////////////////////////////////////////
+                        // AnsibleTower ゴミ掃除 戻り値は確認しない。
+                        ////////////////////////////////////////////////////////////////
+                        AnsibleTowerExecution(DF_DELETERESOURCE_FUNCTION,$lv_ans_if_info,$tgt_execution_row,$ansdrv->getAnsible_out_Dir(),$UIExecLogPath,$UIErrorLogPath,$Status);
+                }
+            }
             
             // トレースメッセージ
             if ( $log_level === 'DEBUG' ){
                 $FREE_LOG = $objMTS->getSomeMessage("ITAANSIBLEH-STD-50040",$tgt_execution_no);
                 require ($root_dir_path . $log_output_php );
             }
+            unset($ansdrv);
         }
         
         // トレースメッセージ

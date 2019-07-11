@@ -668,7 +668,19 @@ function drawCommandButtons(minorPhase){
                 if( objButtonR50 != null ){
                     objCommandAreaWrap.insertBefore(objButtonR50, null);
                 }
-                
+                //キャンセルボタン用
+                var objButtonCancel50 = document.createElement('input');
+                objButtonCancel50.type = 'button';
+                objButtonCancel50.className = 'cmdButton disableAfterPush';
+                if( minorPhase==1 ){
+                    objButtonCancel50.value = getSomeMessage("ITABASEC010411");;
+                    objButtonCancel50.onclick = new Function( "symphonyUpdateCancel();" );
+                }else{
+                    objButtonCancel50 = null;
+                }
+                if( objButtonCancel50 != null ){
+                    objCommandAreaWrap.insertBefore(objButtonCancel50, null);
+                }
 
                 break;
             case "instanceConstruct":

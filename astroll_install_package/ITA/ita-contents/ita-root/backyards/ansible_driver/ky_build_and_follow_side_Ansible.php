@@ -96,6 +96,9 @@
     // 並列実行数対応
     $strExecCount               = $argv[5];  // 並列実行数 0:デフォルト !0:並列実行数
 
+    // ansible-playbook実行ユーザー
+    $strExecUser                = $argv[6];
+
     // Legacy-Roleの場合はplaybookをsite.ymlにする。
     if($strOrchestratorSub_Id == "LEGACY_RL"){
         $strPlayBookFileName = '/site.yml';
@@ -176,7 +179,7 @@
         $stroptions = file_get_contents($stroptionfile);
 
         // Ansible実行Commnad発行
-        $strBuildCommand     = "sudo -u root -i ansible-playbook {$stroptions} -M " . $root_dir_path . "/libs/restapiindividuallibs/ansible_driver -i {$strhosts} {$strPlaybookPath} {$stransibleplaybook_options}";
+        $strBuildCommand     = "sudo -u {$strExecUser} -i ansible-playbook {$stroptions} -M " . $root_dir_path . "/libs/restapiindividuallibs/ansible_driver -i {$strhosts} {$strPlaybookPath} {$stransibleplaybook_options}";
 
         $resProcess = proc_open($strBuildCommand, $objDescriptorspec, $aryPipe);
 

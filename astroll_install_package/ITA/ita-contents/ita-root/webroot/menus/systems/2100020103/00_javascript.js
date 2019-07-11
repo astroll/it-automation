@@ -88,6 +88,10 @@ callback.prototype = {
             if( ary_result[3]==1 ){
                 Filter1Tbl_reset_filter(true);
             }
+            // 作業状態確認から遷移してきた場合の対応
+            else if( ary_result[3]==0 ){
+                queryDataToFilter();
+            }
         }else{
             window.alert(getSomeMessage("ITAWDCC90101"));
         }
@@ -843,6 +847,24 @@ function setInputButtonDisable(rangeId,targetClass,toValue){
     }
 }
 //////// 汎用系ファンクション---- ////////
-
 //---- ここからカスタマイズした場合の一般メソッド配置域
+function queryDataToFilter(){
+    // クエリからMovementIDを取得
+    var ope_id      = getQuerystring("ope_id");
+    var movement_id = getQuerystring("movement_id");
+
+    var filter_flag = false;
+
+    // MovementIDが取得された場合
+    if ( movement_id.length > 0 ){
+            document.getElementById('Filter1Tbl_1__S').value = decodeURIComponent(movement_id);
+            document.getElementById('Filter1Tbl_1__E').value = decodeURIComponent(movement_id);
+            filter_flag = true;
+    }
+    if(filter_flag === true){
+            filter_on = true;
+            // フィルタボタンを押下したことにする
+            Filter1Tbl_search_async('orderFromFilterCmdBtn');
+    }
+}
 // ここまでカスタマイズした場合の一般メソッド配置域----

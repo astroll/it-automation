@@ -14,7 +14,7 @@
 //   limitations under the License.
 //
 ////en_US_UTF-8_ITAOPENST_MNU
-$ary[100010] = "You can perform maintenance (view/update) of OpenStack server authentication information. <br> Register a user with heat_stack_owner rights for each project. <br>";
+$ary[100010] = "Maintenance (view/update) can be performed on OpenStack server authentication information. <br> Register a user with heat_stack_owner rights for each project. <br>";
 $ary[100020] = "No.";
 $ary[100030] = "OpenStack interface information";
 $ary[100040] = "Protocol";
@@ -42,8 +42,8 @@ $ary[110110] = "Select";
 $ary[120030] = "Project";
 $ary[130000] = "You can perform maintenance (view/register/update/discard) of specific values substituted to variables in the template file for each Operation, Movement and Project.";
 $ary[130010] = "Item No.";
-$ary[130020] = "OpenStackSubstitution value list";
-$ary[130030] = "OpenStackSubstitution value list";
+$ary[130020] = "OpenStack Substitution value list";
+$ary[130030] = "OpenStack Substitution value list";
 $ary[130040] = "Operation";
 $ary[130050] = "[Original Data] Basic Console / Input Operation List";
 $ary[130060] = "Movement";
@@ -62,12 +62,14 @@ $ary[130200] = "Classification";
 $ary[130210] = "Input value";
 $ary[130220] = "Symbol Name/ID";
 $ary[130230] = "Warning";
-$ary[130240] = "There are items with blank values, are you sure you want to reflect them?";
+$ary[130240] = "Items with blank values exist. Are you sure you want to apply them?";
 $ary[130250] = "Error";
-$ary[130260] = "FloatingIPAddress is duplicated.";
-$ary[130270] = "FloatingIP identification name / ID, please select an ID.";
-$ary[130280] = "Execution user";
+$ary[130260] = "Floating IP Address is duplicated.";
+$ary[130270] = "Floating IP identification name/ID, please select an ID.";
+$ary[130280] = "Executing user";
 $ary[130290] = "[Original data] User list";
+$ary[130300] = "Caller symphony";
+$ary[130310] = "[Original data] Symphony class list";
 $ary[150000] = "You can view the execution result list. <br>Press \"Result details\" to move to results detail menu.";
 $ary[150010] = "Execution No.";
 $ary[150020] = "Execution status check";

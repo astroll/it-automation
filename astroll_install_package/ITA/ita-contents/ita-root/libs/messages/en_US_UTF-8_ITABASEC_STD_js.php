@@ -52,6 +52,7 @@ $ary["ITABASEC-010407"] = "Unhold";
 $ary["ITABASEC-010408"] = "Pause";
 $ary["ITABASEC-010409"] = "Description";
 $ary["ITABASEC-010410"] = "Skip";
+$ary["ITABASEC-010411"] = "cancel";
 $ary["ITABASEC-010501"] = "Unexecuted";
 $ary["ITABASEC-010502"] = "Preparation error";
 $ary["ITABASEC-010503"] = "Preparing";
@@ -84,5 +85,5 @@ $ary["ITABASEC-090002"] = "Are you sure you want to export?";
 $ary["ITABASEC-090003"] = "Select menus to import";
 $ary["ITABASEC-090004"] = "Are you sure you want to import?";
 $ary["ITABASEC-090005"] = "Select a file to upload";
-$ary["ITABASEC-090006"] = "All menu are not selected.\nIf you import only a part of menus, the consistency between the data may be corrupted.\n\nAre you sure you want to continue?";
+$ary["ITABASEC-090006"] = "Not all menu items are selected.\nIf you only partially import menus, consistency between the data may be corrupted.\n\nAre you sure you want to continue?";
 ?>

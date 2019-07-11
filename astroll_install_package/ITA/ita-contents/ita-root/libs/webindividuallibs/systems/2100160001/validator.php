@@ -791,4 +791,68 @@ class StartCreateItemValidator extends IDValidator {
         return $retBool;
     }
 }
+
+/**
+* 正規表現専用のバリデータクラス
+*/
+
+class PregMatchValidator extends SingleTextValidator {
+
+    protected $eventMasterName;
+
+    function isValid($value, $strNumberForRI=null, $arrayRegData=null, &$arrayVariant=array()){
+
+        global $g;
+        $retBool = true;
+        $strModeId = "";
+
+        if( parent::isValid($value, $strNumberForRI, $arrayRegData, $arrayVariant) != true ) {
+            return false;
+        }
+
+        if(array_key_exists("TCA_PRESERVED", $arrayVariant)){
+            if(array_key_exists("TCA_ACTION", $arrayVariant["TCA_PRESERVED"])){
+                $aryTcaAction = $arrayVariant["TCA_PRESERVED"]["TCA_ACTION"];
+                $strModeId = $aryTcaAction["ACTION_MODE"];
+            }
+        }
+
+        if( $strModeId != "" ){
+            $boolCheckContinue = false;
+            if($strModeId == "DTUP_singleRecRegister" ){
+                //----各種登録時
+                $boolCheckContinue = true;
+                //各種登録時----
+            }else if($strModeId == "DTUP_singleRecUpdate"){
+                //----各種更新時
+                $boolCheckContinue = true;
+                //各種更新時----
+            }else if($strModeId == "DTUP_singleRecDelete"){
+                $modeValue_sub = $arrayVariant["TCA_PRESERVED"]["TCA_ACTION"]["ACTION_SUB_MODE"];//['mode_sub'];
+                if( $modeValue_sub=="on" ){
+                    //処理をしない
+                }else if( $modeValue_sub=="off" ){
+                    //復活時
+                    $boolCheckContinue = true;
+                }
+            }else{
+                //処理をしない
+            }
+
+            if($boolCheckContinue===true){
+
+                // 正規表現が不正な文法
+                if("" != $value && false === @preg_match($value, "")){
+                    $retBool = false;
+                    $strErrAddMsg = $g['objMTS']->getSomeMessage("ITACREPAR-ERR-1021");
+                }
+            }
+
+            if( $retBool === false ){
+                $this->setValidRule($strErrAddMsg);
+            }
+        }
+        return $retBool;
+    }
+}
 ?>

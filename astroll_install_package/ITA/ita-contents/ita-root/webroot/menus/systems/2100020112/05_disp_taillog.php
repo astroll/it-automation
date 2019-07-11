@@ -19,7 +19,7 @@
     
     //----オーケストレータ別の設定記述
     
-    $strIfTableIdForSelect       = 'D_ANSIBLE_LNS_IF_INFO';
+    $strIfTableIdForSelect       = 'B_ANSIBLE_IF_INFO'; 
     
     $strColIdOfDRSRPathFromWebSv = 'ANSIBLE_STORAGE_PATH_LNX';
     $strColIdOfTailLine          = 'ANSIBLE_TAILLOG_LINES';

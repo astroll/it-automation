@@ -24,8 +24,9 @@
     $tmpArrayReqHeaderRaw = getallheaders();
     list($strReqMethod  , $tmpBoolKey01Exists) = isSetInArrayNestThenAssign($_SERVER             , array('REQUEST_METHOD'),"");
     // 独自のhttpリクエストヘッダフィールド名なので[X-]を付加
-    list($strCommand    , $tmpBoolKey02Exists) = isSetInArrayNestThenAssign($tmpArrayReqHeaderRaw, array('X-Command'),"");
-    list($strContentType, $tmpBoolKey03Exists) = isSetInArrayNestThenAssign($tmpArrayReqHeaderRaw, array('Content-Type'),"");
+    $tmpArrayReqHeaderPrepare=array_change_key_case($tmpArrayReqHeaderRaw);
+    list($strCommand    , $tmpBoolKey02Exists) = isSetInArrayNestThenAssign($tmpArrayReqHeaderPrepare, array('x-command'),"");
+    list($strContentType, $tmpBoolKey03Exists) = isSetInArrayNestThenAssign($tmpArrayReqHeaderPrepare, array('content-type'),"");
     unset($tmpArrayReqHeaderRaw);
 
     $tmpStrJsonString = "";

@@ -13,12 +13,12 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 //
-    //////////////////////////////////////////////////////////////////////
-    //
-    //  【概要】
-    //    symphonyインスタンスの作成、更新をする機能を提供する。
-    //
-    //////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//
+//  【概要】
+//    ・symphonyインスタンスの作成、更新をする機能を提供する。
+//
+//////////////////////////////////////////////////////////////////////
 
 $tmpAryFx = array();
 $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
@@ -27,23 +27,24 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
     /////////////////////////////////////////////////////////////////
     // 各種ローカル定数を定義
     $intControlDebugLevel01 = 250;
-
+    
     $strStatusNumeric = null;
     $intErrorType = null;
     $aryErrMsgBody = array();
     $strErrMsg = "";
     $aryTargetParameter = array();
-
+    
     //----オーケストレータ別の設定記述
-    $strExeCurTableIdForIU = 'C_DSC_EXE_INS_MNG'; //
-    $strExeJnlTableIdForIU = 'C_DSC_EXE_INS_MNG_JNL'; //
-
+    $strExeCurTableIdForIU = 'C_DSC_EXE_INS_MNG';
+    $strExeJnlTableIdForIU = 'C_DSC_EXE_INS_MNG_JNL';
+    
     $arrayConfigForSelect = array(
         "JOURNAL_SEQ_NO"=>"",
         "JOURNAL_ACTION_CLASS"=>"",
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>"",
         "EXECUTION_USER"=>"",
+        "SYMPHONY_NAME"=>"",
         "STATUS_ID"=>"",
         "SYMPHONY_INSTANCE_NO"=>"",
         "PATTERN_ID"=>"",
@@ -71,6 +72,7 @@ $tmpFx = function ($objOLA, $target_execution_no, $aryProperParameter=array()){
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>"",
         "EXECUTION_USER"=>"",
+        "SYMPHONY_NAME"=>"",
         "STATUS_ID"=>"",
         "SYMPHONY_INSTANCE_NO"=>"",
         "PATTERN_ID"=>"",
@@ -252,6 +254,7 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
     // 処理開始
     try{
         $user_name = '';
+        $symphony_name = '';
         list($strTmpRunMode,$boolKeyExists) = isSetInArrayNestThenAssign($aryProperParameter,array('RUN_MODE'),"");
         if( $boolKeyExists === false ){
             //----シンフォニーから呼ばれる場合を想定
@@ -277,6 +280,30 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
                 // レコードFETCH
                 while ( $row = $objQuery->resultFetch() ){
                     $user_name = $row['EXECUTION_USER'];
+                }
+                // DBアクセス事後処理
+                unset($objQuery);
+            }
+            // シンフォニークラス名情報を取得する
+            if(isset($g['__SYMPHONY_INSTANCE_NO__'])) {
+                // SQL作成
+                $sql = "SELECT I_SYMPHONY_NAME FROM C_SYMPHONY_INSTANCE_MNG WHERE SYMPHONY_INSTANCE_NO = $int_Symphony_instance_no";
+                // SQL準備
+                $objQuery = $objDBCA->sqlPrepare($sql);
+                if( $objQuery->getStatus()===false ){
+                    $strErrStepIdInFx="00000001";
+                    throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+                }
+                // SQL発行
+                $r = $objQuery->sqlExecute();
+                if (!$r){
+                    unset($objQuery);
+                    $strErrStepIdInFx="00000001";
+                    throw new Exception( $strErrStepIdInFx . '-([FILE]' . __FILE__ . ',[LINE]' . __LINE__ . ')' );
+                }
+                // レコードFETCH
+                while ( $row = $objQuery->resultFetch() ){
+                    $symphony_name = $row['I_SYMPHONY_NAME'];
                 }
                 // DBアクセス事後処理
                 unset($objQuery);
@@ -378,6 +405,7 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>"",
         "EXECUTION_USER"=>"",
+        "SYMPHONY_NAME"=>"",
         "STATUS_ID"=>"",
         "SYMPHONY_INSTANCE_NO"=>"",
         "PATTERN_ID"=>"",
@@ -424,6 +452,7 @@ $tmpFx = function ($objOLA, $intPatternId, $intOperationNoUAPK, $strPreserveDate
         "JOURNAL_REG_DATETIME"=>"",
         "EXECUTION_NO"=>$p_execution_utn_no,
         "EXECUTION_USER"=>$user_name,
+        "SYMPHONY_NAME"=>$symphony_name,
         "STATUS_ID"=>$status_id_for_update,
 
         "SYMPHONY_INSTANCE_NO"=>$int_Symphony_instance_no,

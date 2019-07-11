@@ -271,6 +271,11 @@ function registData($record, &$importedTableAry){
     $ricAry = json_decode($ricJson, true);
     $jsqJson = file_get_contents($importPath . '/JSQ_LIST');
     $jsqAry = json_decode($jsqJson, true);
+    $otherSeqAry = array();
+    if(file_exists($importPath . '/OTHER_SEQ_LIST')){
+        $otherSeqJson = file_get_contents($importPath . '/OTHER_SEQ_LIST');
+        $otherSeqAry = json_decode($otherSeqJson, true);
+    }
 
     // インポート時にPOSTされたMENU_IDを取得
     $menuIdJson = file_get_contents($importPath . '/IMPORT_MENU_ID_LIST');
@@ -281,6 +286,11 @@ function registData($record, &$importedTableAry){
         $tableAry[$menuId] = $tmpTableAry[$menuId];
         $lockLAry[] = $tmpTableAry[$menuId]['SEQUENCE_JSQ'];
         $lockLAry[] = $tmpTableAry[$menuId]['SEQUENCE_RIC'];
+        if(array_key_exists('SEQUENCE_OTHER', $tmpTableAry[$menuId]) && 0 < count($tmpTableAry[$menuId]['SEQUENCE_OTHER'])){
+            foreach($tmpTableAry[$menuId]['SEQUENCE_OTHER'] as $seqName){
+                $lockLAry[] = $seqName;
+            }
+        }
     }
 
     // 更新前に対象テーブルをバックアップ
@@ -317,6 +327,16 @@ function registData($record, &$importedTableAry){
         $res = updateSequence(array('name' => $table['SEQUENCE_JSQ'], 'value' => $seqValue));
         if ($res === false) {
             return false;
+        }
+
+        if(array_key_exists('SEQUENCE_OTHER', $table) && 0 < count($table['SEQUENCE_OTHER'])){
+            foreach($table['SEQUENCE_OTHER'] as $seqName){
+                $seqValue = $otherSeqAry[$seqName];
+                $res = updateSequence(array('name' => $seqName, 'value' => $seqValue));
+                if ($res === false) {
+                    return false;
+                }
+            }
         }
 
         // 更新系テーブルinsert
@@ -1583,8 +1603,9 @@ function exportData($record){
         return false;
     }
 
-    $ricAry = array(); // 更新系テーブルのシーケンス番号用
-    $jsqAry = array(); // 履歴系テーブルのシーケンス番号用
+    $ricAry = array();      // 更新系テーブルのシーケンス番号用
+    $jsqAry = array();      // 履歴系テーブルのシーケンス番号用
+    $otherSeqAry = array(); // その他のシーケンス番号用
 
     foreach ($resAry as $key => $value) {
 
@@ -1739,6 +1760,31 @@ function exportData($record){
         while ($row = $objQuery->resultFetch()) {
             $jsqAry[$value['SEQUENCE_JSQ']] = $row['VALUE'];
         }
+
+        // その他のシーケンス番号取得
+        if(array_key_exists('SEQUENCE_OTHER', $value) && 0 < $value['SEQUENCE_OTHER']){
+            foreach($value['SEQUENCE_OTHER'] as $seqName){
+                $sql  = 'SELECT VALUE FROM A_SEQUENCE';
+                $sql .= " WHERE NAME = '" . $seqName . "'";
+                $objQuery = $objDBCA->sqlPrepare($sql);
+                if ($objQuery->getStatus() === false) {
+                    outputLog(LOG_PREFIX, $objMTS->getSomeMessage('ITABASEH-ERR-900054', array(basename(__FILE__), __LINE__)));
+                    outputLog(LOG_PREFIX, "SQL=[$sql].");
+                    outputLog(LOG_PREFIX, $objQuery->getLastError());
+                    return false;
+                }
+                $res = $objQuery->sqlExecute();
+                if ($res === false) {
+                    outputLog(LOG_PREFIX, $objMTS->getSomeMessage('ITABASEH-ERR-900054', array(basename(__FILE__), __LINE__)));
+                    outputLog(LOG_PREFIX, "SQL=[$sql].");
+                    outputLog(LOG_PREFIX, $objQuery->getLastError());
+                    return false;
+                }
+                while ($row = $objQuery->resultFetch()) {
+                    $otherSeqAry[$seqName] = $row['VALUE'];
+                }
+            }
+        }
     }
 
     $json = json_encode($ricAry);
@@ -1753,6 +1799,14 @@ function exportData($record){
     if ($res === false) {
         outputLog(LOG_PREFIX, "Function[file_put_contents] is error. File=[" . $exportPath . '/JSQ_LIST' . "],Value={$json}");
         return false;
+    }
+    if(0 < count($otherSeqAry)){
+        $json = json_encode($otherSeqAry);
+        $res = file_put_contents($exportPath . '/OTHER_SEQ_LIST', $json);
+        if ($res === false) {
+            outputLog(LOG_PREFIX, "Function[file_put_contents] is error. File=[" . $exportPath . '/OTHER_SEQ_LIST' . "],Value={$json}");
+            return false;
+        }
     }
 
     $sql  = 'SELECT MENU_GROUP_ID, MENU_GROUP_NAME, MENU_ID, MENU_NAME, DISP_SEQ';
@@ -1934,8 +1988,12 @@ function getInfoOfLTUsingIdOfMenuForDBtoDBLink($strMenuIdNumeric){
     $retAry['JNL_TABLE_NAME'] = $aryValues['TABLE_INFO']['JNL']['OBJECT_ID'];
     $retAry['VIEW_NAME'] = $aryValues['TABLE_INFO']['VIEW']['UTN_VIEW'];
     $retAry['JNL_VIEW_NAME'] = $aryValues['TABLE_INFO']['VIEW']['JNL_VIEW'];
-    $retAry['SEQUENCE_JSQ'] = $aryValues['TABLE_INFO']['REQUIRED_COLUMNS']['UtnSeqName'];
-    $retAry['SEQUENCE_RIC'] = $aryValues['TABLE_INFO']['REQUIRED_COLUMNS']['JnlSeqName'];
+    $retAry['SEQUENCE_RIC'] = $aryValues['TABLE_INFO']['REQUIRED_COLUMNS']['UtnSeqName'];
+    $retAry['SEQUENCE_JSQ'] = $aryValues['TABLE_INFO']['REQUIRED_COLUMNS']['JnlSeqName'];
+    if(0 < count($aryValues['SEQ_IDS'])){
+        $retAry['SEQUENCE_OTHER'] = $aryValues['SEQ_IDS'];
+    }
+
     $retUploadAry =  $aryValues['UPLOAD_DIRS'];
     // 存在しないディレクトリは対象から削除
     foreach($retUploadAry as $key => $value){
@@ -1983,6 +2041,7 @@ function getInfoOfLoadTable($strMenuIdNumeric){
     $aryColumnInfo01 = array();
     $aryColumnInfo02 = array();
     $aryUploadColumnDir = array();
+    $aryOtherSeqIds = array();
     try{
         $systemDir = "systems/{$strMenuIdNumeric}";
         $userDir = "users/{$strMenuIdNumeric}";
@@ -2186,6 +2245,9 @@ function getInfoOfLoadTable($strMenuIdNumeric){
                         if("FileUploadColumn" ===  get_class($objColumn)){
                             $aryUploadColumnDir[] = $objColumn->getNRPathAnyToBranchPerFUC();
                         }
+                        if("AutoNumRegisterColumn" ===  get_class($objColumn)){
+                            $aryOtherSeqIds[] = $objColumn->getSequenceID();
+                        }
                     }
                     else{
                         $aryColumnInfo02[] = array($strColumnId,$objColumn->getColLabel(true));
@@ -2202,8 +2264,9 @@ function getInfoOfLoadTable($strMenuIdNumeric){
     }
     $aryValues = array("TABLE_INFO"       =>$aryInfoOfTable
                       ,"TABLE_IUD_COLUMNS"=>$aryColumnInfo01
-                      ,"OTHER_COLUMNS"    =>$aryColumnInfo02                         
+                      ,"OTHER_COLUMNS"    =>$aryColumnInfo02
                       ,"UPLOAD_DIRS"      =>$aryUploadColumnDir
+                      ,"SEQ_IDS"          =>$aryOtherSeqIds
                        );
     return array($aryValues,$intErrorType,$strErrMsg);
 }

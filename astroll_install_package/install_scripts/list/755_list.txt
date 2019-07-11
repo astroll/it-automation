@@ -12,10 +12,7 @@
 /ita-root/backyards/ansible_driver/ky_pioneer_varsautolistup-workflow
 /ita-root/backyards/ansible_driver/ky_pionner_grep_side_Ansible.sh
 /ita-root/backyards/ansible_driver/ky_pionner_kill_side_Ansible.sh
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_checkcondition-workflow
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_execute-workflow
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_valautostup-workflow
-/ita-root/backyards/ansibletower_driver/ky_ansibletower_varsautolistup-workflow
+/ita-root/backyards/ansible_driver/ky_ansible_towermasterSync-workflow
 /ita-root/backyards/cobbler_driver/ky_cobbler_profileSync_side_Cobbler
 /ita-root/backyards/cobbler_driver/ky_cobbler_profileSync_side_ITA
 /ita-root/backyards/cobbler_driver/ky_cobbler_systemSync_side_Cobbler

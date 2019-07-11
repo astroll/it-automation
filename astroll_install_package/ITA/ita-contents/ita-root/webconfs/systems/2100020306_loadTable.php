@@ -129,25 +129,27 @@ Ansible(Legacy Role)作業パターン
         $c->setRequired(true);//登録/更新時には、入力必須
         $cg->addColumn($c);
 
-        // 並列実行数
-        $c = new NumColumn('ANS_PARALLEL_EXE',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1207047"));
-        $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1207048"));//エクセル・ヘッダでの説明
-        $c->setHiddenMainTableColumn(true);//コンテンツのソースがヴューの場合、登録/更新の対象とする際に、trueとすること。setDBColumn(true)であることも必要。
-        $c->setSubtotalFlag(false);
-        $c->setValidator(new IntNumValidator(1,null));
-        $cg->addColumn($c);
-
         $c = new IDColumn('ANS_WINRM_ID',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1207071"),'D_FLAG_LIST_01','FLAG_ID','FLAG_NAME','');
         $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1207072"));//エクセル・ヘッダでの説明
         $c->setHiddenMainTableColumn(true);//コンテンツのソースがヴューの場合、登録/更新の対象とする際に、trueとすること。setDBColumn(true)であることも必要。
         $cg->addColumn($c);
 
-        $c = new IDColumn('ANS_GATHER_FACTS',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1207073"),'D_GATHER_FACTS_LIST_01','FLAG_ID','FLAG_NAME','');
-        $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1207074"));//エクセル・ヘッダでの説明
+        /* 親Playbookのヘッダーセクション */
+        $objVldt = new MultiTextValidator(0,512,false);
+        $c = new MultiTextColumn('ANS_PLAYBOOK_HED_DEF',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000008"));
+        $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000012"));//エクセル・ヘッダでの説明
         $c->setHiddenMainTableColumn(true);//コンテンツのソースがヴューの場合、登録/更新の対象とする際に、trueとすること。setDBColumn(true)であることも必要。
+        $c->setValidator($objVldt);
+        $c->setRequired(false);//登録/更新時には、任意入力
+        $cg->addColumn($c);
 
-        $c->getOutputType('register_table')->setDefaultInputValue("1");
-
+        /* Ansible-Playbook実行時のMovement固有オプションパラメータ */
+        $objVldt = new SingleTextValidator(0,512,false);
+        $c = new TextColumn('ANS_EXEC_OPTIONS',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000010"));
+        $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000011"));
+        $c->setHiddenMainTableColumn(true);//コンテンツのソースがヴューの場合、登録/更新の対象とする際に、trueとすること。setDBColumn(true)であることも必要。
+        $c->setValidator($objVldt);
+        $c->setRequired(false);
         $cg->addColumn($c);
 
 

@@ -1782,7 +1782,7 @@ class TextTabBFmt extends TabBFmt {
 			}
 			//リッチ完全合致がなかった場合----
 		}
-		$strTagInnerBody = nl2br($strTagInnerBody);
+//		$strTagInnerBody = nl2br($strTagInnerBody);
 		dev_log($g['objMTS']->getSomeMessage("ITAWDCH-STD-4",array(__FILE__,$strFxName)),$intControlDebugLevel01);
 		return $this->getTag($strTagInnerBody, $rowData);
 	}
@@ -3679,17 +3679,14 @@ EOD;
 			
 			$strTagInnerBody = 
 <<<EOD
-	{$current}
-<iframe id="{$strIdOfIframe}" name="{$strNameOfIframe}" style="display:none" ></iframe>
-<form id="{$strIdOfForm}" action="{$strActionUrl}"
-	   method="POST" encoding="multipart/form-data" enctype="multipart/form-data" target="{$strIdOfIframe}">
- <input type="hidden" id="{$strIdOfFSTOfTmpFile}" name="{$strNameOfFSTOfTmpFile}" value="" />
- <input type="hidden" id="{$strIdOfFSTOfFileId}" name="{$strNameOfFSTOfFileId}" value="{$strDummyValue01}" />
- <input type="hidden" name="MAX_FILE_SIZE" value="{$strConfSetFilesizeNumeric}" />
- <input type="hidden" name="{$strNameOfFromFormatterId}" value="{$this->strFormatterId}" />
- <span name="filewrapper"><input type="file" name="file" id="{$strIdOfForm}_file"/></span>
-</form>
-
+{$current}<iframe id="{$strIdOfIframe}" name="{$strNameOfIframe}" style="display:none" >
+</iframe><form id="{$strIdOfForm}" action="{$strActionUrl}" method="POST" encoding="multipart/form-data" enctype="multipart/form-data" target="{$strIdOfIframe}"><input type="hidden" id="{$strIdOfFSTOfTmpFile}" name="{$strNameOfFSTOfTmpFile}" value="" /><input type="hidden" id="{$strIdOfFSTOfFileId}" name="{$strNameOfFSTOfFileId}" value="{$strDummyValue01}" /><input type="hidden" name="MAX_FILE_SIZE" value="{$strConfSetFilesizeNumeric}" /><input type="hidden" name="{$strNameOfFromFormatterId}" value="{$this->strFormatterId}" /><span name="filewrapper"><input type="file" name="file" id="{$strIdOfForm}_file"/></span></form><input type="button" id="{$strIdOfInputButton}" name="1" value="{$g['objMTS']->getSomeMessage("ITAWDCH-STD-634")}" onclick="
+formControlForFUCFileUpLoad(
+    this,'{$strIdOfForm}','{$strIdOfResultArea}','{$strIdOfIframe}','{$strIdOfFSTOfTmpFile}','{$strIdOfInputButton}',
+    '{$g['objMTS']->getSomeMessage("ITAWDCH-ERR-12103")}','{$g['objMTS']->getSomeMessage("ITAWDCH-STD-635")}'
+);
+" />
+{$g['objMTS']->getSomeMessage("ITAWDCH-STD-636")}:<div id="{$strIdOfResultArea}"></div><br />
 <script type="text/javascript">
 document.getElementById("{$strIdOfForm}_file").onchange = function(){
     if(document.getElementById("{$strIdOfFSTOfDelFlag}") != null){
@@ -3702,16 +3699,6 @@ document.getElementById("{$strIdOfForm}_file").onchange = function(){
     }
 }
 </script>
-<!-- start of inputTag -->
-<input type="button" id="{$strIdOfInputButton}" name="1" value="{$g['objMTS']->getSomeMessage("ITAWDCH-STD-634")}" onclick="
-formControlForFUCFileUpLoad(
-    this,'{$strIdOfForm}','{$strIdOfResultArea}','{$strIdOfIframe}','{$strIdOfFSTOfTmpFile}','{$strIdOfInputButton}',
-    '{$g['objMTS']->getSomeMessage("ITAWDCH-ERR-12103")}','{$g['objMTS']->getSomeMessage("ITAWDCH-STD-635")}'
-);
-" />
-<!-- tail of inputTag -->
-<p>{$g['objMTS']->getSomeMessage("ITAWDCH-STD-636")}:<div id="{$strIdOfResultArea}"></div></p>
-<br /><div>&nbsp;</div>
 EOD;
 			
 		}

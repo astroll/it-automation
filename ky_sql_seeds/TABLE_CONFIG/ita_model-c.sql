@@ -40,27 +40,35 @@ PRIMARY KEY(JOURNAL_SEQ_NO)
 -- ----更新系テーブル作成
 CREATE TABLE B_ANSIBLE_IF_INFO
 (
-ANSIBLE_IF_INFO_ID                %INT%                            ,
-
-ANSIBLE_STORAGE_PATH_LNX          %VARCHR%(256)                    ,
-ANSIBLE_STORAGE_PATH_ANS          %VARCHR%(256)                    ,
-SYMPHONY_STORAGE_PATH_ANS         %VARCHR%(256)                    ,
-ANSIBLE_PROTOCOL                  %VARCHR%(8)                      ,
-ANSIBLE_HOSTNAME                  %VARCHR%(128)                    ,
-ANSIBLE_PORT                      %INT%                            ,
-ANSIBLE_ACCESS_KEY_ID             %VARCHR%(64)                     ,
-ANSIBLE_SECRET_ACCESS_KEY         %VARCHR%(64)                     ,
-ANSIBLE_REFRESH_INTERVAL          %INT%                            ,
-ANSIBLE_TAILLOG_LINES             %INT%                            ,
-ANSIBLE_EXEC_OPTIONS              %VARCHR%(512)                    , -- ansible-playbook実行時のオプションパラメータ
-NULL_DATA_HANDLING_FLG            %INT%                            , -- Null値の連携 1:有効　2:無効
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-
+-- 主キー
+ANSIBLE_IF_INFO_ID              INT                               ,
+-- 共通
+ANSIBLE_HOSTNAME                %VARCHR%(128)                     , 
+ANSIBLE_PROTOCOL                %VARCHR%(8)                       , 
+ANSIBLE_PORT                    %INT%                             ,
+ANSIBLE_EXEC_MODE               %INT%                             , -- 実行モード 1:ansible/2:ansible tower
+ANSIBLE_STORAGE_PATH_LNX        %VARCHR%(256)                     ,
+ANSIBLE_STORAGE_PATH_ANS        %VARCHR%(256)                     ,
+SYMPHONY_STORAGE_PATH_ANS       %VARCHR%(256)                     ,
+ANSIBLE_EXEC_OPTIONS            %VARCHR%(512)                     , -- ansible-playbook実行時のオプションパラメータ
+-- ansible独自情報
+ANSIBLE_EXEC_USER               %VARCHR%(64)                      , -- ansible-playbook実行ユーザー
+ANSIBLE_ACCESS_KEY_ID           %VARCHR%(64)                      , 
+ANSIBLE_SECRET_ACCESS_KEY       %VARCHR%(64)                      , 
+-- ansible Tower独自情報
+ANSTWR_ORGANIZATION             %VARCHR%(64)                      , -- 組織名
+ANSTWR_AUTH_TOKEN               %VARCHR%(256)                     , -- 接続トークン
+ANSTWR_DEL_RUNTIME_DATA         %INT%                             , 
+-- 共通
+NULL_DATA_HANDLING_FLG          %INT%                             , -- Null値の連携 1:有効　2:無効
+ANSIBLE_REFRESH_INTERVAL        %INT%                             , 
+ANSIBLE_TAILLOG_LINES           %INT%                             , 
+--
+DISP_SEQ                        %INT%                             , -- 表示順序
+NOTE                            %VARCHR%(4000)                    , -- 備考
+DISUSE_FLAG                     %VARCHR%(1)                       , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP           %DATETIME6%                       , -- 最終更新日時
+LAST_UPDATE_USER                %INT%                             , -- 最終更新ユーザ
 PRIMARY KEY (ANSIBLE_IF_INFO_ID)
 )%%TABLE_CREATE_OUT_TAIL%%;
 -- 更新系テーブル作成----
@@ -68,34 +76,43 @@ PRIMARY KEY (ANSIBLE_IF_INFO_ID)
 -- ----履歴系テーブル作成
 CREATE TABLE B_ANSIBLE_IF_INFO_JNL
 (
-JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
-JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
-JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
-
-ANSIBLE_IF_INFO_ID                %INT%                            ,
-
-ANSIBLE_STORAGE_PATH_LNX          %VARCHR%(256)                    ,
-ANSIBLE_STORAGE_PATH_ANS          %VARCHR%(256)                    ,
-SYMPHONY_STORAGE_PATH_ANS           %VARCHR%(256)                  ,
-ANSIBLE_PROTOCOL                  %VARCHR%(8)                      ,
-ANSIBLE_HOSTNAME                  %VARCHR%(128)                    ,
-ANSIBLE_PORT                      %INT%                            ,
-ANSIBLE_ACCESS_KEY_ID             %VARCHR%(64)                     ,
-ANSIBLE_SECRET_ACCESS_KEY         %VARCHR%(64)                     ,
-ANSIBLE_REFRESH_INTERVAL          %INT%                            ,
-ANSIBLE_TAILLOG_LINES             %INT%                            ,
-ANSIBLE_EXEC_OPTIONS              %VARCHR%(512)                    , -- ansible-playbook実行時のオプションパラメータ
-NULL_DATA_HANDLING_FLG            %INT%                            , -- Null値の連携 1:有効　2:無効
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
+JOURNAL_SEQ_NO                  %INT%                             , -- 履歴用シーケンス
+JOURNAL_REG_DATETIME            %DATETIME6%                       , -- 履歴用変更日時
+JOURNAL_ACTION_CLASS            %VARCHR%(8)                       , -- 履歴用変更種別
+-- 主キー
+ANSIBLE_IF_INFO_ID              INT                               ,
+-- 共通
+ANSIBLE_HOSTNAME                %VARCHR%(128)                     , 
+ANSIBLE_PROTOCOL                %VARCHR%(8)                       , 
+ANSIBLE_PORT                    %INT%                             ,
+ANSIBLE_EXEC_MODE               %INT%                             , -- 実行モード 1:ansible/2:ansible tower
+ANSIBLE_STORAGE_PATH_LNX        %VARCHR%(256)                     ,
+ANSIBLE_STORAGE_PATH_ANS        %VARCHR%(256)                     ,
+SYMPHONY_STORAGE_PATH_ANS       %VARCHR%(256)                     ,
+ANSIBLE_EXEC_OPTIONS            %VARCHR%(512)                     , -- ansible-playbook実行時のオプションパラメータ
+-- ansible独自情報
+ANSIBLE_EXEC_USER               %VARCHR%(64)                      , -- ansible-playbook実行ユーザー
+ANSIBLE_ACCESS_KEY_ID           %VARCHR%(64)                      , 
+ANSIBLE_SECRET_ACCESS_KEY       %VARCHR%(64)                      , 
+-- ansible Tower独自情報
+ANSTWR_ORGANIZATION             %VARCHR%(64)                      , -- 組織名
+ANSTWR_AUTH_TOKEN               %VARCHR%(256)                     , -- 接続トークン
+ANSTWR_DEL_RUNTIME_DATA         %INT%                             , 
+-- 共通
+NULL_DATA_HANDLING_FLG          %INT%                             , -- Null値の連携 1:有効　2:無効
+ANSIBLE_REFRESH_INTERVAL        %INT%                             , 
+ANSIBLE_TAILLOG_LINES           %INT%                             , 
+--
+DISP_SEQ                        %INT%                             , -- 表示順序
+NOTE                            %VARCHR%(4000)                    , -- 備考
+DISUSE_FLAG                     %VARCHR%(1)                       , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP           %DATETIME6%                       , -- 最終更新日時
+LAST_UPDATE_USER                %INT%                             , -- 最終更新ユーザ
 PRIMARY KEY(JOURNAL_SEQ_NO)
 )%%TABLE_CREATE_OUT_TAIL%%;
 -- 履歴系テーブル作成----
 
+-- ----更新系テーブル作成
 CREATE TABLE B_ANSIBLE_RUN_MODE
 (
 RUN_MODE_ID                       %INT%                            , -- 識別シーケンス
@@ -172,15 +189,15 @@ PRIMARY KEY(JOURNAL_SEQ_NO)
 )%%TABLE_CREATE_OUT_TAIL%%;
 -- 履歴系テーブル作成----
 
--- - D_GATHER_FACTS_LIST_01をVIEWからTABLEに変更
--- -------------------------------------------------------
--- --GATHER_FACTS　実施選択(プルダウン用)　TABLE
--- -------------------------------------------------------
-CREATE TABLE D_GATHER_FACTS_LIST_01
+-- ------------------------------
+-- -- ファイル管理
+-- ------------------------------
+-- ----更新系テーブル作成
+CREATE TABLE B_ANS_CONTENTS_FILE
 (
-FLAG_ID                           %INT%                            , -- 識別シーケンス
-
-FLAG_NAME                         %VARCHR%(32)                     , -- 表示名
+CONTENTS_FILE_ID                  %INT%                            , -- ファイルID
+CONTENTS_FILE_VARS_NAME           %VARCHR%(128)                    , -- 変数名
+CONTENTS_FILE                     %VARCHR%(256)                    , -- コンテンツ ファイル名
 
 DISP_SEQ                          %INT%                            , -- 表示順序
 NOTE                              %VARCHR%(4000)                   , -- 備考
@@ -188,20 +205,19 @@ DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止�
 LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
 LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
 
-PRIMARY KEY (FLAG_ID)
+PRIMARY KEY (CONTENTS_FILE_ID)
 )%%TABLE_CREATE_OUT_TAIL%%;
 -- 更新系テーブル作成----
-
 -- ----履歴系テーブル作成
-CREATE TABLE D_GATHER_FACTS_LIST_01_JNL
+CREATE TABLE B_ANS_CONTENTS_FILE_JNL
 (
 JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
 JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
 JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
 
-FLAG_ID                           %INT%                            , -- 識別シーケンス
-
-FLAG_NAME                         %VARCHR%(32)                     , -- 表示名
+CONTENTS_FILE_ID                  %INT%                            , -- ファイルID
+CONTENTS_FILE_VARS_NAME           %VARCHR%(128)                    , -- 変数名
+CONTENTS_FILE                     %VARCHR%(256)                    , -- コンテンツ ファイル名
 
 DISP_SEQ                          %INT%                            , -- 表示順序
 NOTE                              %VARCHR%(4000)                   , -- 備考
@@ -210,12 +226,214 @@ LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終�
 LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
 PRIMARY KEY(JOURNAL_SEQ_NO)
 )%%TABLE_CREATE_OUT_TAIL%%;
+-- 履歴系テーブル作成----
+
+-- ------------------------------
+-- -- テンプレート管理
+-- ------------------------------
+-- ----更新系テーブル作成
+CREATE TABLE B_ANS_TEMPLATE_FILE
+(
+ANS_TEMPLATE_ID                   %INT%                            ,
+
+ANS_TEMPLATE_VARS_NAME            %VARCHR%(128)                    ,
+ANS_TEMPLATE_FILE                 %VARCHR%(256)                    ,
+
+DISP_SEQ                          %INT%                            , -- 表示順序
+NOTE                              %VARCHR%(4000)                   , -- 備考
+DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
+LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
+
+PRIMARY KEY (ANS_TEMPLATE_ID)
+)%%TABLE_CREATE_OUT_TAIL%%;
+-- 更新系テーブル作成----
+
+-- ----履歴系テーブル作成
+CREATE TABLE B_ANS_TEMPLATE_FILE_JNL
+(
+JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
+JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
+JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
+
+ANS_TEMPLATE_ID                   %INT%                            ,
+
+ANS_TEMPLATE_VARS_NAME            %VARCHR%(128)                    ,
+ANS_TEMPLATE_FILE                 %VARCHR%(256)                    ,
+
+DISP_SEQ                          %INT%                            , -- 表示順序
+NOTE                              %VARCHR%(4000)                   , -- 備考
+DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
+LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
+PRIMARY KEY(JOURNAL_SEQ_NO)
+)%%TABLE_CREATE_OUT_TAIL%%;
+-- 履歴系テーブル作成----
+
+-- ------------------------------
+-- -- 実行モード（エンジン）
+-- ------------------------------
+-- ----更新系テーブル作成
+CREATE TABLE B_ANSIBLE_EXEC_MODE
+(
+ID                                %INT%                            ,
+
+NAME                              %VARCHR%(32)                     ,
+
+DISP_SEQ                          %INT%                            , -- 表示順序
+NOTE                              %VARCHR%(4000)                   , -- 備考
+DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
+LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
+
+PRIMARY KEY (ID)
+)%%TABLE_CREATE_OUT_TAIL%%;
+-- 更新系テーブル作成----
+
+-- ----履歴系テーブル作成
+CREATE TABLE B_ANSIBLE_EXEC_MODE_JNL
+(
+JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
+JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
+JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
+ID                                %INT%                            ,
+
+NAME                              %VARCHR%(32)                     ,
+
+DISP_SEQ                          %INT%                            , -- 表示順序
+NOTE                              %VARCHR%(4000)                   , -- 備考
+DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
+LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
+PRIMARY KEY(JOURNAL_SEQ_NO)
+)%%TABLE_CREATE_OUT_TAIL%%;
+-- 履歴系テーブル作成----
+
+-- ----更新系テーブル作成
+CREATE TABLE B_ANS_TWER_RUNDATA_DEL_FLAG
+(
+FLAG_ID                           %INT%                             , -- 識別シーケンス
+FLAG_NAME                         %VARCHR%(32)                      , -- 表示名
+DISP_SEQ                          %INT%                             , -- 表示順序
+NOTE                              %VARCHR%(4000)                    , -- 備考
+DISUSE_FLAG                       %VARCHR%(1)                       , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP             %DATETIME6%                       , -- 最終更新日時
+LAST_UPDATE_USER                  %INT%                             , -- 最終更新ユーザ
+PRIMARY KEY (FLAG_ID)
+)%%TABLE_CREATE_OUT_TAIL%%;
+-- 更新系テーブル作成----
+
+-- ----履歴系テーブル作成
+CREATE TABLE B_ANS_TWER_RUNDATA_DEL_FLAG_JNL
+(
+JOURNAL_SEQ_NO                    %INT%                             , -- 履歴用シーケンス
+JOURNAL_REG_DATETIME              %DATETIME6%                       , -- 履歴用変更日時
+JOURNAL_ACTION_CLASS              %VARCHR%(8)                       , -- 履歴用変更種別
+FLAG_ID                           %INT%                             , -- 識別シーケンス
+FLAG_NAME                         %VARCHR%(32)                      , -- 表示名
+DISP_SEQ                          %INT%                             , -- 表示順序
+NOTE                              %VARCHR%(4000)                    , -- 備考
+DISUSE_FLAG                       %VARCHR%(1)                       , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP             %DATETIME6%                       , -- 最終更新日時
+LAST_UPDATE_USER                  %INT%                             , -- 最終更新ユーザ
+PRIMARY KEY(JOURNAL_SEQ_NO)
+)%%TABLE_CREATE_OUT_TAIL%%;
+-- 履歴系テーブル作成----
+
+-- ------------------------------
+-- -- Towerインスタンスグループ
+-- ------------------------------
+-- ----更新系テーブル作成
+CREATE TABLE B_ANS_TWR_INSTANCE_GROUP ( 
+  INSTANCE_GROUP_ITA_MANAGED_ID   %INT%                             , 
+  INSTANCE_GROUP_NAME             %VARCHR%(512)                     , 
+  INSTANCE_GROUP_ID               %INT%                             , 
+  DISP_SEQ                        %INT%                             , 
+  NOTE                            %VARCHR%(4000)                    , 
+  DISUSE_FLAG                     %VARCHR%(1)                       , 
+  LAST_UPDATE_TIMESTAMP           %DATETIME6%                       , 
+  LAST_UPDATE_USER                %INT%                             , 
+  PRIMARY KEY (INSTANCE_GROUP_ITA_MANAGED_ID) 
+)%%TABLE_CREATE_OUT_TAIL%%; 
+-- 更新系テーブル作成----
+
+-- ----履歴系テーブル作成
+CREATE TABLE B_ANS_TWR_INSTANCE_GROUP_JNL ( 
+  JOURNAL_SEQ_NO                  %INT%                             , 
+  JOURNAL_REG_DATETIME            %DATETIME6%                       , 
+  JOURNAL_ACTION_CLASS            %VARCHR%(8)                       , 
+  INSTANCE_GROUP_ITA_MANAGED_ID   %INT%                             , 
+  INSTANCE_GROUP_NAME             %VARCHR%(512)                     , 
+  INSTANCE_GROUP_ID               %INT%                             , 
+  DISP_SEQ                        %INT%                             , 
+  NOTE                            %VARCHR%(4000)                    , 
+  DISUSE_FLAG                     %VARCHR%(1)                       , 
+  LAST_UPDATE_TIMESTAMP           %DATETIME6%                       , 
+  LAST_UPDATE_USER                %INT%                             , 
+  PRIMARY KEY (JOURNAL_SEQ_NO) 
+)%%TABLE_CREATE_OUT_TAIL%%; 
+-- 履歴系テーブル作成----
+
+
+-- ----------------------------------------------------------------------------------------
+-- -- ansible-playbookのオプションパラメータとAnsible Tower JobTemplate プロパティの紐づけ
+-- ----------------------------------------------------------------------------------------
+-- ----更新系テーブル作成
+CREATE TABLE B_ANS_TWR_JOBTP_PROPERTY
+(
+ROWID                             %INT%                            ,
+--
+KEY_NAME                          %VARCHR%(64)                     , -- ansible-playbook パラメータ名
+SHORT_KEY_NAME                    %VARCHR%(32)                     , -- ansible-playbook ショートパラメータ名
+PROPERTY_TYPE                     %VARCHR%(64)                     , -- パラメータタイプ
+                                                                     -- 1: KeyValue     -key  value/--key==value
+                                                                     -- 2: Verbosity    -v...
+                                                                     -- 3: booleanTrue  -D         /--deff
+                                                                     -- 4: ExtraVars    -e value   /-extra-vars=value
+PROPERTY_NAME                     %VARCHR%(64)                     , -- Tower JobTemplateプロパティ名
+TOWERONLY                         %INT%                            , -- 0:Ansible/Tower共通　1:Tower独自パラメータ
+--
+DISP_SEQ                          %INT%                            , -- 表示順序
+NOTE                              %VARCHR%(4000)                   , -- 備考
+DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
+LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
+
+PRIMARY KEY (ROWID)
+)%%TABLE_CREATE_OUT_TAIL%%;
+-- 更新系テーブル作成----
+
+-- ----履歴系テーブル作成
+CREATE TABLE B_ANS_TWR_JOBTP_PROPERTY_JNL
+(
+JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
+JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
+JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
+--
+ROWID                             %INT%                            ,
+--
+KEY_NAME                          %VARCHR%(64)                     , -- ansible-playbook パラメータ名
+SHORT_KEY_NAME                    %VARCHR%(32)                     , -- ansible-playbook ショートパラメータ名
+PROPERTY_TYPE                     %VARCHR%(64)                     , -- パラメータタイプ
+                                                                     -- 1: KeyValue     -key  value/--key==value
+                                                                     -- 2: Verbosity    -v...
+                                                                     -- 3: booleanTrue  -D         /--deff
+                                                                     -- 4: ExtraVars    -e value   /-extra-vars=value
+PROPERTY_NAME                     %VARCHR%(64)                     , -- Tower JobTemplateプロパティ名
+TOWERONLY                         %INT%                            , -- 0:Ansible/Tower共通　1:Tower独自パラメータ
+--
+DISP_SEQ                          %INT%                            , -- 表示順序
+NOTE                              %VARCHR%(4000)                   , -- 備考
+DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
+LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
+LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
+PRIMARY KEY(JOURNAL_SEQ_NO)
+)%%TABLE_CREATE_OUT_TAIL%%;
+-- 履歴系テーブル作成----
 
 -- *****************************************************************************
 -- ***  Ansible Common Tables *****                                          ***
 -- *****************************************************************************
-
-
 
 -- *****************************************************************************
 -- *** ***** Ansible Legacy Tables                                           ***
@@ -467,51 +685,13 @@ PRIMARY KEY(JOURNAL_SEQ_NO)
 -- 履歴系テーブル作成----
 
 -- ----更新系テーブル作成
-CREATE TABLE B_ANSIBLE_LNS_TEMPLATE
-(
-ANS_TEMPLATE_ID                   %INT%                            ,
-
-ANS_TEMPLATE_VARS_NAME            %VARCHR%(128)                    ,
-ANS_TEMPLATE_FILE                 %VARCHR%(256)                    ,
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-
-PRIMARY KEY (ANS_TEMPLATE_ID)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 更新系テーブル作成----
-
--- ----履歴系テーブル作成
-CREATE TABLE B_ANSIBLE_LNS_TEMPLATE_JNL
-(
-JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
-JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
-JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
-
-ANS_TEMPLATE_ID                   %INT%                            ,
-
-ANS_TEMPLATE_VARS_NAME            %VARCHR%(128)                    ,
-ANS_TEMPLATE_FILE                 %VARCHR%(256)                    ,
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-PRIMARY KEY(JOURNAL_SEQ_NO)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 履歴系テーブル作成----
-
--- ----更新系テーブル作成
 CREATE TABLE C_ANSIBLE_LNS_EXE_INS_MNG
 (
 EXECUTION_NO                      %INT%                            ,
 
-STATUS_ID                         %INT%                            ,
 EXECUTION_USER                    %VARCHR%(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     %VARCHR%(128)                    , -- シンフォニークラス名
+STATUS_ID                         %INT%                            ,
 SYMPHONY_INSTANCE_NO              %INT%                            ,
 PATTERN_ID                        %INT%                            ,
 I_PATTERN_NAME                    %VARCHR%(256)                    ,
@@ -519,7 +699,8 @@ I_TIME_LIMIT                      %INT%                            ,
 I_ANS_HOST_DESIGNATE_TYPE_ID      %INT%                            ,
 I_ANS_PARALLEL_EXE                %INT%                            ,
 I_ANS_WINRM_ID                    %INT%                            ,
-I_ANS_GATHER_FACTS                %INT%                            , -- Ansible GATHER_FACTS MODE　1:On 他:off
+I_ANS_PLAYBOOK_HED_DEF            %VARCHR%(512)                    ,
+I_ANS_EXEC_OPTIONS                %VARCHR%(512)                    ,
 OPERATION_NO_UAPK                 %INT%                            ,
 I_OPERATION_NAME                  %VARCHR%(128)                    ,
 I_OPERATION_NO_IDBH               %INT%                            ,
@@ -529,6 +710,7 @@ TIME_END                          %DATETIME6%                      ,
 FILE_INPUT                        %VARCHR%(1024)                   ,
 FILE_RESULT                       %VARCHR%(1024)                   ,
 RUN_MODE                          %INT%                            , -- ドライランモード 1:通常 2:ドライラン
+EXEC_MODE                         %INT%                            , -- 実行モード 1:ansible/2:ansible tower
 
 DISP_SEQ                          %INT%                            , -- 表示順序
 NOTE                              %VARCHR%(4000)                   , -- 備考
@@ -549,8 +731,9 @@ JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴�
 
 EXECUTION_NO                      %INT%                            ,
 
-STATUS_ID                         %INT%                            ,
 EXECUTION_USER                    %VARCHR%(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     %VARCHR%(128)                    , -- シンフォニークラス名
+STATUS_ID                         %INT%                            ,
 SYMPHONY_INSTANCE_NO              %INT%                            ,
 PATTERN_ID                        %INT%                            ,
 I_PATTERN_NAME                    %VARCHR%(256)                    ,
@@ -558,7 +741,8 @@ I_TIME_LIMIT                      %INT%                            ,
 I_ANS_HOST_DESIGNATE_TYPE_ID      %INT%                            ,
 I_ANS_PARALLEL_EXE                %INT%                            ,
 I_ANS_WINRM_ID                    %INT%                            ,
-I_ANS_GATHER_FACTS                %INT%                            , -- Ansible GATHER_FACTS MODE　1:On 他:off
+I_ANS_PLAYBOOK_HED_DEF            %VARCHR%(512)                    ,
+I_ANS_EXEC_OPTIONS                %VARCHR%(512)                    ,
 OPERATION_NO_UAPK                 %INT%                            ,
 I_OPERATION_NAME                  %VARCHR%(128)                    ,
 I_OPERATION_NO_IDBH               %INT%                            ,
@@ -568,46 +752,7 @@ TIME_END                          %DATETIME6%                      ,
 FILE_INPUT                        %VARCHR%(1024)                   ,
 FILE_RESULT                       %VARCHR%(1024)                   ,
 RUN_MODE                          %INT%                            , -- ドライランモード 1:通常 2:ドライラン
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-PRIMARY KEY(JOURNAL_SEQ_NO)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 履歴系テーブル作成----
-
--- ------------------------------
--- -- ファイル管理
--- ------------------------------
--- ----更新系テーブル作成
-CREATE TABLE B_ANS_LNS_CONTENTS_FILE
-(
-CONTENTS_FILE_ID                  %INT%                            , -- ファイルID
-CONTENTS_FILE_VARS_NAME           %VARCHR%(128)                    , -- 変数名
-CONTENTS_FILE                     %VARCHR%(256)                    , -- コンテンツ ファイル名
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-
-PRIMARY KEY (CONTENTS_FILE_ID)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 更新系テーブル作成----
-
--- ----履歴系テーブル作成
-CREATE TABLE B_ANS_LNS_CONTENTS_FILE_JNL
-(
-JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
-JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
-JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
-
-CONTENTS_FILE_ID                  %INT%                            , -- ファイルID
-CONTENTS_FILE_VARS_NAME           %VARCHR%(128)                    , -- 変数名
-CONTENTS_FILE                     %VARCHR%(256)                    , -- コンテンツ ファイル名
+EXEC_MODE                         %INT%                            , -- 実行モード 1:ansible/2:ansible tower
 
 DISP_SEQ                          %INT%                            , -- 表示順序
 NOTE                              %VARCHR%(4000)                   , -- 備考
@@ -621,8 +766,6 @@ PRIMARY KEY(JOURNAL_SEQ_NO)
 -- *****************************************************************************
 -- *** Ansible Legacy Tables *****                                           ***
 -- *****************************************************************************
-
-
 
 -- *****************************************************************************
 -- *** ***** Ansible Legacy Views                                            ***
@@ -689,7 +832,8 @@ SELECT
         ANS_HOST_DESIGNATE_TYPE_ID    ,
         ANS_PARALLEL_EXE              ,
         ANS_WINRM_ID                  ,
-        ANS_GATHER_FACTS              ,
+        ANS_PLAYBOOK_HED_DEF      ,
+        ANS_EXEC_OPTIONS              ,
         (SELECT 
            COUNT(*) 
          FROM 
@@ -719,7 +863,8 @@ SELECT
         ANS_HOST_DESIGNATE_TYPE_ID    ,
         ANS_PARALLEL_EXE              ,
         ANS_WINRM_ID                  ,
-        ANS_GATHER_FACTS              ,
+        ANS_PLAYBOOK_HED_DEF      ,
+        ANS_EXEC_OPTIONS              ,
         (SELECT 
            COUNT(*) 
          FROM 
@@ -799,6 +944,7 @@ AND TAB_C.DISUSE_FLAG = '0'
 CREATE VIEW E_ANSIBLE_LNS_EXE_INS_MNG AS
 SELECT 
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -810,9 +956,9 @@ SELECT
          TAB_E.HOST_DESIGNATE_TYPE_NAME    ANS_HOST_DESIGNATE_TYPE_NAME,
          TAB_A.I_ANS_PARALLEL_EXE        ,
          TAB_A.I_ANS_WINRM_ID            ,
-         TAB_A.I_ANS_GATHER_FACTS        ,
+         TAB_A.I_ANS_PLAYBOOK_HED_DEF,
+         TAB_A.I_ANS_EXEC_OPTIONS        ,
          TAB_F.FLAG_NAME                   ANS_WINRM_FLAG_NAME,
-         TAB_G.FLAG_NAME                   ANS_GATHER_FACTS_NAME,
          TAB_A.OPERATION_NO_UAPK         ,
          TAB_A.I_OPERATION_NAME          ,
          TAB_A.I_OPERATION_NO_IDBH       ,
@@ -823,6 +969,8 @@ SELECT
          TAB_A.FILE_RESULT               ,
          TAB_A.RUN_MODE                  ,
          TAB_D.RUN_MODE_NAME             ,
+         TAB_A.EXEC_MODE                 ,
+         TAB_G.NAME AS EXEC_MODE_NAME    ,
          TAB_A.DISP_SEQ                  ,
          TAB_A.NOTE                      ,
          TAB_A.DISUSE_FLAG               ,
@@ -834,7 +982,7 @@ LEFT JOIN D_ANSIBLE_LNS_INS_STATUS   TAB_C ON ( TAB_A.STATUS_ID = TAB_C.STATUS_I
 LEFT JOIN D_ANSIBLE_LNS_INS_RUN_MODE TAB_D ON ( TAB_A.RUN_MODE = TAB_D.RUN_MODE_ID )
 LEFT JOIN B_HOST_DESIGNATE_TYPE_LIST TAB_E ON ( TAB_A.I_ANS_HOST_DESIGNATE_TYPE_ID = TAB_E.HOST_DESIGNATE_TYPE_ID )
 LEFT JOIN D_FLAG_LIST_01             TAB_F ON ( TAB_A.I_ANS_WINRM_ID = TAB_F.FLAG_ID )
-LEFT JOIN D_GATHER_FACTS_LIST_01     TAB_G ON ( TAB_A.I_ANS_GATHER_FACTS = TAB_G.FLAG_ID )
+LEFT JOIN B_ANSIBLE_EXEC_MODE        TAB_G ON ( TAB_A.EXEC_MODE = TAB_G.ID )
 ;
 
 CREATE VIEW E_ANSIBLE_LNS_EXE_INS_MNG_JNL AS 
@@ -843,6 +991,7 @@ SELECT
          TAB_A.JOURNAL_REG_DATETIME      ,
          TAB_A.JOURNAL_ACTION_CLASS      ,
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -853,9 +1002,9 @@ SELECT
          TAB_E.HOST_DESIGNATE_TYPE_NAME    ANS_HOST_DESIGNATE_TYPE_NAME,
          TAB_A.I_ANS_PARALLEL_EXE        ,
          TAB_A.I_ANS_WINRM_ID            ,
-         TAB_A.I_ANS_GATHER_FACTS        ,
+         TAB_A.I_ANS_PLAYBOOK_HED_DEF    ,
+         TAB_A.I_ANS_EXEC_OPTIONS        ,
          TAB_F.FLAG_NAME                   ANS_WINRM_FLAG_NAME,
-         TAB_G.FLAG_NAME                   ANS_GATHER_FACTS_NAME,
          TAB_A.I_TIME_LIMIT              ,
          TAB_A.OPERATION_NO_UAPK         ,
          TAB_A.I_OPERATION_NAME          ,
@@ -867,6 +1016,8 @@ SELECT
          TAB_A.FILE_RESULT               ,
          TAB_A.RUN_MODE                  ,
          TAB_D.RUN_MODE_NAME             ,
+         TAB_A.EXEC_MODE                 ,
+         TAB_G.NAME AS EXEC_MODE_NAME    ,
          TAB_A.DISP_SEQ                  ,
          TAB_A.NOTE                      ,
          TAB_A.DISUSE_FLAG               ,
@@ -878,7 +1029,7 @@ LEFT JOIN D_ANSIBLE_LNS_INS_STATUS   TAB_C ON ( TAB_A.STATUS_ID = TAB_C.STATUS_I
 LEFT JOIN D_ANSIBLE_LNS_INS_RUN_MODE TAB_D ON ( TAB_A.RUN_MODE = TAB_D.RUN_MODE_ID )
 LEFT JOIN B_HOST_DESIGNATE_TYPE_LIST TAB_E ON ( TAB_A.I_ANS_HOST_DESIGNATE_TYPE_ID = TAB_E.HOST_DESIGNATE_TYPE_ID )
 LEFT JOIN D_FLAG_LIST_01             TAB_F ON ( TAB_A.I_ANS_WINRM_ID = TAB_F.FLAG_ID )
-LEFT JOIN D_GATHER_FACTS_LIST_01     TAB_G ON ( TAB_A.I_ANS_GATHER_FACTS = TAB_G.FLAG_ID )
+LEFT JOIN B_ANSIBLE_EXEC_MODE        TAB_G ON ( TAB_A.EXEC_MODE = TAB_G.ID )
 ;
 
 CREATE VIEW E_OPE_FOR_PULLDOWN_LNS
@@ -1227,6 +1378,7 @@ CREATE TABLE C_ANSIBLE_PNS_EXE_INS_MNG
 (
 EXECUTION_NO                      %INT%                            , -- 識別シーケンス
 EXECUTION_USER                    %VARCHR%(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     %VARCHR%(128)                    , -- シンフォニークラス名
 
 STATUS_ID                         %INT%                            ,
 SYMPHONY_INSTANCE_NO              %INT%                            ,
@@ -1235,6 +1387,9 @@ I_PATTERN_NAME                    %VARCHR%(256)                    ,
 I_TIME_LIMIT                      %INT%                            ,
 I_ANS_HOST_DESIGNATE_TYPE_ID      %INT%                            ,
 I_ANS_PARALLEL_EXE                %INT%                            ,
+I_ANS_WINRM_ID                    %INT%                            ,
+I_ANS_PLAYBOOK_HED_DEF            %VARCHR%(512)                    ,
+I_ANS_EXEC_OPTIONS                %VARCHR%(512)                    ,
 OPERATION_NO_UAPK                 %INT%                            ,
 I_OPERATION_NAME                  %VARCHR%(128)                    ,
 I_OPERATION_NO_IDBH               %INT%                            ,
@@ -1244,6 +1399,7 @@ TIME_END                          %DATETIME6%                      ,
 FILE_INPUT                        %VARCHR%(1024)                   ,
 FILE_RESULT                       %VARCHR%(1024)                   ,
 RUN_MODE                          %INT%                            , -- ドライランモード 1:通常 2:ドライラン
+EXEC_MODE                         %INT%                            , -- 実行モード 1:ansible/2:ansible tower
 
 DISP_SEQ                          %INT%                            , -- 表示順序
 NOTE                              %VARCHR%(4000)                   , -- 備考
@@ -1259,11 +1415,12 @@ PRIMARY KEY (EXECUTION_NO)
 CREATE TABLE C_ANSIBLE_PNS_EXE_INS_MNG_JNL
 (
 JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
-EXECUTION_USER                    %VARCHR%(80)                     , -- 実行ユーザ
 JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
 JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
 
 EXECUTION_NO                      %INT%                            , -- 識別シーケンス
+EXECUTION_USER                    %VARCHR%(80)                     , -- 実行ユーザ
+SYMPHONY_NAME                     %VARCHR%(128)                    , -- シンフォニークラス名
 
 STATUS_ID                         %INT%                            ,
 SYMPHONY_INSTANCE_NO              %INT%                            ,
@@ -1272,6 +1429,9 @@ I_PATTERN_NAME                    %VARCHR%(256)                    ,
 I_TIME_LIMIT                      %INT%                            ,
 I_ANS_HOST_DESIGNATE_TYPE_ID      %INT%                            ,
 I_ANS_PARALLEL_EXE                %INT%                            ,
+I_ANS_WINRM_ID                    %INT%                            ,
+I_ANS_PLAYBOOK_HED_DEF            %VARCHR%(512)                    ,
+I_ANS_EXEC_OPTIONS                %VARCHR%(512)                    ,
 OPERATION_NO_UAPK                 %INT%                            ,
 I_OPERATION_NAME                  %VARCHR%(128)                    ,
 I_OPERATION_NO_IDBH               %INT%                            ,
@@ -1281,88 +1441,7 @@ TIME_END                          %DATETIME6%                      ,
 FILE_INPUT                        %VARCHR%(1024)                   ,
 FILE_RESULT                       %VARCHR%(1024)                   ,
 RUN_MODE                          %INT%                            , -- ドライランモード 1:通常 2:ドライラン
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-PRIMARY KEY(JOURNAL_SEQ_NO)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 履歴系テーブル作成----
-
--- ------------------------------
--- -- ファイル管理
--- ------------------------------
--- ----更新系テーブル作成
-CREATE TABLE B_ANS_PNS_CONTENTS_FILE
-(
-CONTENTS_FILE_ID                  %INT%                            , -- ファイルID
-CONTENTS_FILE_VARS_NAME           %VARCHR%(128)                    , -- 変数名
-CONTENTS_FILE                     %VARCHR%(256)                    , -- コンテンツ ファイル名
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-
-PRIMARY KEY (CONTENTS_FILE_ID)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 更新系テーブル作成----
-
--- ----履歴系テーブル作成
-CREATE TABLE B_ANS_PNS_CONTENTS_FILE_JNL
-(
-JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
-JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
-JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
-
-CONTENTS_FILE_ID                  %INT%                            , -- ファイルID
-CONTENTS_FILE_VARS_NAME           %VARCHR%(128)                    , -- 変数名
-CONTENTS_FILE                     %VARCHR%(256)                    , -- コンテンツ ファイル名
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-PRIMARY KEY(JOURNAL_SEQ_NO)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 履歴系テーブル作成----
-
--- ------------------------------
--- -- テンプレート管理
--- ------------------------------
--- ----更新系テーブル作成
-CREATE TABLE B_ANSIBLE_PNS_TEMPLATE
-(
-ANS_TEMPLATE_ID                   %INT%                            ,
-
-ANS_TEMPLATE_VARS_NAME            %VARCHR%(128)                    ,
-ANS_TEMPLATE_FILE                 %VARCHR%(256)                    ,
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-
-PRIMARY KEY (ANS_TEMPLATE_ID)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 更新系テーブル作成----
-
--- ----履歴系テーブル作成
-CREATE TABLE B_ANSIBLE_PNS_TEMPLATE_JNL
-(
-JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
-JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
-JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
-
-ANS_TEMPLATE_ID                   %INT%                            ,
-
-ANS_TEMPLATE_VARS_NAME            %VARCHR%(128)                    ,
-ANS_TEMPLATE_FILE                 %VARCHR%(256)                    ,
+EXEC_MODE                         %INT%                            , -- 実行モード 1:ansible/2:ansible tower
 
 DISP_SEQ                          %INT%                            , -- 表示順序
 NOTE                              %VARCHR%(4000)                   , -- 備考
@@ -1456,6 +1535,7 @@ SELECT
            TBL_S.PATTERN_ID = TAB_A.PATTERN_ID AND
            DISUSE_FLAG = '0'
         ) VARS_COUNT                  ,
+        ANS_EXEC_OPTIONS              ,
         DISP_SEQ                      ,
         NOTE                          ,
         DISUSE_FLAG                   ,
@@ -1484,6 +1564,7 @@ SELECT
            TBL_S.PATTERN_ID = TAB_A.PATTERN_ID AND
            DISUSE_FLAG = '0'
         ) VARS_COUNT                  ,
+        ANS_EXEC_OPTIONS              ,
         DISP_SEQ                      ,
         NOTE                          ,
         DISUSE_FLAG                   ,
@@ -1556,6 +1637,7 @@ AND TAB_C.DISUSE_FLAG = '0'
 CREATE VIEW E_ANSIBLE_PNS_EXE_INS_MNG AS
 SELECT 
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -1565,6 +1647,10 @@ SELECT
          TAB_A.I_TIME_LIMIT              ,
          TAB_A.I_ANS_HOST_DESIGNATE_TYPE_ID ,
          TAB_A.I_ANS_PARALLEL_EXE        ,
+         TAB_A.I_ANS_WINRM_ID            ,
+         TAB_A.I_ANS_PLAYBOOK_HED_DEF    ,
+         TAB_A.I_ANS_EXEC_OPTIONS        ,
+         TAB_F.FLAG_NAME                   ANS_WINRM_FLAG_NAME,
          TAB_E.HOST_DESIGNATE_TYPE_NAME    ANS_HOST_DESIGNATE_TYPE_NAME,
          TAB_A.OPERATION_NO_UAPK         ,
          TAB_A.I_OPERATION_NAME          ,
@@ -1576,6 +1662,8 @@ SELECT
          TAB_A.FILE_RESULT               ,
          TAB_A.RUN_MODE                  ,
          TAB_D.RUN_MODE_NAME             ,
+         TAB_A.EXEC_MODE                 ,
+         TAB_G.NAME AS EXEC_MODE_NAME    ,
          TAB_A.DISP_SEQ                  ,
          TAB_A.NOTE                      ,
          TAB_A.DISUSE_FLAG               ,
@@ -1586,6 +1674,8 @@ LEFT JOIN E_ANSIBLE_PNS_PATTERN      TAB_B ON ( TAB_B.PATTERN_ID = TAB_A.PATTERN
 LEFT JOIN D_ANSIBLE_PNS_INS_STATUS   TAB_C ON ( TAB_A.STATUS_ID = TAB_C.STATUS_ID )
 LEFT JOIN D_ANSIBLE_PNS_INS_RUN_MODE TAB_D ON ( TAB_A.RUN_MODE = TAB_D.RUN_MODE_ID )
 LEFT JOIN B_HOST_DESIGNATE_TYPE_LIST TAB_E ON ( TAB_A.I_ANS_HOST_DESIGNATE_TYPE_ID = TAB_E.HOST_DESIGNATE_TYPE_ID )
+LEFT JOIN D_FLAG_LIST_01             TAB_F ON ( TAB_A.I_ANS_WINRM_ID = TAB_F.FLAG_ID )
+LEFT JOIN B_ANSIBLE_EXEC_MODE        TAB_G ON ( TAB_A.EXEC_MODE = TAB_G.ID )
 ;
 
 CREATE VIEW E_ANSIBLE_PNS_EXE_INS_MNG_JNL AS 
@@ -1594,6 +1684,7 @@ SELECT
          TAB_A.JOURNAL_REG_DATETIME      ,
          TAB_A.JOURNAL_ACTION_CLASS      ,
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -1603,6 +1694,10 @@ SELECT
          TAB_A.I_TIME_LIMIT              ,
          TAB_A.I_ANS_HOST_DESIGNATE_TYPE_ID ,
          TAB_A.I_ANS_PARALLEL_EXE        ,
+         TAB_A.I_ANS_WINRM_ID            ,
+         TAB_A.I_ANS_PLAYBOOK_HED_DEF    ,
+         TAB_A.I_ANS_EXEC_OPTIONS        ,
+         TAB_F.FLAG_NAME                   ANS_WINRM_FLAG_NAME,
          TAB_E.HOST_DESIGNATE_TYPE_NAME    ANS_HOST_DESIGNATE_TYPE_NAME,
          TAB_A.OPERATION_NO_UAPK         ,
          TAB_A.I_OPERATION_NAME          ,
@@ -1614,6 +1709,8 @@ SELECT
          TAB_A.FILE_RESULT               ,
          TAB_A.RUN_MODE                  ,
          TAB_D.RUN_MODE_NAME             ,
+         TAB_A.EXEC_MODE                 ,
+         TAB_G.NAME AS EXEC_MODE_NAME    ,
          TAB_A.DISP_SEQ                  ,
          TAB_A.NOTE                      ,
          TAB_A.DISUSE_FLAG               ,
@@ -1624,6 +1721,8 @@ LEFT JOIN E_ANSIBLE_PNS_PATTERN      TAB_B ON ( TAB_B.PATTERN_ID = TAB_A.PATTERN
 LEFT JOIN D_ANSIBLE_PNS_INS_STATUS   TAB_C ON ( TAB_A.STATUS_ID = TAB_C.STATUS_ID )
 LEFT JOIN D_ANSIBLE_PNS_INS_RUN_MODE TAB_D ON ( TAB_A.RUN_MODE = TAB_D.RUN_MODE_ID )
 LEFT JOIN B_HOST_DESIGNATE_TYPE_LIST TAB_E ON ( TAB_A.I_ANS_HOST_DESIGNATE_TYPE_ID = TAB_E.HOST_DESIGNATE_TYPE_ID )
+LEFT JOIN D_FLAG_LIST_01             TAB_F ON ( TAB_A.I_ANS_WINRM_ID = TAB_F.FLAG_ID )
+LEFT JOIN B_ANSIBLE_EXEC_MODE        TAB_G ON ( TAB_A.EXEC_MODE = TAB_G.ID )
 ;
 
 CREATE VIEW E_OPE_FOR_PULLDOWN_PNS
@@ -1689,6 +1788,7 @@ CREATE TABLE C_ANSIBLE_LRL_EXE_INS_MNG
 (
 EXECUTION_NO                      %INT%                            ,
 EXECUTION_USER                    %VARCHR%(80)                     , -- 作業パターン名
+SYMPHONY_NAME                     %VARCHR%(128)                    , -- シンフォニークラス名
 
 STATUS_ID                         %INT%                            , -- 状態
 SYMPHONY_INSTANCE_NO              %INT%                            ,
@@ -1698,7 +1798,8 @@ I_TIME_LIMIT                      %INT%                            , -- 遅延�
 I_ANS_HOST_DESIGNATE_TYPE_ID      %INT%                            , -- ホスト指定方式
 I_ANS_PARALLEL_EXE                INT                              , -- 並列実行数
 I_ANS_WINRM_ID                    %INT%                            , -- WINRM接続
-I_ANS_GATHER_FACTS                %INT%                            , -- Ansible GATHER_FACTS MODE　1:On 他:off
+I_ANS_PLAYBOOK_HED_DEF            %VARCHR%(512)                    ,
+I_ANS_EXEC_OPTIONS                %VARCHR%(512)                    ,
 OPERATION_NO_UAPK                 %INT%                            , -- オペレーションNo
 I_OPERATION_NAME                  %VARCHR%(128)                    , -- オペレーション名
 I_OPERATION_NO_IDBH               %INT%                            , -- オペレーションID
@@ -1708,6 +1809,7 @@ TIME_END                          %DATETIME6%                      , -- 終了�
 FILE_INPUT                        %VARCHR%(1024)                   , -- 投入データ格納ファイル(ZIP形式)
 FILE_RESULT                       %VARCHR%(1024)                   , -- 結果データ格納ファイル(ZIP形式)
 RUN_MODE                          %INT%                            , -- ドライランモード 1:通常 2:ドライラン
+EXEC_MODE                         %INT%                            , -- 実行モード 1:ansible/2:ansible tower
 
 DISP_SEQ                          %INT%                            , -- 表示順序
 NOTE                              %VARCHR%(4000)                   , -- 備考
@@ -1723,11 +1825,12 @@ PRIMARY KEY (EXECUTION_NO)
 CREATE TABLE C_ANSIBLE_LRL_EXE_INS_MNG_JNL
 (
 JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
-EXECUTION_USER                    %VARCHR%(80)                     , -- 作業パターン名
 JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
 JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
 
 EXECUTION_NO                      %INT%                            ,
+EXECUTION_USER                    %VARCHR%(80)                     , -- 作業パターン名
+SYMPHONY_NAME                     %VARCHR%(128)                    , -- シンフォニークラス名
 
 STATUS_ID                         %INT%                            , -- 状態
 SYMPHONY_INSTANCE_NO              %INT%                            ,
@@ -1737,7 +1840,8 @@ I_TIME_LIMIT                      %INT%                            , -- 遅延�
 I_ANS_HOST_DESIGNATE_TYPE_ID      %INT%                            , -- ホスト指定方式
 I_ANS_PARALLEL_EXE                INT                              , -- 並列実行数
 I_ANS_WINRM_ID                    %INT%                            , -- WINRM接続
-I_ANS_GATHER_FACTS                %INT%                            , -- Ansible GATHER_FACTS MODE　1:On 他:off
+I_ANS_PLAYBOOK_HED_DEF            %VARCHR%(512)                    ,
+I_ANS_EXEC_OPTIONS                %VARCHR%(512)                    ,
 OPERATION_NO_UAPK                 %INT%                            , -- オペレーションNo
 I_OPERATION_NAME                  %VARCHR%(128)                    , -- オペレーション名
 I_OPERATION_NO_IDBH               %INT%                            , -- オペレーションID
@@ -1747,6 +1851,7 @@ TIME_END                          %DATETIME6%                      , -- 終了�
 FILE_INPUT                        %VARCHR%(1024)                   , -- 投入データ格納ファイル(ZIP形式)
 FILE_RESULT                       %VARCHR%(1024)                   , -- 結果データ格納ファイル(ZIP形式)
 RUN_MODE                          %INT%                            , -- ドライランモード 1:通常 2:ドライラン
+EXEC_MODE                         %INT%                            , -- 実行モード 1:ansible/2:ansible tower
 
 DISP_SEQ                          %INT%                            , -- 表示順序
 NOTE                              %VARCHR%(4000)                   , -- 備考
@@ -2391,45 +2496,6 @@ PRIMARY KEY(JOURNAL_SEQ_NO)
 )%%TABLE_CREATE_OUT_TAIL%%;
 -- 履歴系テーブル作成----
 
--- ------------------------------
--- -- T-0014 ファイル管理
--- ------------------------------
--- ----更新系テーブル作成
-CREATE TABLE B_ANS_LRL_CONTENTS_FILE
-(
-CONTENTS_FILE_ID                  %INT%                            , -- ファイルID
-CONTENTS_FILE_VARS_NAME           %VARCHR%(128)                    , -- 変数名
-CONTENTS_FILE                     %VARCHR%(256)                    , -- コンテンツ ファイル名
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-
-PRIMARY KEY (CONTENTS_FILE_ID)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 更新系テーブル作成----
--- ----履歴系テーブル作成
-CREATE TABLE B_ANS_LRL_CONTENTS_FILE_JNL
-(
-JOURNAL_SEQ_NO                    %INT%                            , -- 履歴用シーケンス
-JOURNAL_REG_DATETIME              %DATETIME6%                      , -- 履歴用変更日時
-JOURNAL_ACTION_CLASS              %VARCHR%(8)                      , -- 履歴用変更種別
-
-CONTENTS_FILE_ID                  %INT%                            , -- ファイルID
-CONTENTS_FILE_VARS_NAME           %VARCHR%(128)                    , -- 変数名
-CONTENTS_FILE                     %VARCHR%(256)                    , -- コンテンツ ファイル名
-
-DISP_SEQ                          %INT%                            , -- 表示順序
-NOTE                              %VARCHR%(4000)                   , -- 備考
-DISUSE_FLAG                       %VARCHR%(1)                      , -- 廃止フラグ
-LAST_UPDATE_TIMESTAMP             %DATETIME6%                      , -- 最終更新日時
-LAST_UPDATE_USER                  %INT%                            , -- 最終更新ユーザ
-PRIMARY KEY(JOURNAL_SEQ_NO)
-)%%TABLE_CREATE_OUT_TAIL%%;
--- 履歴系テーブル作成----
-
 -- -------------------------------------------------------
 -- T-0015 ロールパッケージ読替変数管理(メニュー対象外)
 -- -------------------------------------------------------
@@ -2513,7 +2579,8 @@ SELECT
         ANS_HOST_DESIGNATE_TYPE_ID    ,
         ANS_PARALLEL_EXE              ,
         ANS_WINRM_ID                  ,
-        ANS_GATHER_FACTS              ,
+        ANS_PLAYBOOK_HED_DEF          ,
+        ANS_EXEC_OPTIONS              ,
         (SELECT 
            COUNT(*) 
          FROM 
@@ -2543,7 +2610,8 @@ SELECT
         ANS_HOST_DESIGNATE_TYPE_ID    ,
         ANS_PARALLEL_EXE              ,
         ANS_WINRM_ID                  ,
-        ANS_GATHER_FACTS              ,
+        ANS_PLAYBOOK_HED_DEF          ,
+        ANS_EXEC_OPTIONS              ,
         (SELECT 
            COUNT(*) 
          FROM 
@@ -2568,6 +2636,7 @@ CREATE VIEW E_ANSIBLE_LRL_EXE_INS_MNG AS
 SELECT 
          TAB_A.EXECUTION_NO              ,
          TAB_A.EXECUTION_USER            ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
          TAB_A.SYMPHONY_INSTANCE_NO      ,
@@ -2578,9 +2647,9 @@ SELECT
          TAB_E.HOST_DESIGNATE_TYPE_NAME    ANS_HOST_DESIGNATE_TYPE_NAME,
          TAB_A.I_ANS_PARALLEL_EXE        ,
          TAB_A.I_ANS_WINRM_ID            ,
-         TAB_A.I_ANS_GATHER_FACTS        ,
+         TAB_A.I_ANS_PLAYBOOK_HED_DEF    ,
+         TAB_A.I_ANS_EXEC_OPTIONS        ,
          TAB_F.FLAG_NAME                   ANS_WINRM_FLAG_NAME,
-         TAB_G.FLAG_NAME                   ANS_GATHER_FACTS_NAME,
          TAB_A.OPERATION_NO_UAPK         ,
          TAB_A.I_OPERATION_NAME          ,
          TAB_A.I_OPERATION_NO_IDBH       ,
@@ -2591,6 +2660,8 @@ SELECT
          TAB_A.FILE_RESULT               ,
          TAB_A.RUN_MODE                  ,
          TAB_D.RUN_MODE_NAME             ,
+         TAB_A.EXEC_MODE                 ,
+         TAB_G.NAME AS EXEC_MODE_NAME    ,
          TAB_A.DISP_SEQ                  ,
          TAB_A.NOTE                      ,
          TAB_A.DISUSE_FLAG               ,
@@ -2602,7 +2673,7 @@ LEFT JOIN D_ANSIBLE_LRL_INS_STATUS   TAB_C ON ( TAB_A.STATUS_ID = TAB_C.STATUS_I
 LEFT JOIN D_ANSIBLE_LRL_INS_RUN_MODE TAB_D ON ( TAB_A.RUN_MODE = TAB_D.RUN_MODE_ID )
 LEFT JOIN B_HOST_DESIGNATE_TYPE_LIST TAB_E ON ( TAB_A.I_ANS_HOST_DESIGNATE_TYPE_ID = TAB_E.HOST_DESIGNATE_TYPE_ID )
 LEFT JOIN D_FLAG_LIST_01             TAB_F ON ( TAB_A.I_ANS_WINRM_ID = TAB_F.FLAG_ID )
-LEFT JOIN D_GATHER_FACTS_LIST_01     TAB_G ON ( TAB_A.I_ANS_GATHER_FACTS = TAB_G.FLAG_ID )
+LEFT JOIN B_ANSIBLE_EXEC_MODE        TAB_G ON ( TAB_A.EXEC_MODE = TAB_G.ID )
 ;
 
 CREATE VIEW E_ANSIBLE_LRL_EXE_INS_MNG_JNL AS 
@@ -2611,6 +2682,7 @@ SELECT
          TAB_A.JOURNAL_REG_DATETIME      ,
          TAB_A.JOURNAL_ACTION_CLASS      ,
          TAB_A.EXECUTION_NO              ,
+         TAB_A.SYMPHONY_NAME             ,
          TAB_A.EXECUTION_USER            ,
          TAB_A.STATUS_ID                 ,
          TAB_C.STATUS_NAME               ,
@@ -2622,9 +2694,9 @@ SELECT
          TAB_E.HOST_DESIGNATE_TYPE_NAME    ANS_HOST_DESIGNATE_TYPE_NAME,
          TAB_A.I_ANS_PARALLEL_EXE        ,
          TAB_A.I_ANS_WINRM_ID            ,
-         TAB_A.I_ANS_GATHER_FACTS        ,
+         TAB_A.I_ANS_PLAYBOOK_HED_DEF    ,
+         TAB_A.I_ANS_EXEC_OPTIONS        ,
          TAB_F.FLAG_NAME                   ANS_WINRM_FLAG_NAME,
-         TAB_G.FLAG_NAME                   ANS_GATHER_FACTS_NAME,
          TAB_A.OPERATION_NO_UAPK         ,
          TAB_A.I_OPERATION_NAME          ,
          TAB_A.I_OPERATION_NO_IDBH       ,
@@ -2635,6 +2707,8 @@ SELECT
          TAB_A.FILE_RESULT               ,
          TAB_A.RUN_MODE                  ,
          TAB_D.RUN_MODE_NAME             ,
+         TAB_A.EXEC_MODE                 ,
+         TAB_G.NAME AS EXEC_MODE_NAME    ,
          TAB_A.DISP_SEQ                  ,
          TAB_A.NOTE                      ,
          TAB_A.DISUSE_FLAG               ,
@@ -2646,23 +2720,9 @@ LEFT JOIN D_ANSIBLE_LRL_INS_STATUS   TAB_C ON ( TAB_A.STATUS_ID = TAB_C.STATUS_I
 LEFT JOIN D_ANSIBLE_LRL_INS_RUN_MODE TAB_D ON ( TAB_A.RUN_MODE = TAB_D.RUN_MODE_ID )
 LEFT JOIN B_HOST_DESIGNATE_TYPE_LIST TAB_E ON ( TAB_A.I_ANS_HOST_DESIGNATE_TYPE_ID = TAB_E.HOST_DESIGNATE_TYPE_ID )
 LEFT JOIN D_FLAG_LIST_01             TAB_F ON ( TAB_A.I_ANS_WINRM_ID = TAB_F.FLAG_ID )
-LEFT JOIN D_GATHER_FACTS_LIST_01             TAB_G ON ( TAB_A.I_ANS_GATHER_FACTS = TAB_G.FLAG_ID )
+LEFT JOIN B_ANSIBLE_EXEC_MODE        TAB_G ON ( TAB_A.EXEC_MODE = TAB_G.ID )
 ;
 -- END----------------------------------------------------
-
-
--- -------------------------------------------------------
--- V-0004 インタフェース情報
--- -------------------------------------------------------
-CREATE VIEW D_ANSIBLE_LRL_IF_INFO     AS 
-SELECT * 
-FROM B_ANSIBLE_IF_INFO;
-
-CREATE VIEW D_ANSIBLE_LRL_IF_INFO_JNL AS 
-SELECT * 
-FROM B_ANSIBLE_IF_INFO_JNL;
--- END----------------------------------------------------
-
 
 -- -------------------------------------------------------
 -- V-0005 ロール一覧
@@ -3429,6 +3489,7 @@ PRIMARY KEY(JOURNAL_SEQ_NO)
 )%%TABLE_CREATE_OUT_TAIL%%;
 -- 履歴系テーブル作成----
 
+
 -- 索引作成
 
 -- -- ansible共通 追加Index
@@ -3437,7 +3498,8 @@ CREATE        INDEX IND_B_ANSIBLE_STATUS_01           ON B_ANSIBLE_STATUS       
 CREATE        INDEX IND_B_ANSIBLE_IF_INFO_01          ON B_ANSIBLE_IF_INFO             (DISUSE_FLAG);
 CREATE        INDEX IND_B_ANSIBLE_RUN_MODE_01         ON B_ANSIBLE_RUN_MODE            (DISUSE_FLAG);
 CREATE        INDEX IND_B_ANS_VARS_TYPE_01            ON B_ANS_VARS_TYPE               (DISUSE_FLAG);
-CREATE        INDEX IND_D_GATHER_FACTS_LIST_01_01     ON D_GATHER_FACTS_LIST_01        (DISUSE_FLAG);
+CREATE        INDEX IND_B_ANS_TEMPLATE_FILE_01        ON B_ANS_TEMPLATE_FILE           (DISUSE_FLAG);
+CREATE        INDEX IND_B_ANS_CONTENTS_FILE_01        ON B_ANS_CONTENTS_FILE           (DISUSE_FLAG);
 
 -- -- Legacy 追加Index
 CREATE        INDEX IND_B_ANSIBLE_LNS_PLAYBOOK_01     ON B_ANSIBLE_LNS_PLAYBOOK        (DISUSE_FLAG);
@@ -3452,9 +3514,7 @@ CREATE        INDEX IND_B_ANS_LNS_PTN_VARS_LINK_03    ON B_ANS_LNS_PTN_VARS_LINK
 CREATE        INDEX IND_B_ANS_LNS_PTN_VARS_LINK_04    ON B_ANS_LNS_PTN_VARS_LINK       (VARS_LINK_ID ,DISUSE_FLAG);
 CREATE        INDEX IND_B_ANSIBLE_LNS_VARS_ASSIGN_01  ON B_ANSIBLE_LNS_VARS_ASSIGN     (DISUSE_FLAG);
 CREATE        INDEX IND_B_ANSIBLE_LNS_VARS_ASSIGN_02  ON B_ANSIBLE_LNS_VARS_ASSIGN     (VARS_ENTRY);
-CREATE        INDEX IND_B_ANSIBLE_LNS_TEMPLATE_01     ON B_ANSIBLE_LNS_TEMPLATE        (DISUSE_FLAG);
 CREATE        INDEX IND_C_ANSIBLE_LNS_EXE_INS_MNG_01  ON C_ANSIBLE_LNS_EXE_INS_MNG     (DISUSE_FLAG);
-CREATE        INDEX IND_B_ANS_LNS_CONTENTS_FILE_01    ON B_ANS_LNS_CONTENTS_FILE       (DISUSE_FLAG);
 CREATE        INDEX IND_B_ANS_LNS_VAL_ASSIGN_01       ON B_ANS_LNS_VAL_ASSIGN          (DISUSE_FLAG);
 
 -- -- Pioneer 追加Index
@@ -3470,8 +3530,6 @@ CREATE        INDEX IND_B_ANS_PNS_PTN_VARS_LINK_02    ON B_ANS_PNS_PTN_VARS_LINK
 CREATE        INDEX IND_B_ANS_PNS_PTN_VARS_LINK_03    ON B_ANS_PNS_PTN_VARS_LINK       (PATTERN_ID ,VARS_LINK_ID ,DISUSE_FLAG);
 CREATE        INDEX IND_B_ANSIBLE_PNS_VARS_ASSIGN_01  ON B_ANSIBLE_PNS_VARS_ASSIGN     (DISUSE_FLAG);
 CREATE        INDEX IND_C_ANSIBLE_PNS_EXE_INS_MNG_01  ON C_ANSIBLE_PNS_EXE_INS_MNG     (DISUSE_FLAG);
-CREATE        INDEX IND_B_ANS_PNS_CONTENTS_FILE_01    ON B_ANS_PNS_CONTENTS_FILE       (DISUSE_FLAG);
-CREATE        INDEX IND_B_ANSIBLE_PNS_TEMPLATE_01     ON B_ANSIBLE_PNS_TEMPLATE        (DISUSE_FLAG);
 CREATE        INDEX IND_B_ANS_PNS_VAL_ASSIGN_01       ON B_ANS_PNS_VAL_ASSIGN          (DISUSE_FLAG);
 
 -- -- Role 追加Index
@@ -3499,7 +3557,6 @@ CREATE        INDEX IND_B_ANS_LRL_MAX_MEMBER_COL_01   ON B_ANS_LRL_MAX_MEMBER_CO
 CREATE UNIQUE INDEX IND_B_ANS_LRL_MAX_MEMBER_COL_02   ON B_ANS_LRL_MAX_MEMBER_COL      (VARS_NAME_ID ,ARRAY_MEMBER_ID ,DISUSE_FLAG);
 CREATE        INDEX IND_B_ANS_LRL_MEMBER_COL_COMB_01  ON B_ANS_LRL_MEMBER_COL_COMB     (DISUSE_FLAG);
 CREATE        INDEX IND_B_ANS_LRL_MEMBER_COL_COMB_02  ON B_ANS_LRL_MEMBER_COL_COMB     (ARRAY_MEMBER_ID);
-CREATE        INDEX IND_B_ANS_LRL_CONTENTS_FILE_01    ON B_ANS_LRL_CONTENTS_FILE       (DISUSE_FLAG);
 CREATE        INDEX IND_B_ANS_LRL_RP_REP_VARS_LIST_01 ON B_ANS_LRL_RP_REP_VARS_LIST    (DISUSE_FLAG);
 CREATE UNIQUE INDEX IND_B_ANS_LRL_RP_REP_VARS_LIST_02 ON B_ANS_LRL_RP_REP_VARS_LIST    (ROLE_PACKAGE_ID ,ROLE_ID ,REP_VARS_NAME ,ANY_VARS_NAME);
 CREATE        INDEX IND_B_ANS_LRL_VAL_ASSIGN_01       ON B_ANS_LRL_VAL_ASSIGN          (DISUSE_FLAG);

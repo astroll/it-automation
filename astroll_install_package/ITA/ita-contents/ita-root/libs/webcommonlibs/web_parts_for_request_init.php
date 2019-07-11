@@ -16,6 +16,7 @@
 
     ini_set("display_errors",1);
 
+
     global $g;
     $tmpEscapeDataBody = array();
     $tmpEscapeDataKey = array('requestByHA','requestByREST');

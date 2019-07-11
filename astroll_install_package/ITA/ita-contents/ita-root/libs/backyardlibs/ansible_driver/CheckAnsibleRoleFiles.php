@@ -696,6 +696,7 @@ class CheckAnsibleRoleFiles {
 
                        unset($chkObj);
 
+                       //$user_vars_file = $in_base_dir . "/ita_readme_" . $in_rolename . ".yml";
                        $user_vars_file = $in_base_dir . "/astroll_readme_" . $in_rolename . ".yml";
 
                        // ユーザー定義変数ファイルの有無判定

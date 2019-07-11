@@ -26,6 +26,7 @@
 class ControlGit {
 
     private $remortRepoUrl;     // GitのリモートリポジトリURL
+    private $branch;            // Gitのブランチ
     private $cloneRepoDir;      // Gitクローンディレクトリ
     private $password;          // Gitのパスワード
     private $gitOption;         // Gitのオプション（--git-dir、--work-tree）
@@ -36,8 +37,9 @@ class ControlGit {
     /**
      * コンストラクタ
      */
-    public function __construct($remortRepoUrl, $cloneRepoDir, $password, $libPath) {
+    public function __construct($remortRepoUrl, $branch, $cloneRepoDir, $password, $libPath) {
         $this->remortRepoUrl = $remortRepoUrl;
+        $this->branch = $branch;
         $this->cloneRepoDir = $cloneRepoDir . "/";
         $this->password = $password;
         $this->gitOption = "--git-dir " . $this->cloneRepoDir . "/.git --work-tree=" . $this->cloneRepoDir;
@@ -63,12 +65,29 @@ class ControlGit {
 
         // Git CLONE
         $output = NULL;
-        $cmd = "sudo -s " . $this->libPath . "ky_cloneGit.sh '" . $this->remortRepoUrl . "' '" . $this->cloneRepoDir . "' " . $this->password . " 2>&1";
+        if("" == $this->branch){
+            $branch = "master";
+        }
+        else{
+            $branch = $this->branch;
+        }
 
+        $cmd = "sudo -i " . $this->libPath . "ky_cloneGit.sh '" . $this->remortRepoUrl . "' '" . $this->cloneRepoDir . "' '" . $branch . "' '" . $this->password . "' 2>&1";
         exec($cmd, $output, $return_var);
 
         if(0 != $return_var){
             $errMsg = print_r($output, true);
+            return $return_var;
+        }
+
+        // 日本語文字化け対応
+        $output = NULL;
+        $cmd = "sudo git " . $this->gitOption . " config --local core.quotepath false  2>&1";
+        exec($cmd, $output, $return_var);
+
+        if(0 != $return_var){
+            $errMsg = print_r($output, true);
+            return $return_var;
         }
         return $return_var;
     }
@@ -181,7 +200,7 @@ class ControlGit {
 
         // Git PUSH
         $output = NULL;
-        $cmd = "sudo " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
+        $cmd = "sudo -i " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
         exec($cmd, $output, $return_var);
 
         if(0 != $return_var){
@@ -284,7 +303,7 @@ class ControlGit {
 
             // Git PUSH
             $output = NULL;
-            $cmd = "sudo " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
+            $cmd = "sudo -i " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
             exec($cmd, $output, $return_var);
 
             if(0 != $return_var){
@@ -347,7 +366,7 @@ class ControlGit {
 
         // Git PUSH
         $output = NULL;
-        $cmd = "sudo " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
+        $cmd = "sudo -i " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
         exec($cmd, $output, $return_var);
 
         if(0 != $return_var){
@@ -380,7 +399,7 @@ class ControlGit {
         // Git管理上にディレクトリがあるか確認する
         $matchFlg = false;
         foreach($output as $gitFile){
-            if(substr("/" . $gitFile, 0, strlen($orgDirPath)) === $orgDirPath){
+            if(substr("/" . ltrim($gitFile, '"'), 0, strlen($orgDirPath)) === $orgDirPath){
                 $matchFlg = true;
                 break;
             }
@@ -430,7 +449,7 @@ class ControlGit {
 
             // Git PUSH
             $output = NULL;
-            $cmd = "sudo " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
+            $cmd = "sudo -i " . $this->libPath . "ky_pushGit.sh '" . $this->gitOption . "' " . $this->password . " 2>&1";
             exec($cmd, $output, $return_var);
 
             if(0 != $return_var){

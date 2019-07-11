@@ -25,7 +25,7 @@
     //                               ["ROLE_PACKAGE_ID"]["ROLE_PACKAGE_NAME"] = ["ROLE_PACKAGE_FILE"];
     //                                Array  (
     //                                    [6] => Array        (
-    //                                            [enomoto_pkg] => roles.zip
+    //                                            [pkg] => roles.zip
     //                                        )
     //                                )
     // T0002
@@ -218,7 +218,7 @@
     //                               [ロールパッケージ名][role名][変数名]=0　一般変数
     //                               [ロールパッケージ名][role名][変数名]=1　複数具体値変数
     //                                Array(
-    //                                    [enomoto_pkg] => Array   (
+    //                                    [pkg] => Array   (
     //                                            [test_1] => Array           (
     //                                                    [VAR_std_test1] => 0
     //                                                    [VAR_list_test1] => 1
@@ -297,7 +297,7 @@
     //                               [ロールパッケージ名][role名][変数名]["COL_COUNT_LIST"]
     //                               [ロールパッケージ名][role名][変数名]["VAR_VALUE"]
     //                                Array                               (
-    //                                    [enomoto_pkg] => Array                                       (
+    //                                    [pkg] => Array                                       (
     //                                            [test_1] => Array                                               (
     //                                                    [VAR_str_test1] => Array                                                       (
     //                                                            多次元配列の構造ほ示す配列

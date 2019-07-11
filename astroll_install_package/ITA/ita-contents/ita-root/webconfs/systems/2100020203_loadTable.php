@@ -117,7 +117,7 @@ Ansible(Pioneer)作業パターン
     $table->addColumn($c);
 
     $cg = new ColumnGroup( $g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-409035") );
-    
+
         $c = new IDColumn('ANS_HOST_DESIGNATE_TYPE_ID',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-409040"),'B_HOST_DESIGNATE_TYPE_LIST','HOST_DESIGNATE_TYPE_ID','HOST_DESIGNATE_TYPE_NAME','');
         $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-409050"));//エクセル・ヘッダでの説明
         $c->setHiddenMainTableColumn(true);//コンテンツのソースがヴューの場合、登録/更新の対象とする際に、trueとすること。setDBColumn(true)であることも必要。

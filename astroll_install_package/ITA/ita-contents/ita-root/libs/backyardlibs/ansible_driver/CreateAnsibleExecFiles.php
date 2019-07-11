@@ -1096,8 +1096,10 @@ class CreateAnsibleExecFiles {
     //   $ina_DB_child_vars_master: 
     //                          メンバー変数マスタの配列変数のメンバー変数リスト返却
     //                          [変数名][メンバー変数名]=0
-    //   $in_gather_facts_flg:   gather_factsの実施有無
-    //                           1: 実施  他: 未実施
+    //   $in_exec_mode:         実行エンジン
+    //                           1: Ansible  2: Ansible Tower
+    //   $in_exec_playbook_hed_def; 親playbookヘッダセクション
+    //   $in_exec_option:       予約
     //
     // 戻り値
     //   true:   正常
@@ -1118,7 +1120,9 @@ class CreateAnsibleExecFiles {
                                        $ina_MultiArray_vars_list,
                                        $ina_def_vars_list,
                                        $ina_def_array_vars_list,
-                                       $in_gather_facts_flg)
+                                       $in_exec_mode,
+                                       $in_exec_playbook_hed_def,
+                                       $in_exec_option)
     {
 
         //////////////////////////////////////
@@ -1192,8 +1196,7 @@ class CreateAnsibleExecFiles {
             //////////////////////////////////////
             // Legacy PlayBookファイル作成      //
             //////////////////////////////////////
-
-            if ( $this->CreateLegacyPlaybookfiles($ina_child_playbooks,$in_gather_facts_flg) === false){
+            if ( $this->CreateLegacyPlaybookfiles($ina_child_playbooks,$in_exec_mode,$in_exec_playbook_hed_def) === false){
                 return false;
             }
             /////////////////////////////////////////////////
@@ -1233,7 +1236,8 @@ class CreateAnsibleExecFiles {
             //////////////////////////////////////
             if ( $this->CreatePioneerDialogfiles($ina_dialog_files,$ina_host_vars,$ina_hostprotcollist,
                                                  $pioneer_sshkeyfilelist,
-                                                 $pioneer_sshextraargslist
+                                                 $pioneer_sshextraargslist,
+                                                 $in_exec_mode
                                                 ) === false){
                 return false;
             }
@@ -1261,7 +1265,7 @@ class CreateAnsibleExecFiles {
             //////////////////////////////////////
             // Legacy-Role PlayBookファイル作成 //
             //////////////////////////////////////
-            if ( $this->CreateLegacyRolePlaybookfiles($ina_rolenames,$in_gather_facts_flg) === false){
+            if ( $this->CreateLegacyRolePlaybookfiles($ina_rolenames,$in_exec_mode,$in_exec_playbook_hed_def) === false){
                 return false;
             }
             /////////////////////////////////////////////////
@@ -1948,14 +1952,15 @@ class CreateAnsibleExecFiles {
     //                         [通番][pkey固定][変数名(var%d)]
     //                         Legacy-Role: ロール名の配列
     //                         [実行順序][role_id]=>ロール名
-    //   $in_gather_facts_flg:   gather_factsの実施有無
-    //                           1: 実施  他: 未実施
+    //   $in_exec_mode:        実行エンジン
+    //                           1: Ansible  2: Ansible Tower
+    //   $in_exec_playbook_hed_def: 親Playbookヘッダセクション
     // 
     // 戻り値
     //   true:   正常
     //   false:  異常
     ////////////////////////////////////////////////////////////////////////////////
-    function CreatePlaybookfile($in_file_name,$ina_playbook_list,$in_gather_facts_flg){
+    function CreatePlaybookfile($in_file_name,$ina_playbook_list,$in_exec_mode,$in_exec_playbook_hed_def){
         global $root_dir_path;
 
         $fd = @fopen($in_file_name, "w");
@@ -1969,20 +1974,27 @@ class CreateAnsibleExecFiles {
         $value = "";
         switch($this->getAnsibleDriverID()){
         case DF_LEGACY_DRIVER_ID:
-            $value =          "- hosts: all\n";
-            $value = $value . "  remote_user: \"{{ " . self::LC_ANS_USERNAME_VAR_NAME . " }}\"\n";
+            if(strlen(trim($in_exec_playbook_hed_def)) == 0) {
+                if($in_exec_mode == DF_EXEC_MODE_ANSIBLE) {
+                    $value =          "- hosts: all\n";
+                    $value = $value . "  remote_user: \"{{ " . self::LC_ANS_USERNAME_VAR_NAME . " }}\"\n";
+                    $value = $value . "  gather_facts: no\n";
 
-            // 対象ホストがwindowsか判別。windows以外の場合は sudo: yes を設定
-            if($this->lv_winrm_id != 1){
-                $value = $value . "  sudo: yes\n";
-            }
-
-            // gather_factsのyes/no設定
-            if($in_gather_facts_flg == 1){
-                $value = $value . "  gather_facts: true\n";
-            }
-            else{
-                $value = $value . "  gather_facts: false\n";
+                    // 対象ホストがwindowsか判別。windows以外の場合は become: yes を設定
+                    if($this->lv_winrm_id != 1){
+                        $value = $value . "  become: yes\n";
+                    }
+                } else {
+                    $value =          "- hosts: all\n";
+                    $value = $value . "  gather_facts: no\n";
+                    // 対象ホストがwindowsか判別。windows以外の場合は become: yes を設定
+                    if($this->lv_winrm_id != 1){
+                        $value = $value . "  become: yes\n";
+                    }
+                }
+            } else {
+                $value  = $in_exec_playbook_hed_def;
+                $value  = $value . "\n";
             }
 
             $value = $value . "\n";
@@ -1996,22 +2008,23 @@ class CreateAnsibleExecFiles {
             break;
             
         case DF_LEGACY_ROLE_DRIVER_ID:
-            $value =          "- hosts: all\n";
-            $value = $value . "  remote_user: \"{{ " . self::LC_ANS_USERNAME_VAR_NAME . " }}\"\n";
+            if(strlen(trim($in_exec_playbook_hed_def)) == 0) {
+                if($in_exec_mode == DF_EXEC_MODE_ANSIBLE) {
+                    $value =          "- hosts: all\n";
+                    $value = $value . "  remote_user: \"{{ " . self::LC_ANS_USERNAME_VAR_NAME . " }}\"\n";
 
-            // 対象ホストがwindowsか判別。windows以外の場合は sudo: yes を設定
-            if($this->lv_winrm_id != 1){
-                $value = $value . "  sudo: yes\n";
+                    // 対象ホストがwindowsか判別。windows以外の場合は becom: yes を設定
+                    if($this->lv_winrm_id != 1){
+                        $value = $value . "  become: yes\n";
+                    }
+                } else {
+                    $value =          "- hosts: all\n";
+                    $value = $value . "  become: yes\n";
+                }
+            } else {
+                $value  = $in_exec_playbook_hed_def;
+                $value  = $value . "\n";
             }
-
-            // gather_factsのyes/no設定
-            if($in_gather_facts_flg == 1){
-                $value = $value . "  gather_facts: true\n";
-            }
-            else{
-                $value = $value . "  gather_facts: false\n";
-            }
-
             $value = $value . "\n";
             $value = $value . "  roles:\n";
             break;
@@ -2083,14 +2096,15 @@ class CreateAnsibleExecFiles {
     // パラメータ
     //   $ina_child_playbooks:  子PlayBookファイル配列
     //                          ina_child_playbooks[INCLUDE順序][素材管理Pkey]=>素材ファイル
-    //   $in_gather_facts_flg:   gather_factsの実施有無
-    //                           1: 実施  他: 未実施
+    //   $in_exec_mode:         実行エンジン
+    //                           1: Ansible  2: Ansible Tower
+    //   $in_exec_playbook_hed_def: 親Playbookヘッダセクション
     // 
     // 戻り値
     //   true:   正常
     //   false:  異常
     ////////////////////////////////////////////////////////////////////////////////
-    function CreateLegacyPlaybookfiles($ina_child_playbooks,$in_gather_facts_flg){
+    function CreateLegacyPlaybookfiles($ina_child_playbooks,$in_exec_mode,$in_exec_playbook_hed_def){
         //////////////////////////////////////
         // 子PlayBookファイル作成           //
         //////////////////////////////////////
@@ -2102,7 +2116,7 @@ class CreateAnsibleExecFiles {
         //////////////////////////////////////
         $file_name = $this->getAnsible_playbook_file();
 
-        if($this->CreatePlaybookfile($file_name,$ina_child_playbooks,$in_gather_facts_flg) === false){
+        if($this->CreatePlaybookfile($file_name,$ina_child_playbooks,$in_exec_mode,$in_exec_playbook_hed_def) === false){
             return false;
         }
         return true;
@@ -2161,6 +2175,8 @@ class CreateAnsibleExecFiles {
     //                                    [ホスト名(IP)] = SSH秘密鍵ファイル 
     //   $ina_pioneer_sshextraargslist:   SSH_EXTRA_ARGSリスト(pioneer専用)
     //                                    [ホスト名(IP)] = SSH秘密鍵ファイル 
+    //   $in_exec_mode:         実行エンジン
+    //                           1: Ansible  2: Ansible Tower
     // 戻り値
     //   true:   正常
     //   false:  異常
@@ -2168,7 +2184,8 @@ class CreateAnsibleExecFiles {
     // hostsファイルにホスト名を設定可能するためにホスト毎プロトコル一覧を貰う
     function CreatePioneerDialogfiles($ina_dialog_files,$ina_host_vars,$ina_hostprotcollist,
                                       $ina_pioneer_sshkeyfilelist,
-                                      $ina_pioneer_sshextraargslist)
+                                      $ina_pioneer_sshextraargslist,
+                                      $in_exec_mode)
     {
         $max_file = 0;
         // 対話ファイル配列よりホスト名(IP)を取得
@@ -2306,8 +2323,7 @@ class CreateAnsibleExecFiles {
         //////////////////////////////////////
         // $var_name_list [通番][pkey固定][変数名(var%d)]
 
-        $gather_facts_flg = "";
-        if($this->CreatePlaybookfile($this->getAnsible_playbook_file(),$var_name_list,$gather_facts_flg) === false){
+        if($this->CreatePlaybookfile($this->getAnsible_playbook_file(),$var_name_list,$in_exec_mode,"") === false){
             return false;
         }
         return true;
@@ -3192,7 +3208,7 @@ class CreateAnsibleExecFiles {
                         break;
                     }
                 }
-                // exec_list=>expect:キーか判定:1
+                // exec_list=>expect:キーか判定
                 elseif(strpos($read_line,"  - expect:") === 0){
                     if(($mysts == 5) || ($mysts == 6))
                     {
@@ -3290,7 +3306,7 @@ class CreateAnsibleExecFiles {
                 }
 // 作業パターンの出力結果から特定の文字列でOK/NGを判断するコマンド(state)の処理
                 ////////////////////////////////////////////////////////////////
-                // exec_list=>state:キーか判定:1
+                // exec_list=>state:キーか判定
                 ////////////////////////////////////////////////////////////////
                 elseif(strpos($read_line,"  - state:") === 0){
                     $now_cmd = "state";
@@ -3349,8 +3365,8 @@ class CreateAnsibleExecFiles {
                     }
                 }
                 ////////////////////////////////////////////////////////////////
-                // exec_list=>state:->prompt:キーか判定:1
-                // exec_list=>command:->prompt:キーか判定:1
+                // exec_list=>state:->prompt:キーか判定
+                // exec_list=>command:->prompt:キーか判定
                 ////////////////////////////////////////////////////////////////
                 elseif(strpos($read_line,"    prompt:") === 0){
                     $now_cmd = "prompt";
@@ -3433,7 +3449,7 @@ class CreateAnsibleExecFiles {
                     }
                 }
                 ////////////////////////////////////////////////////////////////
-                // exec_list=>state:->shell:キーか判定:1
+                // exec_list=>state:->shell:キーか判定
                 ////////////////////////////////////////////////////////////////
                 elseif(strpos($read_line,"    shell:") === 0){
                     $now_cmd = "shell";
@@ -3484,7 +3500,7 @@ class CreateAnsibleExecFiles {
                     }
                 }
                 ////////////////////////////////////////////////////////////////
-                // exec_list=>state:->parameter:キーか判定:1
+                // exec_list=>state:->parameter:キーか判定
                 ////////////////////////////////////////////////////////////////
                 elseif(strpos($read_line,"    parameter:") === 0){
                     $now_cmd = "parameter";
@@ -3520,8 +3536,8 @@ class CreateAnsibleExecFiles {
                     }
                 }
                 ////////////////////////////////////////////////////////////////
-                // exec_list=>state:->parameter:->-キーか判定:1
-                // exec_list=>command:->with_items:->-キーか判定:1
+                // exec_list=>state:->parameter:->-キーか判定
+                // exec_list=>command:->with_items:->-キーか判定
                 // exec_list=>command:->when:->-キーか判定:1
                 // exec_list=>command:->exec_when:->-キーか判定:1
                 // exec_list=>command:->failed_when:->-キーか判定:1
@@ -6602,7 +6618,7 @@ class CreateAnsibleExecFiles {
                "  ANS_TEMPLATE_ID,             \n" .
                "  ANS_TEMPLATE_FILE            \n" .
                "FROM                           \n" .
-               "  B_ANSIBLE_LNS_TEMPLATE       \n" .
+               "  B_ANS_TEMPLATE_FILE          \n" .
                "WHERE                          \n" .
                "  ANS_TEMPLATE_VARS_NAME = :ANS_TEMPLATE_VARS_NAME AND \n" .
                "  DISUSE_FLAG            = '0';\n";
@@ -7472,20 +7488,20 @@ class CreateAnsibleExecFiles {
     // パラメータ
     //   $ina_rolenames:    ロール名リスト配列
     //                      [実行順序][ロールID(Pkey)]=>ロール名
-    //   $in_gather_facts_flg:   gather_factsの実施有無
-    //                           1: 実施  他: 未実施
+    //   $in_exec_mode:         実行エンジン
+    //                           1: Ansible  2: Ansible Tower
+    //   $in_exec_playbook_hed_def; 親playbookヘッダセクション
     // 
     // 戻り値
     //   true:   正常
     //   false:  異常
     ////////////////////////////////////////////////////////////////////////////////
-    function CreateLegacyRolePlaybookfiles($ina_rolenames,$in_gather_facts_flg){
+    function CreateLegacyRolePlaybookfiles($ina_rolenames,$in_exec_mode,$in_exec_playbook_hed_def){
         /////////////////////////////////////////
         // 親PlayBookファイル作成(Legacy-Role) //
         /////////////////////////////////////////
         $file_name = $this->getAnsible_RolePlaybook_file();
-
-        if($this->CreatePlaybookfile($file_name,$ina_rolenames,$in_gather_facts_flg) === false){
+        if($this->CreatePlaybookfile($file_name,$ina_rolenames,$in_exec_mode,$in_exec_playbook_hed_def) === false){
             return false;
         }
         return true;
@@ -8156,7 +8172,7 @@ class CreateAnsibleExecFiles {
                "  CONTENTS_FILE_ID,            \n" .
                "  CONTENTS_FILE                \n" .
                "FROM                           \n" .
-               "  B_ANS_LNS_CONTENTS_FILE      \n" .
+               "  B_ANS_CONTENTS_FILE          \n" .
                "WHERE                          \n" .
                "  CONTENTS_FILE_VARS_NAME = :CONTENTS_FILE_VARS_NAME AND \n" .
                "  DISUSE_FLAG            = '0';\n";
@@ -9767,7 +9783,7 @@ class CreateAnsibleExecFiles {
                "  CONTENTS_FILE_ID,            \n" .
                "  CONTENTS_FILE                \n" .
                "FROM                           \n" .
-               "  B_ANS_PNS_CONTENTS_FILE      \n" .
+               "  B_ANS_CONTENTS_FILE          \n" .
                "WHERE                          \n" .
                "  CONTENTS_FILE_VARS_NAME = :CONTENTS_FILE_VARS_NAME AND \n" .
                "  DISUSE_FLAG            = '0';\n";
@@ -10113,7 +10129,7 @@ class CreateAnsibleExecFiles {
                "  ANS_TEMPLATE_ID,             \n" .
                "  ANS_TEMPLATE_FILE            \n" .
                "FROM                           \n" .
-               "  B_ANSIBLE_PNS_TEMPLATE       \n" .
+               "  B_ANS_TEMPLATE_FILE          \n" .
                "WHERE                          \n" .
                "  ANS_TEMPLATE_VARS_NAME = :ANS_TEMPLATE_VARS_NAME AND \n" .
                "  DISUSE_FLAG            = '0';\n";
