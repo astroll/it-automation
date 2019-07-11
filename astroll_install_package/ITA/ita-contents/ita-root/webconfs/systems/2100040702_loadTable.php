@@ -133,7 +133,7 @@ Ansibleインターフェース情報
         $c = new TextColumn('ANSIBLE_ACCESS_KEY_ID',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1203070"));
         $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1203080"));//エクセル・ヘッダでの説明
         $c->setValidator($objVldt);
-        $c->setRequired(true);//登録/更新時には、入力必須
+        $c->setRequired(false);
         $acg->addColumn($c);
 
         /* 認証キー Value */
@@ -141,7 +141,7 @@ Ansibleインターフェース情報
         $c = new PasswordColumn('ANSIBLE_SECRET_ACCESS_KEY',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1203090"));
         $c->setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-1204010"));//エクセル・ヘッダでの説明
         $c->setValidator($objVldt);
-        $c->setRequired(true);//登録/更新時には、入力必須
+        $c->setRequired(false);
         $c->setUpdateRequireExcept(1);//1は空白の場合は維持、それ以外はNULL扱いで更新
         $c->setEncodeFunctionName("ky_encrypt");
         $acg->addColumn($c);
@@ -158,7 +158,7 @@ Ansibleインターフェース情報
 	$c = new TextColumn('ANSTWR_ORGANIZATION',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000002"));
 	$c -> setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000003")); // エクセル・ヘッダでの説明
 	$c -> setValidator($objVldt);
-	$c -> setRequired(true); // 登録/更新時には、入力必須
+        $c -> setRequired(false);
 	$tcg->addColumn($c);
 
 	/* 接続トークン */
@@ -166,7 +166,7 @@ Ansibleインターフェース情報
 	$c = new PasswordColumn('ANSTWR_AUTH_TOKEN',$g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000000"));
 	$c -> setDescription($g['objMTS']->getSomeMessage("ITAANSIBLEH-MNU-9010000001")); // エクセル・ヘッダでの説明
 	$c -> setValidator($objVldt);
-	$c -> setRequired(true); // 登録/更新時には、入力必須
+        $c -> setRequired(false);
 	$c -> setUpdateRequireExcept(1); // 1は空白の場合は維持、それ以外はNULL扱いで更新
     	$c -> setEncodeFunctionName("ky_encrypt");
 	$tcg->addColumn($c);
@@ -179,6 +179,7 @@ Ansibleインターフェース情報
 	$c -> setJournalLUTSIDOfMaster('LAST_UPDATE_TIMESTAMP');
 	$c -> setJournalKeyIDOfMaster('FLAG_ID');
 	$c -> setJournalDispIDOfMaster('FLAG_NAME');
+        $c -> setRequired(false);
 	$tcg -> addColumn($c);
 
     $table -> addColumn($tcg);
