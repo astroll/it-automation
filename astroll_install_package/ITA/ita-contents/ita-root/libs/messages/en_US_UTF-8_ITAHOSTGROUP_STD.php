@@ -17,5 +17,5 @@
 $ary[10001] = "[{}] START";
 $ary[10002] = "[{}] END(NORMAL)";
 $ary[10003] = "[{}] END(ERROR)";
-$ary[10004] = "Target:[{}], Number of processes:Regist=[{}] , Update=[{}], Disuse=[{}]";
+$ary[10004] = "Target:[{}], Number of processes: Register=[{}], Update=[{}], Discard=[{}]";
 ?>
