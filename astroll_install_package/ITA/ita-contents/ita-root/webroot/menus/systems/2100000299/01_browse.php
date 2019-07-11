@@ -24,20 +24,12 @@
     $table_code_label=
 <<< EOD
 <tr class="defaultExplainRow">
-    <th>
-        <p class="generalBold">{$g['objMTS']->getSomeMessage("ITABASEH-MNU-910002")}</p>
-    </th>
-    <th>
-        <p class="generalBold">{$g['objMTS']->getSomeMessage("ITABASEH-MNU-910003")}</p>
-    </th>
+    <th><p class="generalBold">{$g['objMTS']->getSomeMessage("ITABASEH-MNU-910002")}</p></th>
+    <th><p class="generalBold">{$g['objMTS']->getSomeMessage("ITABASEH-MNU-910003")}</p></th>
 </tr>
 <tr class="defaultExplainRow">
-    <td>
-        <p class="generalBold">Base</p>
-    </td>
-    <td>
-        <p class="generalBold">$releaseBase</p>
-    </td>
+    <td><p class="generalBold">Base</p></td>
+    <td><p class="generalBold">$releaseBase</p></td>
 </tr>
 EOD;
 
@@ -47,15 +39,11 @@ EOD;
         $table_code_row=
 <<< EOD
 <tr>
-    <td>
-        <p>$driverName[3]</p>
-    </td>
-    <td>
-        <p>$release</p>
-    </td>
+    <td><p>$driverName[3]</p></td>
+    <td><p>$release</p></td>
 </tr>
 EOD;
-    $table_code=$table_code.$table_code_row;
+        $table_code=$table_code.$table_code_row;
     }
 
     //-- サイト個別PHP要素、ここまで--
