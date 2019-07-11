@@ -575,10 +575,10 @@ $ary[1202040] = "Ansibleインターフェース情報";
 $ary[1202050] = "Ansibleインターフェース情報";
 $ary[1202060] = "データリレイストレージパス(astroll)";
 $ary[1202070] = "astrollサーバとの共有ディレクトリです。";
-$ary[1202080] = "データリレイストレージパス(Ansible/Ansible Tower)";
+$ary[1202080] = "データリレイストレージパス(Ansible)";
 $ary[1202090] = "Ansible/Ansible Towerサーバとの共有ディレクトリです。";
-$ary[1202095] = "Symphonyインスタンスデータリレイストレージパス(Ansible/Ansible Tower)";
-$ary[1202096] = "Symphonyインスタンスの各Movementが共有するディレクトリをAnsibleサーバで共有する為のパスです。";
+$ary[1202095] = "Symphonyインスタンスデータリレイストレージパス(Ansible)";
+$ary[1202096] = "Symphonyインスタンスの各Movementが共有するディレクトリをAnsible/Ansible Towerサーバで共有する為のパスです。";
 $ary[1203010] = "プロトコル";
 $ary[1203020] = "http/httpsのいずれかです。\nAnsible Towerはhttpsを入力します。";
 $ary[1203030] = "ホスト";
@@ -594,8 +594,8 @@ $ary[1203080] = "Ansibleサーバ接続時の認証に使用するアクセス�
 $ary[1203090] = "Secret_access_key";
 $ary[1204010] = "Ansibleサーバ接続時の認証に使用するシークレットアクセスキーです。";
 $ary[1204015] = "オプションパラメータ";
-$ary[1204016] = "Movement共通のansible-playbookコマンドのオプションパラメータを設定しです。
-Movement固有のオプションパラメータはMovement一覧で設定にします。
+$ary[1204016] = "Movement共通のansible-playbookコマンドのオプションパラメータを設定します。
+Movement固有のオプションパラメータはMovement一覧で設定します。
 Ansible:
   ansible-playbookコマンドのパラメータを設定します。
 　-i オプションはastrollが設定します。
@@ -1114,8 +1114,8 @@ $ary[9010000000] = "認証トークン";
 $ary[9010000001] = "astrolからRestAPIでAnsible Towerに接続するユーザーの認証トークンです。";
 $ary[9010000002] = "組織名";
 $ary[9010000003] = "Ansible Towerに登録されている組織名を入力します。";
-$ary[9010000004] = "Ansible情報";
-$ary[9010000005] = "Ansible Tower情報";
+$ary[9010000004] = "Ansible core インターフェース";
+$ary[9010000005] = "Tower インターフェース\"";
 $ary[9010000006] = "Legacy";
 $ary[9010000007] = "Legacy Role";
 $ary[9010000008] = "ヘッダーセクション";
@@ -1124,11 +1124,14 @@ $ary[9010000009] = "astrollが自動生成する親Playbookの先頭からtasks�
 Ansible:
   - hosts: all
     remote_user: \"{{ __loginuser__ }}\"
+    gather_facts: no
     become: yes
 
 Ansible Tower:
   - hosts: all
-    become: yes";
+    gather_facts: no
+    become: yes
+winrm接続の場合は「become: yes」は省略されます。";
 $ary[9010000010] = "オプションパラメータ";
 $ary[9010000011] = "Movement固有のansible-playbookコマンドのオプションパラメータを設定します。
 Movement共通のオプションパラメータはインターフェース情報で設定にします。
