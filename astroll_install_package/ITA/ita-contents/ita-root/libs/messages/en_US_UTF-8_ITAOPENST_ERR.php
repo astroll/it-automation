@@ -40,8 +40,8 @@ $ary[51083] = "Rollback has failed. (Execution No.: {})";
 $ary[103010] = "ERROR:EXECUTION_NO_IS_NOT_FOUND(file:{} line:{})";
 $ary[104010] = "Authentication REST failed.";
 $ary[104020] = "No HEAT templates is set in the movment.";
-$ary[53010] = "floating IP address has not been set to the IP address of the device list. floatingip=";
-$ary[53020] = "It does not have a valid floating IP address.";
-$ary[53030] = "floating IP address is not valid. floatingip=";
-$ary[53040] = "floating IP address is already in use. floatingip=";
+$ary[53010] = "Floating IP address has not been set to the IP address of the device list. floatingip=";
+$ary[53020] = "No valid floating IP address exists.";
+$ary[53030] = "Floating IP address is not valid. floatingip=";
+$ary[53040] = "Floating IP address is already in use. floatingip=";
 ?>
